@@ -169,9 +169,13 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
                     <p className="text-gray-700 mb-2">Phone Numbers</p>
                     <div className="space-y-1">
                       {phoneNumbers.map((phone, index) => (
-                        <p key={index} className="text-gray-600 text-sm">
+                        <a
+                          key={index}
+                          href={phone.link}
+                          className="block text-rose-600 hover:text-rose-700 text-sm"
+                        >
                           {phone.label}: {phone.number}
-                        </p>
+                        </a>
                       ))}
                     </div>
                   </div>

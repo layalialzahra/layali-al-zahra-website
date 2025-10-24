@@ -7,7 +7,7 @@ const tipsData = [
     title: 'Winter Hair Care',
     description:
       'During dry winter months, keep your hair hydrated by using deep conditioning treatments weekly. Avoid excessive heat styling and always use a heat protectant spray.',
-    image: 'https://images.unsplash.com/photo-1605980625982-b128a7e7fde2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWlyJTIwdHJlYXRtZW50JTIwc2Fsb258ZW58MXx8fHwxNzYwNDI2NTkwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     tips: [
       'Use a moisturizing shampoo and conditioner',
       'Apply hair oil or serum to seal in moisture',
@@ -20,7 +20,7 @@ const tipsData = [
     title: 'Nail Care Essentials',
     description:
       'Maintain beautiful, healthy nails with these daily care tips. Proper nail care prevents breakage and keeps your manicure looking fresh longer.',
-    image: 'https://images.unsplash.com/photo-1731644139982-b75487df663e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5pY3VyZSUyMHBlZGljdXJlJTIwbHV4dXJ5fGVufDF8fHx8MTc2MDUyMjk1OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1633955726992-2b7c0d2d2a69?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=928',
     tips: [
       'Moisturize your cuticles daily with cuticle oil',
       'File nails in one direction to prevent splitting',
@@ -33,7 +33,7 @@ const tipsData = [
     title: 'Skincare Routine for Glowing Skin',
     description:
       'A consistent skincare routine is essential for maintaining healthy, radiant skin. Follow these steps morning and night for best results.',
-    image: 'https://images.unsplash.com/photo-1647004692483-c5d942fe1137?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiZWF1dHklMjB0aXBzJTIwc2tpbmNhcmV8ZW58MXx8fHwxNzYwNTIyOTYwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     tips: [
       'Cleanse your face twice daily with a gentle cleanser',
       'Apply toner to balance skin pH',
@@ -47,7 +47,7 @@ const tipsData = [
     title: 'Makeup Application Tips',
     description:
       'Achieve a flawless makeup look with these professional tips. The right techniques make all the difference in creating a long-lasting, beautiful finish.',
-    image: 'https://images.unsplash.com/photo-1698181842513-2179d5f8bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYWtldXAlMjBhcnRpc3QlMjBiZWF1dHl8ZW58MXx8fHwxNzYwNDg4NjcwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1614006659838-d4ca51cbd117?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2670',
     tips: [
       'Always start with a clean, moisturized face',
       'Use primer to help makeup last longer',
@@ -61,7 +61,7 @@ const tipsData = [
     title: 'Hair Color Maintenance',
     description:
       'Keep your hair color vibrant and healthy between salon visits with these expert maintenance tips.',
-    image: 'https://images.unsplash.com/photo-1623104086040-35e17b8a8819?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWlyJTIwY29sb3IlMjBoaWdobGlnaHRzfGVufDF8fHx8MTc2MDQ0NTc5Nnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774',
     tips: [
       'Use color-safe shampoo and conditioner',
       'Wash hair with cool water to seal the cuticle',
@@ -75,7 +75,7 @@ const tipsData = [
     title: 'Pre-Waxing Care',
     description:
       'Prepare your skin properly before waxing to ensure the best results and minimize discomfort.',
-    image: 'https://images.unsplash.com/photo-1579643046891-3386be56709c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3YXhpbmclMjBiZWF1dHklMjBzYWxvbnxlbnwxfHx8fDE3NjA1MjI5NjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
     tips: [
       'Exfoliate skin 24 hours before waxing',
       'Ensure hair is at least 1/4 inch long',

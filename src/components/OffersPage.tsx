@@ -8,7 +8,7 @@ const offersData = [
     title: 'New Client Special',
     description: 'Get 20% off on your first visit to our salon',
     validUntil: 'Valid until March 31, 2025',
-    image: 'https://images.unsplash.com/photo-1759142235060-3191ee596c81?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBzYWxvbiUyMGludGVyaW9yfGVufDF8fHx8MTc2MDUyMjk1N3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1562259920-47afc3030ba2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     discount: '20% OFF',
   },
   {
@@ -16,7 +16,7 @@ const offersData = [
     title: 'Bridal Package Special',
     description: 'Complete bridal beauty package including makeup, hair, and nails at special rates',
     validUntil: 'Book now for 2025 weddings',
-    image: 'https://images.unsplash.com/photo-1758473083855-b8385ab7b1e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGVjaWFsJTIwb2NjYXNpb24lMjBtYWtldXB8ZW58MXx8fHwxNzYwNDUzMTE2fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=870',
     discount: 'SPECIAL RATE',
   },
   {
@@ -24,7 +24,7 @@ const offersData = [
     title: 'Hair Treatment Package',
     description: 'Book 3 hair treatment sessions and get the 4th one free',
     validUntil: 'Valid until April 30, 2025',
-    image: 'https://images.unsplash.com/photo-1605980625982-b128a7e7fde2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWlyJTIwdHJlYXRtZW50JTIwc2Fsb258ZW58MXx8fHwxNzYwNDI2NTkwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     discount: 'BUY 3 GET 1 FREE',
   },
   {
@@ -32,7 +32,7 @@ const offersData = [
     title: 'Manicure & Pedicure Combo',
     description: 'Get both gel manicure and pedicure for a special combo price',
     validUntil: 'Valid until March 31, 2025',
-    image: 'https://images.unsplash.com/photo-1731644139982-b75487df663e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5pY3VyZSUyMHBlZGljdXJlJTIwbHV4dXJ5fGVufDF8fHx8MTc2MDUyMjk1OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     discount: '15% OFF',
   },
   {
@@ -40,7 +40,7 @@ const offersData = [
     title: 'Spa Day Package',
     description: 'Indulge in a full day of pampering with our exclusive spa day package',
     validUntil: 'Available all year',
-    image: 'https://images.unsplash.com/photo-1559185590-879c66a55254?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYWNpYWwlMjB0cmVhdG1lbnQlMjBzcGF8ZW58MXx8fHwxNzYwNTE2OTM5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     discount: 'PACKAGE DEAL',
   },
   {
@@ -48,7 +48,7 @@ const offersData = [
     title: 'Color & Highlights Special',
     description: 'Book any color service and get a complimentary deep conditioning treatment',
     validUntil: 'Valid until May 31, 2025',
-    image: 'https://images.unsplash.com/photo-1623104086040-35e17b8a8819?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWlyJTIwY29sb3IlMjBoaWdobGlnaHRzfGVufDF8fHx8MTc2MDQ0NTc5Nnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774',
     discount: 'FREE TREATMENT',
   },
 ];

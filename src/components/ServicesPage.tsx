@@ -7,7 +7,7 @@ const servicesData = [
   {
     id: 'hair-treatments',
     title: 'Hair Treatments',
-    image: 'https://images.unsplash.com/photo-1605980625982-b128a7e7fde2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWlyJTIwdHJlYXRtZW50JTIwc2Fsb258ZW58MXx8fHwxNzYwNDI2NTkwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     subservices: [
       { name: 'Keratin Treatment', price: 'AED 350 - 650' },
       { name: 'Hair Spa', price: 'AED 150 - 250' },
@@ -18,7 +18,7 @@ const servicesData = [
   {
     id: 'hair-extensions',
     title: 'Hair Extensions',
-    image: 'https://images.unsplash.com/photo-1677319378211-06f6a50b49bd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWlyJTIwZXh0ZW5zaW9ucyUyMGx1eHVyeXxlbnwxfHx8fDE3NjA1MjI5NTh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1634449571017-5fecfd26ad76?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     subservices: [
       { name: 'Tape Extensions', price: 'AED 800 - 1500' },
       { name: 'Clip-in Extensions', price: 'AED 400 - 800' },
@@ -29,7 +29,7 @@ const servicesData = [
   {
     id: 'color-highlights',
     title: 'Color & Highlights',
-    image: 'https://images.unsplash.com/photo-1623104086040-35e17b8a8819?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWlyJTIwY29sb3IlMjBoaWdobGlnaHRzfGVufDF8fHx8MTc2MDQ0NTc5Nnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774',
     subservices: [
       { name: 'Full Color', price: 'AED 250 - 500' },
       { name: 'Highlights', price: 'AED 300 - 600' },
@@ -40,7 +40,7 @@ const servicesData = [
   {
     id: 'nails',
     title: 'Nail Services',
-    image: 'https://images.unsplash.com/photo-1731644139982-b75487df663e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5pY3VyZSUyMHBlZGljdXJlJTIwbHV4dXJ5fGVufDF8fHx8MTc2MDUyMjk1OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1633955726992-2b7c0d2d2a69?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=928',
     subservices: [
       { name: 'Classic Manicure', price: 'AED 50 - 80' },
       { name: 'Gel Manicure', price: 'AED 80 - 120' },
@@ -52,7 +52,7 @@ const servicesData = [
   {
     id: 'facials',
     title: 'Facial Treatments',
-    image: 'https://images.unsplash.com/photo-1559185590-879c66a55254?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYWNpYWwlMjB0cmVhdG1lbnQlMjBzcGF8ZW58MXx8fHwxNzYwNTE2OTM5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1740',
     subservices: [
       { name: 'Classic Facial', price: 'AED 150 - 250' },
       { name: 'Anti-Aging Facial', price: 'AED 300 - 500' },
@@ -63,7 +63,7 @@ const servicesData = [
   {
     id: 'makeup',
     title: 'Makeup Services',
-    image: 'https://images.unsplash.com/photo-1698181842513-2179d5f8bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYWtldXAlMjBhcnRpc3QlMjBiZWF1dHl8ZW58MXx8fHwxNzYwNDg4NjcwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1614006659838-d4ca51cbd117?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2670',
     subservices: [
       { name: 'Party Makeup', price: 'AED 200 - 350' },
       { name: 'Bridal Makeup', price: 'AED 800 - 1500' },
@@ -74,7 +74,7 @@ const servicesData = [
   {
     id: 'waxing',
     title: 'Waxing Services',
-    image: 'https://images.unsplash.com/photo-1579643046891-3386be56709c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3YXhpbmclMjBiZWF1dHklMjBzYWxvbnxlbnwxfHx8fDE3NjA1MjI5NjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
     subservices: [
       { name: 'Full Body Waxing', price: 'AED 250 - 400' },
       { name: 'Half Legs', price: 'AED 60 - 100' },
@@ -86,7 +86,7 @@ const servicesData = [
   {
     id: 'special-packages',
     title: 'Special Packages',
-    image: 'https://images.unsplash.com/photo-1758473083855-b8385ab7b1e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGVjaWFsJTIwb2NjYXNpb24lMjBtYWtldXB8ZW58MXx8fHwxNzYwNDUzMTE2fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1738',
     subservices: [
       { name: 'Bridal Package', price: 'AED 2500 - 5000' },
       { name: 'Spa Day Package', price: 'AED 800 - 1500' },
@@ -115,52 +115,6 @@ export default function ServicesPage() {
           <p className="text-gray-700 text-xl max-w-3xl mx-auto">
             Discover our comprehensive range of luxury beauty services
           </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <Button
-            onClick={() =>
-              window.open(
-                'https://www.fresha.com/book-now/layali-al-zahra-ladies-saloon-ng425ap1/all-offer?share=true&pId=2674340',
-                '_blank'
-              )
-            }
-            className="bg-rose-200 text-rose-900 hover:bg-amber-400 hover:text-white px-8 py-6 shadow-md"
-          >
-            Book Now
-          </Button>
-          <Button
-            onClick={() => setShowPhoneDialog(true)}
-            className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-6"
-          >
-            <Phone className="w-5 h-5 mr-2" />
-            Contact Us
-          </Button>
-          <Button
-            onClick={() =>
-              window.open(
-                'https://wa.me/971523706025?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.%20Could%20you%20please%20share%20the%20available%20slots%20and%20details%3F',
-                '_blank'
-              )
-            }
-            className="bg-green-500 hover:bg-green-600 text-white px-8 py-6"
-          >
-            <MessageCircle className="w-5 h-5 mr-2" />
-            WhatsApp Us
-          </Button>
-          <Button
-            onClick={() =>
-              window.open(
-                'https://drive.google.com/file/d/1nakcllVMlJWBZr5ZLhyQuw2W2Ua93ZF0/view?usp=sharing',
-                '_blank'
-              )
-            }
-            className="bg-amber-500 hover:bg-amber-600 text-white px-8 py-6"
-          >
-            <Download className="w-5 h-5 mr-2" />
-            View Price List
-          </Button>
         </div>
 
         {/* Services Grid */}
@@ -242,6 +196,56 @@ export default function ServicesPage() {
             </div>
           </DialogContent>
         </Dialog>
+      </div>
+
+      {/* Action Buttons Section - Above Footer */}
+      <div className="py-12 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button
+              onClick={() =>
+                window.open(
+                  'https://www.fresha.com/book-now/layali-al-zahra-ladies-saloon-ng425ap1/all-offer?share=true&pId=2674340',
+                  '_blank'
+                )
+              }
+              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6 shadow-md"
+            >
+              Book Now
+            </Button>
+            <Button
+              onClick={() => setShowPhoneDialog(true)}
+              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6"
+            >
+              <Phone className="w-5 h-5 mr-2" />
+              Contact Us
+            </Button>
+            <Button
+              onClick={() =>
+                window.open(
+                  'https://wa.me/971523706025?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.%20Could%20you%20please%20share%20the%20available%20slots%20and%20details%3F',
+                  '_blank'
+                )
+              }
+              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              WhatsApp Us
+            </Button>
+            <Button
+              onClick={() =>
+                window.open(
+                  'https://drive.google.com/file/d/1nakcllVMlJWBZr5ZLhyQuw2W2Ua93ZF0/view?usp=sharing',
+                  '_blank'
+                )
+              }
+              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6"
+            >
+              <Download className="w-5 h-5 mr-2" />
+              View Price List
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
