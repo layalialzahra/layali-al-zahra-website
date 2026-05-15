@@ -9,7 +9,7 @@ import React from 'react';
       title: 'Silk Smooth Half Glow',
       description: 'Half Arms + Half Legs + Underarms — smooth, silky skin with our popular intro waxing combo',
       price: 'AED 187.95',
-      image: '/silk-smooth-full-glow.jpg',
+      image: '/silk-smooth-half-glow.jpg',
     },
     {
       id: 2,
