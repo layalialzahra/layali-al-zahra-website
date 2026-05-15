@@ -8,8 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 const phoneNumbers = [
   { label: 'Mobile 1', number: '+971 52 370 6025', link: 'tel:+971523706025' },
   { label: 'Mobile 2', number: '+971 50 614 3199', link: 'tel:+971506143199' },
-  { label: 'Telephone 1', number: '+971 4 347 3880', link: 'tel:+97143473880' },
-  { label: 'Telephone 2', number: '+971 4 347 3001', link: 'tel:+97143473001' },
+  { label: 'Telephone 1', number: '+971 4 347 5545', link: 'tel:+97143475545' },
+  { label: 'Telephone 2', number: '+971 4 357 1060', link: 'tel:+97143571060' },
 ];
 
 interface ContactPageProps {
