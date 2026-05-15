@@ -209,7 +209,7 @@ import React, { useState, useEffect } from 'react';
       image: '',
     },
     {
-      title: 'stephanie chamy',
+      title: 'Stephanie Chamy',
       initials: 'SC',
       description: "My go to salon, always. I really recommend Donna and Mary for Mani Pedi. I have a lot of dry skin on both hands and feet, and they are so patient & make sure I only leave satisfied, happy with great looking nails. Also thank you to NaiNai for her great massage.",
       image: '',
@@ -245,7 +245,7 @@ import React, { useState, useEffect } from 'react';
       image: '',
     },
     {
-      title: 'sahar ayoub',
+      title: 'Sahar Ayoub',
       initials: 'SA',
       description: "Reception staffs Veena & Ann are awesome — very polite and five star service. Mary, Shobha, Sita exceptionally perfect for service — love all the girls.",
       image: '',
