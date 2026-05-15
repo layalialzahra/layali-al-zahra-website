@@ -322,7 +322,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <Button
             onClick={() =>
               window.open(
-                'https://www.fresha.com/book-now/layali-al-zahra-ladies-saloon-ng425ap1/all-offer?share=true&pId=2674340',
+                'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services',
                 '_blank'
               )
             }
