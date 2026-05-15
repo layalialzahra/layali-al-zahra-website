@@ -8,7 +8,7 @@ import React from 'react';
       title: 'Monday Offer – Acrylic Mani + Pedi',
       description: 'Treat yourself every Monday with our unbeatable acrylic manicure and pedicure combo',
       validUntil: 'Every Monday',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/acrylic-nails.jpg',
       badge: 'AED 105',
     },
     {
@@ -16,7 +16,7 @@ import React from 'react';
       title: 'Monday Offer – Hair Wash + Blow Dry',
       description: 'Start your week looking fabulous with a luxurious wash and blow dry session',
       validUntil: 'Every Monday',
-      image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/hair-treatments.jpg',
       badge: 'AED 99',
     },
     {
@@ -24,7 +24,7 @@ import React from 'react';
       title: 'Monday Offer – Acrylic Full Set (Color)',
       description: 'Get a stunning full set of color acrylic nails at our exclusive Monday price',
       validUntil: 'Every Monday',
-      image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/acrylic-nails.jpg',
       badge: 'AED 269',
     },
     {
@@ -32,7 +32,7 @@ import React from 'react';
       title: 'Midday Offer – Relaxing Body Massage',
       description: 'Recharge your afternoon with our soothing full body massage at a special midday price',
       validUntil: 'Midday Special',
-      image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/midday-body-massage.jpg',
       badge: 'AED 178.50',
     },
     {
@@ -40,7 +40,7 @@ import React from 'react';
       title: 'Midday Offer – Hot Oil Head Massage',
       description: 'Unwind midday with our nourishing hot oil head massage — the perfect pick-me-up',
       validUntil: 'Midday Special',
-      image: 'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/massage-services.jpg',
       badge: 'AED 84',
     },
   ];
