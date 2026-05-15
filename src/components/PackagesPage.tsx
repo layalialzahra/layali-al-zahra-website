@@ -9,7 +9,7 @@ import React from 'react';
       title: 'Silk Smooth Half Glow',
       description: 'Half Arms + Half Legs + Underarms — smooth, silky skin with our popular intro waxing combo',
       price: 'AED 187.95',
-      image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
+      image: '/silk-smooth-full-glow.jpg',
     },
     {
       id: 2,
@@ -17,7 +17,7 @@ import React from 'react';
       title: 'Silk Smooth Full Glow',
       description: 'Full Arms + Half Legs + Underarms — step up your smooth with this popular full-arm combo',
       price: 'AED 208.95',
-      image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
+      image: '/silk-smooth-full-glow.jpg',
     },
     {
       id: 3,
@@ -25,7 +25,7 @@ import React from 'react';
       title: 'Silk Smooth Complete Glow',
       description: 'Full Arms + Full Legs + Underarms — head-to-toe smooth for the complete glow experience',
       price: 'AED 240.45',
-      image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
+      image: '/silk-smooth-complete-glow.jpg',
     },
     {
       id: 4,
@@ -33,7 +33,7 @@ import React from 'react';
       title: 'Silk Smooth Full Body Glow',
       description: 'Full body waxing (without bikini) — indulge in head-to-toe silky smoothness',
       price: 'AED 418.95',
-      image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
+      image: '/silk-smooth-full-body-glow.jpg',
     },
     {
       id: 5,
@@ -41,7 +41,7 @@ import React from 'react';
       title: 'Silk Smooth Full Body Glow Deluxe',
       description: 'Full body waxing including bikini — our most complete smoothing package',
       price: 'AED 523.95',
-      image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
+      image: '/silk-smooth-full-body-glow-deluxe.jpg',
     },
     {
       id: 6,
@@ -73,7 +73,7 @@ import React from 'react';
       title: 'Hair Layer Cut',
       description: 'A beautiful layered cut with expert styling included',
       price: 'AED 189',
-      image: '/hair-cuts.jpg',
+      image: '/hair-layer-cut.jpg',
     },
     {
       id: 10,
@@ -81,7 +81,7 @@ import React from 'react';
       title: 'Midday Glow – Hot Oil Head Massage',
       description: 'A nourishing hot oil head massage to revive and relax during your midday break',
       price: 'AED 105',
-      image: '/massage-services.jpg',
+      image: '/midday-hot-oil-head-massage.jpg',
     },
     {
       id: 11,
@@ -89,7 +89,7 @@ import React from 'react';
       title: 'Midday Glow – Basic Manicure & Pedicure',
       description: 'A quick, beautiful mani-pedi combo perfect for a midday refresh',
       price: 'AED 135',
-      image: '/mani-pedi-foot-massage.jpg',
+      image: '/midday-basic-mani-pedi.jpg',
     },
     {
       id: 12,
@@ -97,7 +97,7 @@ import React from 'react';
       title: 'Midday Glow – Head & Back Massage',
       description: 'Dual relaxation — head and back massage to melt away midday tension',
       price: 'AED 147',
-      image: '/massage-services.jpg',
+      image: '/midday-head-back-massage.jpg',
     },
     {
       id: 13,
@@ -105,7 +105,7 @@ import React from 'react';
       title: 'Midday Glow – Hair Spa',
       description: 'A luxurious midday hair spa treatment to restore moisture and shine',
       price: 'AED 156',
-      image: '/hair-treatments.jpg',
+      image: '/midday-hair-spa.jpg',
     },
     {
       id: 14,
@@ -145,7 +145,7 @@ import React from 'react';
       title: 'Beauty Package – Bud',
       description: 'A fresh introduction to our signature beauty treatments — the perfect starter package',
       price: 'AED 229',
-      image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1738',
+      image: '/beauty-package-bud.jpg',
     },
     {
       id: 19,
@@ -153,7 +153,7 @@ import React from 'react';
       title: 'Beauty Package – Blossom',
       description: 'Step up your glow with this lovely mid-tier selection of our popular services',
       price: 'AED 279',
-      image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1738',
+      image: '/beauty-package-blossom.jpg',
     },
     {
       id: 20,
@@ -161,7 +161,7 @@ import React from 'react';
       title: 'Beauty Package – Petal',
       description: 'A curated combination of our most-loved beauty services for a complete treat',
       price: 'AED 319',
-      image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1738',
+      image: '/beauty-package-petal.jpg',
     },
     {
       id: 21,
@@ -169,7 +169,7 @@ import React from 'react';
       title: 'Beauty Package – Bloom',
       description: 'Indulge in a premium full-day beauty experience with our most popular premium package',
       price: 'AED 499',
-      image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1738',
+      image: '/beauty-package-bloom.jpg',
     },
     {
       id: 22,
@@ -177,7 +177,7 @@ import React from 'react';
       title: 'Beauty Package – Flourish',
       description: 'Our ultimate luxury pampering session — a head-to-toe beauty transformation',
       price: 'AED 599',
-      image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1738',
+      image: '/beauty-package-flourish.jpg',
     },
     {
       id: 23,
