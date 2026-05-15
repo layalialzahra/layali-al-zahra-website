@@ -7,12 +7,12 @@ import React, { useState, useEffect } from 'react';
     {
       title: 'Hair Cuts',
       description: 'Precision cuts tailored to your style and face shape',
-      image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/hair-cuts.jpg',
     },
     {
       title: 'Hair Treatments',
       description: 'Keratin, Botox, protein and luxury spa treatments for healthy hair',
-      image: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/hair-treatments.jpg',
     },
     {
       title: 'Hair Extensions',
@@ -27,37 +27,37 @@ import React, { useState, useEffect } from 'react';
     {
       title: 'Hand & Foot Care',
       description: 'Classic, French, paraffin and luxury spa manicure and pedicure',
-      image: 'https://images.unsplash.com/photo-1633955726992-2b7c0d2d2a69?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=928',
+      image: '/hand-foot-care.jpg',
     },
     {
       title: 'Gelish & Gel Nails',
       description: 'Long-lasting gelish, gel extensions, BIAB and Russian manicure',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/gelish.jpg',
     },
     {
       title: 'Acrylic & Nail Art',
       description: 'Full sets, refills and creative nail art in acrylic and soft gel',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/acrylic-nails.jpg',
     },
     {
       title: 'Eyelash & Brow',
       description: 'Lash extensions, lifting, lamination, threading and tinting',
-      image: 'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/eyelash-brow.jpg',
     },
     {
       title: 'Hair Removal',
       description: 'Halawa, waxing and bleaching for silky smooth skin',
-      image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
+      image: '/hair-removal.jpg',
     },
     {
       title: 'Facial & Skin',
       description: 'Hydra facials, Skyendor, Bioesthe and signature glow treatments',
-      image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/facial-skin.jpg',
     },
     {
       title: 'Massage Services',
       description: 'Head, back, foot, body and Ayurvedic massages for total relaxation',
-      image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/massage-services.jpg',
     },
     {
       title: 'Makeup Services',
@@ -67,12 +67,12 @@ import React, { useState, useEffect } from 'react';
     {
       title: 'Henna & Mehandi',
       description: 'Traditional and Eid henna designs for hands and hair',
-      image: 'https://images.unsplash.com/photo-1562273138-f46be4ebdf33?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/henna-mehandi.jpg',
     },
     {
       title: 'Little Ladies',
       description: 'Gentle, fun beauty services specially designed for girls under 10',
-      image: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/little-ladies.jpg',
     },
   ];
 
@@ -111,7 +111,7 @@ import React, { useState, useEffect } from 'react';
       title: 'Gelish Mani + Pedi + Foot Massage',
       description: 'Gelish manicure, gelish pedicure and relaxing foot massage combo',
       validUntil: 'AED 300',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/gelish-mani-pedi.jpg',
     },
     {
       title: 'Silk Smooth Full Glow',
@@ -123,7 +123,7 @@ import React, { useState, useEffect } from 'react';
       title: 'Midday Glow – Relaxing Body Massage',
       description: 'A one-hour full body relaxation massage at a special midday price',
       validUntil: 'AED 200',
-      image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/midday-body-massage.jpg',
     },
   ];
 
@@ -132,31 +132,31 @@ import React, { useState, useEffect } from 'react';
       title: 'Monday Offer – Acrylic Mani + Pedi',
       description: 'Treat yourself every Monday with our unbeatable acrylic mani & pedi combo',
       validUntil: 'Every Monday – AED 105',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/acrylic-nails.jpg',
     },
     {
       title: 'Monday Offer – Hair Wash + Blow Dry',
       description: 'Start your week looking fabulous with a luxurious wash and blow dry',
       validUntil: 'Every Monday – AED 99',
-      image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/hair-treatments.jpg',
     },
     {
       title: 'Monday Offer – Acrylic Full Set (Color)',
       description: 'Get stunning full color acrylic nails at our exclusive Monday price',
       validUntil: 'Every Monday – AED 269',
-      image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/acrylic-nails.jpg',
     },
     {
       title: 'Midday Offer – Relaxing Body Massage',
       description: 'Recharge your afternoon with a soothing body massage at a special price',
       validUntil: 'Midday Special – AED 178.50',
-      image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/midday-body-massage.jpg',
     },
     {
       title: 'Midday Offer – Hot Oil Head Massage',
       description: 'Unwind midday with our nourishing hot oil head massage',
       validUntil: 'Midday Special – AED 84',
-      image: 'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/massage-services.jpg',
     },
   ];
 
