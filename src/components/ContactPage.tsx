@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 
   const phoneNumbers = [
     { label: 'Mobile', number: '+971 52 370 6025', link: 'tel:+971523706025' },
-    { label: 'Chatbot', number: '+971 56 302 1231', link: 'tel:+971563021231' },
+    { label: 'Chatbot', number: '+971 56 302 1231', link: 'https://wa.me/971563021231?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.' },
     { label: 'Telephone', number: '+971 4 347 5545', link: 'tel:+97143475545' },
     { label: 'Telephone', number: '+971 4 357 1060', link: 'tel:+97143571060' },
   ];
@@ -153,7 +153,7 @@ import React, { useState } from 'react';
           <div className="mt-12 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.4966848841967!2d55.196132476011916!3d25.106774577702767!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f6b605b77aaa5%3A0x61889b1cddafac75!2sLayali%20Al%20Zahra%20Beauty%20Lounge!5e0!3m2!1sen!2s!4v1706000000000!5m2!1sen!2s"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.4966848841967!2d55.196132476011916!3d25.106774577702767!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f6b605b77aaa5%3A0x61889b1cddafac75!2sLayali%20Al%20Zahra%20Beauty%20Lounge!5e0!3m2!1sen!2sae!4v1747345580123!5m2!1sen!2sae"
                 width="100%" height="450" style={{ border: 0 }} allowFullScreen loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade" title="Layali Al Zahra Beauty Salon Location"
               ></iframe>
