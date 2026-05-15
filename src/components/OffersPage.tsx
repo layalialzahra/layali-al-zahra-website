@@ -40,7 +40,7 @@ import React from 'react';
       title: 'Midday Offer – Hot Oil Head Massage',
       description: 'Unwind midday with our nourishing hot oil head massage — the perfect pick-me-up',
       validUntil: 'Midday Special',
-      image: '/massage-services.jpg',
+      image: '/midday-offer-hot-oil.jpg',
       badge: 'AED 84',
     },
   ];
