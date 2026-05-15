@@ -7,7 +7,7 @@ const servicesData = [
     {
       id: 'hair-cuts',
       title: 'Hair Cuts',
-      image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/hair-cuts.jpg',
       subservices: [
         { name: 'Blunt Bob Hair Cut', price: 'AED 99.75' },
         { name: 'Advanced Hair Cut', price: 'AED 283.50' },
@@ -24,7 +24,7 @@ const servicesData = [
     {
       id: 'hair-treatments',
       title: 'Hair Treatments',
-      image: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/hair-treatments.jpg',
       subservices: [
         { name: 'Blow Dry – Short', price: 'AED 110.25' },
         { name: 'Blow Dry – Medium', price: 'AED 131.25' },
@@ -130,7 +130,7 @@ const servicesData = [
     {
       id: 'hand-foot-care',
       title: 'Hand & Foot Care',
-      image: 'https://images.unsplash.com/photo-1633955726992-2b7c0d2d2a69?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=928',
+      image: '/hand-foot-care.jpg',
       subservices: [
         { name: 'Classic Manicure', price: 'AED 70.35' },
         { name: 'Classic Pedicure', price: 'AED 90.30' },
@@ -154,7 +154,7 @@ const servicesData = [
     {
       id: 'gelish',
       title: 'Gelish',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/gelish.jpg',
       subservices: [
         { name: 'Gelish Manicure', price: 'AED 137.55' },
         { name: 'Gelish Pedicure', price: 'AED 157.50' },
@@ -171,7 +171,7 @@ const servicesData = [
     {
       id: 'gel-nails',
       title: 'Gel Nails',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/gel-nails.jpg',
       subservices: [
         { name: 'Gel Full Set Clear', price: 'AED 250.95' },
         { name: 'Gel Refill Clear', price: 'AED 148.05' },
@@ -196,7 +196,7 @@ const servicesData = [
     {
       id: 'acrylic-nails',
       title: 'Acrylic & Nail Services',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/acrylic-nails.jpg',
       subservices: [
         { name: 'Acrylic Full Set Clear', price: 'AED 210' },
         { name: 'Acrylic Refill/Natural Nails Clear', price: 'AED 294' },
@@ -231,7 +231,7 @@ const servicesData = [
     {
       id: 'eyelash-brow-threading',
       title: 'Eyelash, Brow & Threading',
-      image: 'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/eyelash-brow.jpg',
       subservices: [
         { name: 'Full Set Eyelash Extensions', price: 'AED 367.50' },
         { name: 'Refill Eyelash Extensions', price: 'AED 262.50' },
@@ -259,7 +259,7 @@ const servicesData = [
     {
       id: 'hair-removal',
       title: 'Hair Removal',
-      image: 'https://cdn.pixabay.com/photo/2024/06/08/18/47/woman-8817391_1280.jpg',
+      image: '/hair-removal.jpg',
       subservices: [
         { name: 'Halawa – Underarms', price: 'AED 42' },
         { name: 'Halawa – Arm', price: 'AED 94.50' },
@@ -305,7 +305,7 @@ const servicesData = [
     {
       id: 'facial-skin',
       title: 'Facial & Skin Treatments',
-      image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/facial-skin.jpg',
       subservices: [
         { name: 'Mini Facial', price: 'AED 100.80' },
         { name: 'Basic Facial', price: 'AED 210' },
@@ -339,7 +339,7 @@ const servicesData = [
     {
       id: 'massage',
       title: 'Massage Services',
-      image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/massage-services.jpg',
       subservices: [
         { name: 'Head Massage 30 Min', price: 'AED 78.75' },
         { name: 'Head Oil Massage (15 Min)', price: 'AED 36.75' },
@@ -390,7 +390,7 @@ const servicesData = [
     {
       id: 'henna-mehandi',
       title: 'Henna & Mehandi',
-      image: 'https://images.unsplash.com/photo-1562273138-f46be4ebdf33?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/henna-mehandi.jpg',
       subservices: [
         { name: 'Henna Tattoo – One Hand, One Side', price: 'AED 52.50' },
         { name: 'Henna Tattoo – One Hand, Both Sides', price: 'AED 105' },
@@ -409,7 +409,7 @@ const servicesData = [
     {
       id: 'little-ladies',
       title: 'Little Ladies (Under 10)',
-      image: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
+      image: '/little-ladies.jpg',
       subservices: [
         { name: 'Hair Cut', price: 'AED 50.40' },
         { name: 'Wash & Blowdry', price: 'AED 78.75' },
