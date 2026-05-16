@@ -9,7 +9,7 @@ import React from 'react';
       title: 'Silk Smooth Half Glow',
       description: 'Half Arms + Half Legs + Underarms — smooth, silky skin with our popular intro waxing combo',
       price: 'AED 187.95',
-      image: '/silk-smooth-half-glow.jpg',
+      image: '/silk-smooth-half-glow.webp',
     },
     {
       id: 2,
@@ -17,7 +17,7 @@ import React from 'react';
       title: 'Silk Smooth Full Glow',
       description: 'Full Arms + Half Legs + Underarms — step up your smooth with this popular full-arm combo',
       price: 'AED 208.95',
-      image: '/silk-smooth-full-glow.jpg',
+      image: '/silk-smooth-full-glow.webp',
     },
     {
       id: 3,
@@ -25,7 +25,7 @@ import React from 'react';
       title: 'Silk Smooth Complete Glow',
       description: 'Full Arms + Full Legs + Underarms — head-to-toe smooth for the complete glow experience',
       price: 'AED 240.45',
-      image: '/silk-smooth-complete-glow.jpg',
+      image: '/silk-smooth-complete-glow.webp',
     },
     {
       id: 4,
@@ -33,7 +33,7 @@ import React from 'react';
       title: 'Silk Smooth Full Body Glow',
       description: 'Full body waxing (without bikini) — indulge in head-to-toe silky smoothness',
       price: 'AED 418.95',
-      image: '/silk-smooth-full-body-glow.jpg',
+      image: '/silk-smooth-full-body-glow.webp',
     },
     {
       id: 5,
@@ -41,7 +41,7 @@ import React from 'react';
       title: 'Silk Smooth Full Body Glow Deluxe',
       description: 'Full body waxing including bikini — our most complete smoothing package',
       price: 'AED 523.95',
-      image: '/silk-smooth-full-body-glow-deluxe.jpg',
+      image: '/silk-smooth-full-body-glow-deluxe.webp',
     },
     {
       id: 6,
@@ -49,7 +49,7 @@ import React from 'react';
       title: 'Gelish Mani + Pedi + Foot Massage',
       description: 'Gelish pedicure + gelish manicure + relaxing foot massage — the complete nail treat',
       price: 'AED 300',
-      image: '/gelish-mani-pedi.jpg',
+      image: '/gelish-mani-pedi.webp',
     },
     {
       id: 7,
@@ -57,7 +57,7 @@ import React from 'react';
       title: 'Manicure + Pedicure + Foot Massage',
       description: 'Classic manicure + pedicure + soothing foot massage at a great combo price',
       price: 'AED 169',
-      image: '/mani-pedi-foot-massage.jpg',
+      image: '/mani-pedi-foot-massage.webp',
     },
     {
       id: 8,
@@ -65,7 +65,7 @@ import React from 'react';
       title: 'Blow Dry + Root Color Combo',
       description: 'Root color touch-up plus a beautiful blow dry finish — look refreshed in one visit',
       price: 'AED 230',
-      image: '/blow-dry-root-color.jpg',
+      image: '/blow-dry-root-color.webp',
     },
     {
       id: 9,
@@ -73,7 +73,7 @@ import React from 'react';
       title: 'Hair Layer Cut',
       description: 'A beautiful layered cut with expert styling included',
       price: 'AED 189',
-      image: '/hair-layer-cut.jpg',
+      image: '/hair-layer-cut.webp',
     },
     {
       id: 10,
@@ -81,7 +81,7 @@ import React from 'react';
       title: 'Midday Glow – Hot Oil Head Massage',
       description: 'A nourishing hot oil head massage to revive and relax during your midday break',
       price: 'AED 105',
-      image: '/midday-hot-oil-head-massage.jpg',
+      image: '/midday-hot-oil-head-massage.webp',
     },
     {
       id: 11,
@@ -89,7 +89,7 @@ import React from 'react';
       title: 'Midday Glow – Basic Manicure & Pedicure',
       description: 'A quick, beautiful mani-pedi combo perfect for a midday refresh',
       price: 'AED 135',
-      image: '/midday-basic-mani-pedi.jpg',
+      image: '/midday-basic-mani-pedi.webp',
     },
     {
       id: 12,
@@ -97,7 +97,7 @@ import React from 'react';
       title: 'Midday Glow – Head & Back Massage',
       description: 'Dual relaxation — head and back massage to melt away midday tension',
       price: 'AED 147',
-      image: '/midday-head-back-massage.jpg',
+      image: '/midday-head-back-massage.webp',
     },
     {
       id: 13,
@@ -105,7 +105,7 @@ import React from 'react';
       title: 'Midday Glow – Hair Spa',
       description: 'A luxurious midday hair spa treatment to restore moisture and shine',
       price: 'AED 156',
-      image: '/midday-hair-spa.jpg',
+      image: '/midday-hair-spa.webp',
     },
     {
       id: 14,
@@ -113,7 +113,7 @@ import React from 'react';
       title: 'Midday Glow – Basic Facial',
       description: 'A refreshing facial to brighten and revive your skin in the middle of your day',
       price: 'AED 188',
-      image: '/midday-basic-facial.jpg',
+      image: '/midday-basic-facial.webp',
     },
     {
       id: 15,
@@ -121,7 +121,7 @@ import React from 'react';
       title: 'Midday Glow – Wash, Cut & Blow Dry',
       description: 'Wash, trim and blowdry combo — a complete hair refresh at midday value pricing',
       price: 'AED 198',
-      image: '/midday-wash-cut-blowdry.jpg',
+      image: '/midday-wash-cut-blowdry.webp',
     },
     {
       id: 16,
@@ -129,7 +129,7 @@ import React from 'react';
       title: 'Midday Glow – Relaxing Body Massage',
       description: 'A one-hour relaxing full body massage at an exclusive midday price',
       price: 'AED 200',
-      image: '/midday-body-massage.jpg',
+      image: '/midday-body-massage.webp',
     },
     {
       id: 17,
@@ -137,7 +137,7 @@ import React from 'react';
       title: 'Midday Glow – Nail Extensions',
       description: 'Get beautiful nail extensions during your midday break at a special price',
       price: 'AED 272',
-      image: '/midday-nail-extensions.jpg',
+      image: '/midday-nail-extensions.webp',
     },
     {
       id: 18,
@@ -145,7 +145,7 @@ import React from 'react';
       title: 'Beauty Package – Bud',
       description: 'A fresh introduction to our signature beauty treatments — the perfect starter package',
       price: 'AED 229',
-      image: '/beauty-package-bud.jpg',
+      image: '/beauty-package-bud.webp',
     },
     {
       id: 19,
@@ -153,7 +153,7 @@ import React from 'react';
       title: 'Beauty Package – Blossom',
       description: 'Step up your glow with this lovely mid-tier selection of our popular services',
       price: 'AED 279',
-      image: '/beauty-package-blossom.jpg',
+      image: '/beauty-package-blossom.webp',
     },
     {
       id: 20,
@@ -161,7 +161,7 @@ import React from 'react';
       title: 'Beauty Package – Petal',
       description: 'A curated combination of our most-loved beauty services for a complete treat',
       price: 'AED 319',
-      image: '/beauty-package-petal.jpg',
+      image: '/beauty-package-petal.webp',
     },
     {
       id: 21,
@@ -169,7 +169,7 @@ import React from 'react';
       title: 'Beauty Package – Bloom',
       description: 'Indulge in a premium full-day beauty experience with our most popular premium package',
       price: 'AED 499',
-      image: '/beauty-package-bloom.jpg',
+      image: '/beauty-package-bloom.webp',
     },
     {
       id: 22,
@@ -177,7 +177,7 @@ import React from 'react';
       title: 'Beauty Package – Flourish',
       description: 'Our ultimate luxury pampering session — a head-to-toe beauty transformation',
       price: 'AED 599',
-      image: '/beauty-package-flourish.jpg',
+      image: '/beauty-package-flourish.webp',
     },
     {
       id: 23,
@@ -185,7 +185,7 @@ import React from 'react';
       title: 'Botox | Keratin | Nanoplastia | Protein',
       description: 'Choose any one of our advanced hair smoothing and strengthening treatment combos',
       price: 'AED 600',
-      image: '/botox-keratin.jpg',
+      image: '/botox-keratin.webp',
     },
   ];
 
