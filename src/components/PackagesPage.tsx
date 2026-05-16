@@ -209,7 +209,7 @@ import React from 'react';
                 {packagesData.filter(p => p.category === category).map((pkg) => (
                   <div key={pkg.id} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
                     <div className="relative h-52 overflow-hidden">
-                      <img src={pkg.image} alt={pkg.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                      <img src={pkg.image} alt={pkg.title + ' package — Layali Al Zahra Beauty Salon, Al Barsha, Dubai'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                       <div className="absolute top-4 right-4 bg-rose-500 text-white px-4 py-2 rounded-full shadow-lg font-semibold text-sm">
                         <Gift className="w-4 h-4 inline mr-1" />
                         {pkg.price}
