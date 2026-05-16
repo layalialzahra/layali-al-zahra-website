@@ -19,7 +19,6 @@ import React, { useState, useEffect } from 'react';
       { name: 'Offers', id: 'offers' },
       { name: 'Tips', id: 'tips' },
       { name: 'Contact', id: 'contact' },
-      { name: 'Terms & Conditions', id: 'terms' },
     ];
 
     useEffect(() => {
