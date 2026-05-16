@@ -581,6 +581,46 @@ export default function ServicesPage() {
           </div>
         </div>
       </div>
+        {/* FAQ Section */}
+        <div className="max-w-4xl mx-auto px-4 pb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-rose-900 text-3xl font-semibold mb-2">Frequently Asked Questions</h2>
+            <p className="text-gray-600">Everything you need to know about our beauty services in Al Barsha, Dubai</p>
+          </div>
+          <div className="space-y-3">
+            {[
+              {
+                q: "What beauty services are available at Layali Al Zahra in Al Barsha, Dubai?",
+                a: "We offer a comprehensive range of ladies beauty services including hair treatments (keratin, colouring, blowouts), nail services (manicure, pedicure, gel nails, nail art), bridal and occasion makeup, facials, full-body waxing, eyebrow threading, henna (Mehandi) and more. Our full price list is available on the website or via WhatsApp."
+              },
+              {
+                q: "How long does a keratin treatment last in Dubai's climate?",
+                a: "A professional keratin treatment at our salon typically lasts 3-5 months. Dubai hard water and air-conditioning can slightly reduce longevity, which is why we recommend a bond-rebuilding maintenance treatment every 6-8 weeks for colour-treated or frequently styled hair."
+              },
+              {
+                q: "Do I need to book an appointment in advance at your Al Barsha salon?",
+                a: "Yes, we recommend booking at least 2-3 days in advance for regular services. For bridal appointments, Eid season, and group bookings, we advise reserving 2-3 weeks ahead to secure your preferred time slot. Book online, via WhatsApp, or by calling us directly."
+              },
+              {
+                q: "What are the opening hours at Layali Al Zahra Beauty Salon?",
+                a: "We are open Monday to Thursday and Saturday to Sunday from 10:00 AM to 9:00 PM. On Fridays we open from 1:00 PM to 8:30 PM. We are at Shop No. 1, Tallal 11, Al Barsha 1, Dubai."
+              },
+              {
+                q: "Do you offer nail services and nail art at your Dubai salon?",
+                a: "Yes, we offer a full range of nail services including classic manicures, pedicures, gel nails, acrylic nail extensions, and detailed nail art. Our nail technicians are experienced in both traditional and trending styles popular across Dubai and the UAE."
+              },
+            ].map((faq, i) => (
+              <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
+                <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
+                  <span>{faq.q}</span>
+                  <span className="ml-4 text-rose-400 flex-shrink-0 text-xl font-light select-none">&#43;</span>
+                </summary>
+                <p className="px-5 pb-5 text-gray-600 leading-relaxed">{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+  
     </div>
   );
 }
