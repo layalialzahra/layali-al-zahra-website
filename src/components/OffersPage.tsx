@@ -92,6 +92,42 @@ import React from 'react';
             </Button>
           </div>
         </div>
+          {/* FAQ Section */}
+          <div className="max-w-4xl mx-auto px-4 pb-16">
+            <div className="text-center mb-8">
+              <h2 className="text-rose-900 text-3xl font-semibold mb-2">Frequently Asked Questions</h2>
+              <p className="text-gray-600">Common questions about our special offers and promotions in Dubai</p>
+            </div>
+            <div className="space-y-3">
+              {[
+                {
+                  q: "What special offers does Layali Al Zahra currently have in Dubai?",
+                  a: "We regularly run seasonal and themed promotions including Eid beauty deals, summer packages, and midweek specials. Check this page regularly or follow us on Instagram @alzahrabeauty.dubai for the latest offers."
+                },
+                {
+                  q: "Do you have regular weekly deals at your Al Barsha salon?",
+                  a: "Yes, we offer midweek deals to help clients enjoy premium beauty services at more accessible prices. Our offers page is updated regularly with current promotions across hair, nails, skin, and more."
+                },
+                {
+                  q: "Can I combine a special offer with a regular service booking?",
+                  a: "Offers apply to the specific services listed in each promotion. WhatsApp us on +971 52 370 6025 and we will be happy to advise you on how to make the most of any current deals at our salon."
+                },
+                {
+                  q: "How do I stay updated on new offers from Layali Al Zahra?",
+                  a: "Follow us on Instagram @alzahrabeauty.dubai and Facebook for our latest offers and beauty tips. You can also message us on WhatsApp to be added to our promotions updates list."
+                },
+              ].map((faq, i) => (
+                <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
+                  <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
+                    <span>{faq.q}</span>
+                    <span className="ml-4 text-rose-400 flex-shrink-0 text-xl font-light select-none">&#43;</span>
+                  </summary>
+                  <p className="px-5 pb-5 text-gray-600 leading-relaxed">{faq.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+  
       </div>
     );
   }
