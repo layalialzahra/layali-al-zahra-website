@@ -71,7 +71,7 @@ import React from 'react';
                     <p className="text-rose-100">Monday - Sunday:</p>
                     <p>10:00 AM - 9:00 PM</p>
                     <p className="text-rose-100 mt-2">Friday:</p>
-                    <p>1:00 PM - 8:30 PM</p>
+                    <p>2:00 PM - 8:30 PM</p>
                   </div>
                 </div>
               </div>
@@ -106,10 +106,10 @@ import React from 'react';
           {/* Copyright */}
           <div className="border-t border-rose-800 pt-8 text-center text-sm text-rose-200 space-y-2">
             <p>© 2025 Layali Al Zahra Beauty Salon LLC. All rights reserved.</p>
-            <p>
-              <a href="#terms" className="hover:text-amber-400 transition-colors underline">
-                Terms & Conditions
-              </a>
+            <p className="flex items-center justify-center gap-4 flex-wrap">
+              <a href="#terms" className="hover:text-amber-400 transition-colors underline">Terms &amp; Conditions</a>
+              <span className="text-rose-600">|</span>
+              <a href="#privacy" className="hover:text-amber-400 transition-colors underline">Privacy Policy</a>
             </p>
           </div>
         </div>
