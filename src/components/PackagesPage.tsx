@@ -244,6 +244,42 @@ import React from 'react';
             </Button>
           </div>
         </div>
+          {/* FAQ Section */}
+          <div className="max-w-4xl mx-auto px-4 pb-16">
+            <div className="text-center mb-8">
+              <h2 className="text-rose-900 text-3xl font-semibold mb-2">Frequently Asked Questions</h2>
+              <p className="text-gray-600">Everything about our beauty packages at Layali Al Zahra, Al Barsha Dubai</p>
+            </div>
+            <div className="space-y-3">
+              {[
+                {
+                  q: "What is included in the bridal package at Layali Al Zahra?",
+                  a: "Our bridal packages include bridal makeup, hairstyling, and henna (Mehandi) application, plus a trial session. Packages can be customised to include additional services such as facials, waxing, nail preparation, and party member treatments."
+                },
+                {
+                  q: "How far in advance should I book a bridal beauty package in Dubai?",
+                  a: "We recommend booking bridal packages at least 4-6 weeks before your wedding date. This allows time for a full trial session and any adjustments. During Eid season the salon is especially busy, so book even earlier for festive bridal appointments."
+                },
+                {
+                  q: "Do you offer group packages for events and parties in Dubai?",
+                  a: "Yes, we offer group and party packages suitable for bridal parties, Eid celebrations, and corporate events. Contact us via WhatsApp on +971 52 370 6025 to discuss a custom package for your group."
+                },
+                {
+                  q: "How can I book a beauty package at your Al Barsha salon?",
+                  a: "You can book online through our Zylu booking link on this page, send a WhatsApp message on +971 52 370 6025, or visit us in person at Shop No. 1, Tallal 11, Al Barsha 1, Dubai."
+                },
+              ].map((faq, i) => (
+                <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
+                  <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
+                    <span>{faq.q}</span>
+                    <span className="ml-4 text-rose-400 flex-shrink-0 text-xl font-light select-none">&#43;</span>
+                  </summary>
+                  <p className="px-5 pb-5 text-gray-600 leading-relaxed">{faq.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+  
       </div>
     );
   }
