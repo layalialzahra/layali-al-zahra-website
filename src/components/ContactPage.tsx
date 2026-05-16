@@ -20,6 +20,8 @@ import React, { useState } from 'react';
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [showPhoneDialog, setShowPhoneDialog] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+      const [isSubmitting, setIsSubmitting] = useState(false);
+      const [submitError, setSubmitError] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
