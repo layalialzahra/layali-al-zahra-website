@@ -8,7 +8,7 @@ import React from 'react';
       title: 'Monday Offer – Acrylic Mani + Pedi',
       description: 'Treat yourself every Monday with our unbeatable acrylic manicure and pedicure combo',
       validUntil: 'Every Monday',
-      image: '/monday-acrylic-mani-pedi.jpg',
+      image: '/monday-acrylic-mani-pedi.webp',
       badge: 'AED 105',
     },
     {
@@ -16,7 +16,7 @@ import React from 'react';
       title: 'Monday Offer – Hair Wash + Blow Dry',
       description: 'Start your week looking fabulous with a luxurious wash and blow dry session',
       validUntil: 'Every Monday',
-      image: '/monday-hair-wash-blow-dry.jpg',
+      image: '/monday-hair-wash-blow-dry.webp',
       badge: 'AED 99',
     },
     {
@@ -24,7 +24,7 @@ import React from 'react';
       title: 'Monday Offer – Acrylic Full Set (Color)',
       description: 'Get a stunning full set of color acrylic nails at our exclusive Monday price',
       validUntil: 'Every Monday',
-      image: '/monday-acrylic-full-set.jpg',
+      image: '/monday-acrylic-full-set.webp',
       badge: 'AED 269',
     },
     {
@@ -32,7 +32,7 @@ import React from 'react';
       title: 'Midday Offer – Relaxing Body Massage',
       description: 'Recharge your afternoon with our soothing full body massage at a special midday price',
       validUntil: 'Midday Special',
-      image: '/midday-relaxing-body-massage.jpg',
+      image: '/midday-relaxing-body-massage.webp',
       badge: 'AED 178.50',
     },
     {
@@ -40,7 +40,7 @@ import React from 'react';
       title: 'Midday Offer – Hot Oil Head Massage',
       description: 'Unwind midday with our nourishing hot oil head massage — the perfect pick-me-up',
       validUntil: 'Midday Special',
-      image: '/midday-offer-hot-oil.jpg',
+      image: '/midday-offer-hot-oil.webp',
       badge: 'AED 84',
     },
   ];
