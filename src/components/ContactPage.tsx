@@ -32,7 +32,7 @@ import React, { useState } from 'react';
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({
-              access_key: 'WEB3FORMS_ACCESS_KEY',
+              access_key: '020bb06c-0030-4a16-8ce7-6c9224cd5079',
               subject: 'New enquiry from Layali Al Zahra website',
               from_name: formData.name,
               name: formData.name,
