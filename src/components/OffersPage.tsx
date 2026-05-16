@@ -60,7 +60,7 @@ import React from 'react';
             {offersData.map((offer) => (
               <div key={offer.id} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
                 <div className="relative h-64 overflow-hidden">
-                  <img src={offer.image} alt={offer.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                  <img src={offer.image} alt={offer.title + ' — special offer at Layali Al Zahra Beauty Lounge, Dubai'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                   <div className="absolute top-4 right-4 bg-rose-500 text-white px-4 py-2 rounded-full shadow-lg font-semibold">
                     <Sparkles className="w-4 h-4 inline mr-1" />
                     {offer.badge}
