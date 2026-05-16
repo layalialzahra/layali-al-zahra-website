@@ -462,7 +462,7 @@ export default function ServicesPage() {
               <div className="h-64 overflow-hidden">
                 <img
                   src={service.image}
-                  alt={service.title}
+                  alt={service.title + ' — beauty service at Layali Al Zahra, Al Barsha, Dubai'}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
@@ -488,7 +488,7 @@ export default function ServicesPage() {
               <div>
                 <img
                   src={selectedService.image}
-                  alt={selectedService.title}
+                  alt={selectedService.title + ' — beauty service at Layali Al Zahra, Al Barsha, Dubai'}
                   className="w-full h-64 object-cover rounded-lg mb-6"
                 />
                 <div className="space-y-3">
