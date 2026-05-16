@@ -7,12 +7,12 @@ import React, { useState, useEffect } from 'react';
     {
       title: 'Hair Cuts',
       description: 'Precision cuts tailored to your style and face shape',
-      image: '/hair-cuts.jpg',
+      image: '/hair-cuts.webp',
     },
     {
       title: 'Hair Treatments',
       description: 'Keratin, Botox, protein and luxury spa treatments for healthy hair',
-      image: '/hair-treatments.jpg',
+      image: '/hair-treatments.webp',
     },
     {
       title: 'Hair Extensions',
@@ -27,37 +27,37 @@ import React, { useState, useEffect } from 'react';
     {
       title: 'Hand & Foot Care',
       description: 'Classic, French, paraffin and luxury spa manicure and pedicure',
-      image: '/hand-foot-care.jpg',
+      image: '/hand-foot-care.webp',
     },
     {
       title: 'Gelish & Gel Nails',
       description: 'Long-lasting gelish, gel extensions, BIAB and Russian manicure',
-      image: '/gelish.jpg',
+      image: '/gelish.webp',
     },
     {
       title: 'Acrylic & Nail Art',
       description: 'Full sets, refills and creative nail art in acrylic and soft gel',
-      image: '/acrylic-nails.jpg',
+      image: '/acrylic-nails.webp',
     },
     {
       title: 'Eyelash & Brow',
       description: 'Lash extensions, lifting, lamination, threading and tinting',
-      image: '/eyelash-brow.jpg',
+      image: '/eyelash-brow.webp',
     },
     {
       title: 'Hair Removal',
       description: 'Halawa, waxing and bleaching for silky smooth skin',
-      image: '/hair-removal.jpg',
+      image: '/hair-removal.webp',
     },
     {
       title: 'Facial & Skin',
       description: 'Hydra facials, Skyendor, Bioesthe and signature glow treatments',
-      image: '/facial-skin.jpg',
+      image: '/facial-skin.webp',
     },
     {
       title: 'Massage Services',
       description: 'Head, back, foot, body and Ayurvedic massages for total relaxation',
-      image: '/massage-services.jpg',
+      image: '/massage-services.webp',
     },
     {
       title: 'Makeup Services',
@@ -67,12 +67,12 @@ import React, { useState, useEffect } from 'react';
     {
       title: 'Henna & Mehandi',
       description: 'Traditional and Eid henna designs for hands and hair',
-      image: '/henna-mehandi.jpg',
+      image: '/henna-mehandi.webp',
     },
     {
       title: 'Little Ladies',
       description: 'Gentle, fun beauty services specially designed for girls under 10',
-      image: '/little-ladies.jpg',
+      image: '/little-ladies.webp',
     },
   ];
 
@@ -81,49 +81,49 @@ import React, { useState, useEffect } from 'react';
       title: 'Beauty Package – Bud',
       description: 'A fresh introduction to our signature beauty treatments',
       validUntil: 'AED 229',
-      image: '/beauty-package-bud.jpg',
+      image: '/beauty-package-bud.webp',
     },
     {
       title: 'Beauty Package – Blossom',
       description: 'Step up your glow with this popular mid-tier package',
       validUntil: 'AED 279',
-      image: '/beauty-package-blossom.jpg',
+      image: '/beauty-package-blossom.webp',
     },
     {
       title: 'Beauty Package – Petal',
       description: 'A curated selection of our most-loved beauty services',
       validUntil: 'AED 319',
-      image: '/beauty-package-petal.jpg',
+      image: '/beauty-package-petal.webp',
     },
     {
       title: 'Beauty Package – Bloom',
       description: 'A premium full-day indulgence with our top-tier services',
       validUntil: 'AED 499',
-      image: '/beauty-package-bloom.jpg',
+      image: '/beauty-package-bloom.webp',
     },
     {
       title: 'Beauty Package – Flourish',
       description: 'Our ultimate luxury head-to-toe pampering session',
       validUntil: 'AED 599',
-      image: '/beauty-package-flourish.jpg',
+      image: '/beauty-package-flourish.webp',
     },
     {
       title: 'Gelish Mani + Pedi + Foot Massage',
       description: 'Gelish manicure, gelish pedicure and relaxing foot massage combo',
       validUntil: 'AED 300',
-      image: '/gelish-mani-pedi.jpg',
+      image: '/gelish-mani-pedi.webp',
     },
     {
       title: 'Silk Smooth Full Glow',
       description: 'Full arms + half legs + underarms waxing combo — silky smooth',
       validUntil: 'AED 208.95',
-      image: '/silk-smooth-full-glow.jpg',
+      image: '/silk-smooth-full-glow.webp',
     },
     {
       title: 'Midday Glow – Relaxing Body Massage',
       description: 'A one-hour full body relaxation massage at a special midday price',
       validUntil: 'AED 200',
-      image: '/midday-body-massage.jpg',
+      image: '/midday-body-massage.webp',
     },
   ];
 
@@ -132,31 +132,31 @@ import React, { useState, useEffect } from 'react';
       title: 'Monday Offer – Acrylic Mani + Pedi',
       description: 'Treat yourself every Monday with our unbeatable acrylic mani & pedi combo',
       validUntil: 'Every Monday – AED 105',
-      image: '/monday-acrylic-mani-pedi.jpg',
+      image: '/monday-acrylic-mani-pedi.webp',
     },
     {
       title: 'Monday Offer – Hair Wash + Blow Dry',
       description: 'Start your week looking fabulous with a luxurious wash and blow dry',
       validUntil: 'Every Monday – AED 99',
-      image: '/monday-hair-wash-blow-dry.jpg',
+      image: '/monday-hair-wash-blow-dry.webp',
     },
     {
       title: 'Monday Offer – Acrylic Full Set (Color)',
       description: 'Get stunning full color acrylic nails at our exclusive Monday price',
       validUntil: 'Every Monday – AED 269',
-      image: '/monday-acrylic-full-set.jpg',
+      image: '/monday-acrylic-full-set.webp',
     },
     {
       title: 'Midday Offer – Relaxing Body Massage',
       description: 'Recharge your afternoon with a soothing body massage at a special price',
       validUntil: 'Midday Special – AED 178.50',
-      image: '/midday-relaxing-body-massage.jpg',
+      image: '/midday-relaxing-body-massage.webp',
     },
     {
       title: 'Midday Offer – Hot Oil Head Massage',
       description: 'Unwind midday with our nourishing hot oil head massage',
       validUntil: 'Midday Special – AED 84',
-      image: '/midday-offer-hot-oil.jpg',
+      image: '/midday-offer-hot-oil.webp',
     },
   ];
 
