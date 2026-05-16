@@ -132,31 +132,31 @@ import React, { useState, useEffect } from 'react';
       title: 'Monday Offer – Acrylic Mani + Pedi',
       description: 'Treat yourself every Monday with our unbeatable acrylic mani & pedi combo',
       validUntil: 'Every Monday – AED 105',
-      image: '/acrylic-nails.jpg',
+      image: '/monday-acrylic-mani-pedi.jpg',
     },
     {
       title: 'Monday Offer – Hair Wash + Blow Dry',
       description: 'Start your week looking fabulous with a luxurious wash and blow dry',
       validUntil: 'Every Monday – AED 99',
-      image: '/hair-treatments.jpg',
+      image: '/monday-hair-wash-blow-dry.jpg',
     },
     {
       title: 'Monday Offer – Acrylic Full Set (Color)',
       description: 'Get stunning full color acrylic nails at our exclusive Monday price',
       validUntil: 'Every Monday – AED 269',
-      image: '/acrylic-nails.jpg',
+      image: '/monday-acrylic-full-set.jpg',
     },
     {
       title: 'Midday Offer – Relaxing Body Massage',
       description: 'Recharge your afternoon with a soothing body massage at a special price',
       validUntil: 'Midday Special – AED 178.50',
-      image: '/midday-body-massage.jpg',
+      image: '/midday-relaxing-body-massage.jpg',
     },
     {
       title: 'Midday Offer – Hot Oil Head Massage',
       description: 'Unwind midday with our nourishing hot oil head massage',
       validUntil: 'Midday Special – AED 84',
-      image: '/massage-services.jpg',
+      image: '/midday-offer-hot-oil.jpg',
     },
   ];
 
