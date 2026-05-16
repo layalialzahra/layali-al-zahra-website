@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
     import TipsPage from './components/TipsPage';
     import ContactPage from './components/ContactPage';
     import TermsPage from './components/TermsPage';
+    import PrivacyPage from './components/PrivacyPage';
     import AdminPage from './components/AdminPage';
     import NotFoundPage from './components/NotFoundPage';
 
@@ -19,6 +20,7 @@ import React, { useState, useEffect } from 'react';
       tips: 'Beauty Tips & Hair Care Advice | Layali Al Zahra Dubai',
       contact: 'Contact Us & Book Appointment | Layali Al Zahra Dubai',
       terms: 'Terms & Conditions | Layali Al Zahra Beauty Lounge',
+      privacy: 'Privacy Policy | Layali Al Zahra Beauty Lounge',
     };
 
     export default function App() {
@@ -56,6 +58,8 @@ import React, { useState, useEffect } from 'react';
             return <ContactPage onNavigate={handleNavigate} />;
           case 'terms':
             return <TermsPage />;
+          case 'privacy':
+            return <PrivacyPage />;
           case 'admin':
             return <AdminPage />;
           default:
