@@ -374,6 +374,7 @@ import React, { useState, useEffect } from 'react';
           </div>
           <div className="relative z-10 h-full flex items-center justify-center text-center px-4">
             <div>
+              <h1 className="sr-only">Luxury Ladies Beauty Salon in Al Barsha 1, Dubai | Layali Al Zahra</h1>
               <h2 className="font-tangerine text-6xl md:text-8xl lg:text-9xl text-white mb-6 drop-shadow-lg">Where Beauty Meets Luxury</h2>
               <p className="text-white text-lg md:text-xl mb-8 max-w-2xl mx-auto">Experience world-class beauty services in the heart of Dubai</p>
             </div>
