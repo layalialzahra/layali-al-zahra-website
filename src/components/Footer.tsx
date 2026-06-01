@@ -26,6 +26,10 @@ import React from 'react';
                     <a href="tel:+971523706025" className="hover:text-amber-400 transition-colors">
                       +971 52 370 6025
                     </a>
+                    <br />
+                    <a href="tel:+971563021231" className="hover:text-amber-400 transition-colors">
+                      +971 56 302 1231
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
