@@ -6,8 +6,8 @@ import React, { useState } from 'react';
     import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 
     const phoneNumbers = [
-      { label: 'Mobile', number: '+971 52 370 6025', link: 'tel:+971523706025' },
-      { label: 'Chatbot', number: '+971 56 302 1231', link: 'https://wa.me/971563021231?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.' },
+      { label: 'Whatsapp', number: '+971 52 370 6025', link: 'https://wa.me/971523706025?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.' },
+      { label: 'Mobile', number: '+971 56 302 1231', link: 'tel:+971563021231' },
       { label: 'Telephone', number: '+971 4 347 5545', link: 'tel:+97143475545' },
       { label: 'Telephone', number: '+971 4 357 1060', link: 'tel:+97143571060' },
     ];
@@ -112,7 +112,7 @@ import React, { useState } from 'react';
                       Call Now
                     </Button>
                     <Button
-                      onClick={() => window.open('https://wa.me/971563021231?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.%20Could%20you%20please%20share%20the%20available%20slots%20and%20details%3F', '_blank')}
+                      onClick={() => window.open('https://wa.me/971523706025?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.%20Could%20you%20please%20share%20the%20available%20slots%20and%20details%3F', '_blank')}
                       className="w-full bg-green-500 hover:bg-green-600 text-white justify-start"
                     >
                       <MessageCircle className="w-5 h-5 mr-3" />
