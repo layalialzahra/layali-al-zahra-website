@@ -75,7 +75,7 @@ import React from 'react';
                     <p className="text-rose-100">Monday - Sunday:</p>
                     <p>10:00 AM - 9:00 PM</p>
                     <p className="text-rose-100 mt-2">Friday:</p>
-                    <p>2:00 PM - 8:30 PM</p>
+                    <p>1:00 PM - 8:30 PM</p>
                   </div>
                 </div>
               </div>
