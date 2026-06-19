@@ -266,7 +266,7 @@ import React from 'react';
                 },
                 {
                   q: "How can I book a beauty package at your Al Barsha salon?",
-                  a: "You can book online through our Zylu booking link on this page, send a WhatsApp message on +971 52 370 6025, or visit us in person at Shop No. 1, Tallal 11, Al Barsha 1, Dubai."
+                  a: "You can book online through our Zylu booking link on this page, send a WhatsApp message on +971 52 370 6025, or visit us in person at Shop No:1, Al Telal 11, Near Westzone Supermarket, Al Barsha 1, Dubai."
                 },
               ].map((faq, i) => (
                 <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
