@@ -603,7 +603,7 @@ export default function ServicesPage() {
               },
               {
                 q: "What are the opening hours at Layali Al Zahra Beauty Salon?",
-                a: "We are open Monday to Thursday and Saturday to Sunday from 10:00 AM to 9:00 PM. On Fridays we open from 1:00 PM to 8:30 PM. We are at Shop No. 1, Tallal 11, Al Barsha 1, Dubai."
+                a: "We are open Monday to Thursday and Saturday to Sunday from 10:00 AM to 9:00 PM. On Fridays we open from 1:00 PM to 8:30 PM. We are at Shop No:1, Al Telal 11, Near Westzone Supermarket, Al Barsha 1, Dubai."
               },
               {
                 q: "Do you offer nail services and nail art at your Dubai salon?",
