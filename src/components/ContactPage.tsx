@@ -155,7 +155,7 @@ import React, { useState } from 'react';
                           rel="noopener noreferrer"
                           className="text-rose-600 hover:text-rose-700"
                         >
-                          Shop No. 1, Tallal 11, Al Barsha 1,<br />Dubai, United Arab Emirates
+                          Shop No:1, Al Telal 11, Near Westzone Supermarket, Al Barsha 1,<br />Dubai, United Arab Emirates
                         </a>
                       </div>
                     </div>
