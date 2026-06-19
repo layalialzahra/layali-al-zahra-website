@@ -66,7 +66,7 @@ import React from 'react';
                     rel="noopener noreferrer"
                     className="hover:text-amber-400 transition-colors"
                   >
-                    Shop No.1, No.11, Near Westzone Supermarket, Al Tallal Building, Al Barsha 1, Dubai
+                    Shop No:1, Al Telal 11, Near Westzone Supermarket, Al Barsha 1, Dubai
                   </a>
                 </div>
                 <div className="flex items-start gap-2">
