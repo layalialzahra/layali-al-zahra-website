@@ -22,14 +22,15 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - CMS modules are intentionally not implemented yet; the authenticated dashboard currently acts as the Stage 2 shell.
 - Deployment issues were identified in both authentication server modules: their MongoDB helper relative imports were incorrect. Both have now been corrected to the proper paths.
 - The frontend now explicitly recognizes direct pathname `/admin` and suppresses the public header/footer/cookie UI on the admin route.
-- Production acceptance testing, direct Vercel SPA routing, basic login abuse protection and admin password-change flow remain open before Stage 2 can be marked complete.
+- Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
+- Production acceptance testing, basic login abuse protection and admin password-change flow remain open before Stage 2 can be marked complete.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Backend and `/admin` session integration implemented; deployment routing/acceptance, rate limiting and password change remain |
+| 2 — Secure Admin Authentication | 🟡 In progress | Backend and `/admin` integration implemented; deployment acceptance, rate limiting and password change remain |
 | 3 — CMS Foundation | ⬜ Not started | Depends on Stage 2 |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
@@ -90,7 +91,8 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Logout clears the session cookie and returns to login.
 - [x] Unauthenticated users cannot access the authenticated dashboard through the UI.
 - [x] Frontend explicitly maps direct `/admin` pathname to `AdminPage` and keeps public header/footer out of the admin route.
-- [ ] Verify Vercel serves the SPA entry for direct `/admin` requests instead of returning `404: NOT_FOUND`.
+- [x] Vercel rewrite added so direct `/admin` requests reach the SPA entry point.
+- [ ] Verify the deployed `/admin` route no longer returns Vercel `404: NOT_FOUND`.
 - [ ] Verify protected API access independently in production.
 - [ ] Verify login/logout/setup end-to-end on the deployed site.
 
@@ -273,3 +275,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Updated `src/App.tsx` to recognize the browser pathname `/admin` in addition to the existing hash-based public routing.
 - The admin route now renders `AdminPage` directly and excludes the public header, footer and cookie-consent UI.
 - Stage 2 remains in progress until Vercel's server-side request routing is corrected/verified and production acceptance passes.
+
+### 2026-09-14 — Add Vercel `/admin` SPA rewrite
+- Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
+- The browser pathname remains `/admin`, allowing the frontend route added above to render the admin page.
+- Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
