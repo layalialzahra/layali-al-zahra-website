@@ -25,8 +25,8 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
 - Login abuse protection is implemented using MongoDB-backed attempt records keyed by a hashed IP/username combination: five failures within a 15-minute window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
 - Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
-- Stage 3 content foundation now has a shared server-side content model helper with `blog | tip | news` type validation, slug normalization, tag normalization, body sanitization, serialization and MongoDB indexes.
-- Production authentication acceptance testing remains open.
+- Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus an authenticated CRUD/search/filter/duplicate API for content.
+- Production authentication acceptance testing and the public content API remain open.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -34,7 +34,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
-| 3 — CMS Foundation | 🟡 In progress | Shared content model helper, validation/sanitization and indexes implemented; APIs remain |
+| 3 — CMS Foundation | 🟡 In progress | Content model, indexes and authenticated CRUD/search/filter/duplicate API implemented; public API remains |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
@@ -135,15 +135,18 @@ Architecture must allow categories to be added without code changes.
 - [x] Tags normalized and deduplicated.
 - [x] Server-side field validation and normalization foundation implemented.
 - [x] Basic body sanitization implemented for stored content.
-- [x] MongoDB indexes prepared for type/slug uniqueness, published feeds, category feeds and updated time.
+- [x] MongoDB indexes prepared for unique type/slug, published feeds, category feeds and updated time.
+- [x] Authenticated content API added for create/read/update/delete.
+- [x] Authenticated content search, status/type/category filters and pagination added.
+- [x] Authenticated duplicate operation added; duplicates are forced to draft state with a unique copy slug.
+- [x] Publish/unpublish supported through the content status field.
 - [ ] Unique slugs within namespace/type verified against production data.
-- [ ] Drafts private through API.
-- [ ] Safe API errors; no secrets in responses.
-- [ ] Authenticated CRUD: create/read/update/delete, publish/unpublish, drafts, search/filter, duplicate.
+- [ ] Drafts private through public API.
+- [ ] Safe API errors; no secrets in responses verified in production.
 - [ ] Public APIs expose only published content.
 
 ### Acceptance
-- [ ] Authenticated APIs safely create/edit/delete/publish content.
+- [ ] Authenticated APIs safely create/edit/delete/publish content in production.
 - [ ] Public APIs expose only intended published content.
 
 ## 9. Stage 4 — Admin Content Editor
@@ -252,17 +255,17 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [x] Real authentication foundation.
 - [x] Secure MongoDB production connection.
 - [x] Authentication API foundation.
-- [ ] Unified content model/API.
-- [ ] CRUD.
-- [ ] Draft/publish.
+- [x] Unified content model foundation.
+- [x] Authenticated content CRUD foundation.
+- [x] Draft/publish status support.
 - [ ] Images.
-- [ ] Categories/tags.
-- [ ] Related services.
-- [ ] Per-content SEO.
+- [x] Categories/tags fields.
+- [x] Related service field.
+- [x] Per-content SEO fields.
 - [ ] Migrate six existing tips.
 - [ ] DB-driven public content pages.
-- [ ] Slug URLs.
-- [ ] Drafts hidden.
+- [x] Slug normalization/uniqueness foundation.
+- [ ] Drafts hidden from public API.
 - [x] Public site preserved.
 - [ ] Production build/deployment independently verified.
 - [ ] Owner can publish without code.
@@ -310,3 +313,9 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added shared content helpers for `blog | tip | news`, required-field validation, slug/tag normalization, basic server-side body sanitization and safe serialization.
 - Added MongoDB index definitions for unique type/slug, published feeds, category feeds and update ordering.
 - Stage 3 is now in progress; content API endpoints are the next implementation item.
+
+### 2026-09-14 — Add authenticated content CRUD API
+- Added `/api/admin/content` with server-side session protection.
+- Added create/read/update/delete, type/status/category/search filters, pagination and duplicate-to-draft behavior.
+- Added publish/unpublish support through the content status field and duplicate slug generation.
+- Stage 3 remains in progress pending the public published-only API and production verification.
