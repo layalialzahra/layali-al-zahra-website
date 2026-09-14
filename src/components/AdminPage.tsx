@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Database, ExternalLink, FileText, Image, LayoutDashboard, Loader2, LockKeyhole, LogOut, Menu, Plus, Settings, Sparkles, Store, Tag, Users, X } from 'lucide-react';
+import { ArrowRight, BarChart3, BookOpen, CheckCircle2, ExternalLink, FileText, Image, LayoutDashboard, Lightbulb, Loader2, LockKeyhole, LogOut, Menu, Newspaper, Plus, Settings, Sparkles, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -13,213 +13,55 @@ const DEMO_URL = '/api/admin/seed-demo-content';
 
 type View = 'dashboard' | 'content' | 'settings';
 
-async function readJson(response: Response) {
-  const data = await response.json().catch(() => ({}));
-  return { response, data };
-}
+async function readJson(response: Response) { const data = await response.json().catch(() => ({})); return { response, data }; }
 
-const navSections: Array<{ label: string; icon: any; view: View; disabled?: boolean }> = [
-  { label: 'Dashboard', icon: LayoutDashboard, view: 'dashboard' },
-  { label: 'Content', icon: FileText, view: 'content' },
-  { label: 'Website', icon: Store, view: 'dashboard', disabled: true },
-  { label: 'Media', icon: Image, view: 'dashboard', disabled: true },
-  { label: 'Settings', icon: Settings, view: 'settings' },
+const nav = [
+  { label: 'Dashboard', icon: LayoutDashboard, view: 'dashboard' as View },
+  { label: 'Content Library', icon: FileText, view: 'content' as View },
+  { label: 'Settings', icon: Settings, view: 'settings' as View },
 ];
 
 export default function AdminPage() {
-  const [status, setStatus] = useState<'checking' | 'login' | 'setup' | 'authenticated'>('checking');
+  const [status, setStatus] = useState<'checking'|'login'|'setup'|'authenticated'>('checking');
   const [view, setView] = useState<View>('dashboard');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [setupToken, setSetupToken] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [adminUsername, setAdminUsername] = useState('');
-  const [demoLoading, setDemoLoading] = useState(false);
-  const [stats, setStats] = useState({ blog: 0, tip: 0, news: 0 });
+  const [username, setUsername] = useState(''); const [password, setPassword] = useState(''); const [confirmPassword, setConfirmPassword] = useState(''); const [setupToken, setSetupToken] = useState('');
+  const [currentPassword, setCurrentPassword] = useState(''); const [newPassword, setNewPassword] = useState(''); const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [busy, setBusy] = useState(false); const [error, setError] = useState(''); const [success, setSuccess] = useState(''); const [adminUsername, setAdminUsername] = useState('');
+  const [demoLoading, setDemoLoading] = useState(false); const [stats, setStats] = useState({ blog: 0, tip: 0, news: 0 });
 
-  useEffect(() => {
-    document.body.style.background = '#fff7f9';
-    document.body.style.fontFamily = 'Montserrat, sans-serif';
-    let active = true;
-    fetch(AUTH_URL, { credentials: 'include' })
-      .then(readJson)
-      .then(({ response, data }) => {
-        if (!active) return;
-        if (!response.ok || !data.success) throw new Error('Unable to check admin session');
-        if (data.authenticated) {
-          setAdminUsername(data.admin?.username || 'Admin');
-          setStatus('authenticated');
-        } else setStatus(data.setupRequired ? 'setup' : 'login');
-      })
-      .catch(() => {
-        if (active) {
-          setError('Unable to connect to the admin service. Please try again.');
-          setStatus('login');
-        }
-      });
-    return () => { active = false; document.body.style.background = ''; document.body.style.fontFamily = ''; };
-  }, []);
-
-  const loadStats = async () => {
-    const types = ['blog', 'tip', 'news'];
-    const values = await Promise.all(types.map(async type => {
-      try {
-        const response = await fetch(`/api/admin/content?type=${type}&limit=1`, { credentials: 'include' });
-        const data = await response.json().catch(() => ({}));
-        return Number(data.total || 0);
-      } catch { return 0; }
-    }));
-    setStats({ blog: values[0], tip: values[1], news: values[2] });
-  };
-
-  useEffect(() => {
-    if (status === 'authenticated') loadStats();
-  }, [status, view]);
+  useEffect(() => { let active = true; fetch(AUTH_URL, { credentials: 'include' }).then(readJson).then(({ response, data }) => { if (!active) return; if (!response.ok || !data.success) throw new Error('Unable to check admin session'); if (data.authenticated) { setAdminUsername(data.admin?.username || 'Admin'); setStatus('authenticated'); } else setStatus(data.setupRequired ? 'setup' : 'login'); }).catch(() => { if (active) { setError('Unable to connect to the admin service. Please try again.'); setStatus('login'); } }); return () => { active = false; }; }, []);
 
   const clearMessages = () => { setError(''); setSuccess(''); };
+  const loadStats = async () => { const types = ['blog','tip','news']; const values = await Promise.all(types.map(async type => { try { const response = await fetch(`/api/admin/content?type=${type}&limit=1`, { credentials:'include' }); const data = await response.json().catch(() => ({})); return Number(data.total || 0); } catch { return 0; } })); setStats({ blog: values[0], tip: values[1], news: values[2] }); };
+  useEffect(() => { if (status === 'authenticated') loadStats(); }, [status, view]);
 
-  const handleLogin = async (event: React.FormEvent) => {
-    event.preventDefault(); clearMessages(); setBusy(true);
-    try {
-      const { response, data } = await readJson(await fetch(AUTH_URL, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) }));
-      if (!response.ok || !data.success) throw new Error(data.message || 'Invalid credentials');
-      setAdminUsername(data.admin?.username || username.trim().toLowerCase()); setPassword(''); setStatus('authenticated');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Login failed'); } finally { setBusy(false); }
-  };
+  const handleLogin = async (event: React.FormEvent) => { event.preventDefault(); clearMessages(); setBusy(true); try { const { response, data } = await readJson(await fetch(AUTH_URL,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})})); if (!response.ok || !data.success) throw new Error(data.message || 'Invalid credentials'); setAdminUsername(data.admin?.username || username.trim().toLowerCase()); setPassword(''); setStatus('authenticated'); } catch (err) { setError(err instanceof Error ? err.message : 'Login failed'); } finally { setBusy(false); } };
+  const handleSetup = async (event: React.FormEvent) => { event.preventDefault(); clearMessages(); if (password.length < 12) { setError('Password must be at least 12 characters.'); return; } if (password !== confirmPassword) { setError('Passwords do not match.'); return; } setBusy(true); try { const {response,data}=await readJson(await fetch(SETUP_URL,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({setupToken,username,password})})); if(!response.ok||!data.success) throw new Error(data.message||'Admin setup failed'); setSetupToken('');setPassword('');setConfirmPassword('');setAdminUsername(data.admin?.username||username.trim().toLowerCase());setStatus('authenticated'); } catch(err){setError(err instanceof Error?err.message:'Admin setup failed');} finally{setBusy(false);} };
+  const handlePasswordChange = async (event: React.FormEvent) => { event.preventDefault(); clearMessages(); if(newPassword.length<12){setError('New password must be at least 12 characters.');return;} if(newPassword!==confirmNewPassword){setError('New passwords do not match.');return;} setBusy(true); try{const {response,data}=await readJson(await fetch(PASSWORD_URL,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({currentPassword,newPassword,confirmPassword:confirmNewPassword})}));if(!response.ok||!data.success)throw new Error(data.message||'Password change failed');setCurrentPassword('');setNewPassword('');setConfirmNewPassword('');setSuccess('Password changed. Please sign in again.');setStatus('login');}catch(err){setError(err instanceof Error?err.message:'Password change failed');}finally{setBusy(false);} };
+  const handleLogout = async () => { clearMessages(); setBusy(true); try { await fetch(AUTH_URL,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({logout:true})}); } finally { setBusy(false); setStatus('login'); setView('dashboard'); setAdminUsername(''); } };
+  const seedDemoContent = async () => { clearMessages(); setDemoLoading(true); try { const {response,data}=await readJson(await fetch(DEMO_URL,{method:'POST',credentials:'include'})); if(!response.ok||!data.success)throw new Error(data.message||'Demo content could not be loaded'); setSuccess(`${data.created||0} demo items added. ${data.skipped||0} already existed.`); await loadStats(); setView('content'); }catch(err){setError(err instanceof Error?err.message:'Demo content could not be loaded');}finally{setDemoLoading(false);} };
+  const navigate = (next: View) => { setView(next); clearMessages(); setMobileNavOpen(false); };
 
-  const handleSetup = async (event: React.FormEvent) => {
-    event.preventDefault(); clearMessages();
-    if (password.length < 12) { setError('Password must be at least 12 characters.'); return; }
-    if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
-    setBusy(true);
-    try {
-      const { response, data } = await readJson(await fetch(SETUP_URL, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ setupToken, username, password }) }));
-      if (!response.ok || !data.success) throw new Error(data.message || 'Admin setup failed');
-      setSetupToken(''); setPassword(''); setConfirmPassword(''); setAdminUsername(data.admin?.username || username.trim().toLowerCase()); setStatus('authenticated');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Admin setup failed'); } finally { setBusy(false); }
-  };
+  if (status === 'checking') return <div className="min-h-screen flex items-center justify-center bg-[#fff8f0]"><div className="text-center"><img src={logo} alt="Layali Al Zahra" className="mx-auto h-16 w-auto object-contain" /><Loader2 className="mx-auto mt-5 h-6 w-6 animate-spin text-rose-600" /><p className="mt-3 text-sm text-stone-500">Preparing your workspace…</p></div></div>;
 
-  const handlePasswordChange = async (event: React.FormEvent) => {
-    event.preventDefault(); clearMessages();
-    if (newPassword.length < 12) { setError('New password must be at least 12 characters.'); return; }
-    if (newPassword !== confirmNewPassword) { setError('New passwords do not match.'); return; }
-    setBusy(true);
-    try {
-      const { response, data } = await readJson(await fetch(PASSWORD_URL, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentPassword, newPassword, confirmPassword: confirmNewPassword }) }));
-      if (!response.ok || !data.success) throw new Error(data.message || 'Password change failed');
-      setCurrentPassword(''); setNewPassword(''); setConfirmNewPassword(''); setSuccess('Password changed. Please sign in again.'); setStatus('login');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Password change failed'); } finally { setBusy(false); }
-  };
+  if (status !== 'authenticated') return <div className="min-h-screen bg-[#fff8f0] flex items-center justify-center p-5"><div className="w-full max-w-[980px] overflow-hidden rounded-3xl bg-white shadow-[0_24px_70px_rgba(123,25,63,0.14)] lg:grid lg:grid-cols-2"><div className="hidden min-h-[620px] bg-gradient-to-br from-rose-500 via-pink-500 to-rose-800 p-12 text-white lg:flex lg:flex-col lg:justify-between"><div><img src={logo} alt="Layali Al Zahra Beauty Lounge" className="h-16 w-auto brightness-0 invert" /><p className="mt-14 font-tangerine text-7xl leading-[0.85]">Beauty,<br/>beautifully<br/>managed.</p><p className="mt-7 max-w-sm text-sm leading-7 text-white/80">Your private workspace for managing the Layali Al Zahra website.</p></div><div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/70"><LockKeyhole className="h-4 w-4"/> Secure admin access</div></div><div className="flex items-center p-7 sm:p-12 lg:p-16"><div className="w-full max-w-md mx-auto"><div className="mb-9 lg:hidden text-center"><img src={logo} alt="Layali Al Zahra Beauty Lounge" className="mx-auto h-16 w-auto" /></div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-600">Layali Al Zahra · Admin</p><h1 className="mt-2 text-3xl font-semibold text-rose-950">{status==='setup'?'Create your admin account':'Welcome back'}</h1><p className="mt-2 text-sm leading-6 text-stone-500">{status==='setup'?'Complete the one-time secure setup.':'Sign in to manage your website content.'}</p>{success&&<div className="mt-5 rounded-xl border border-green-100 bg-green-50 p-3 text-sm text-green-800">{success}</div>}<form onSubmit={status==='setup'?handleSetup:handleLogin} className="mt-7 space-y-5">{status==='setup'&&<div><label className="mb-2 block text-sm font-medium text-stone-700">Setup token</label><Input type="password" autoComplete="off" value={setupToken} onChange={e=>setSetupToken(e.target.value)} required className="h-12 rounded-xl"/></div>}<div><label className="mb-2 block text-sm font-medium text-stone-700">Admin email</label><Input type="email" autoComplete="username" value={username} onChange={e=>setUsername(e.target.value)} required className="h-12 rounded-xl"/></div><div><label className="mb-2 block text-sm font-medium text-stone-700">Password</label><Input type="password" autoComplete={status==='setup'?'new-password':'current-password'} value={password} onChange={e=>setPassword(e.target.value)} minLength={12} required className="h-12 rounded-xl"/></div>{status==='setup'&&<div><label className="mb-2 block text-sm font-medium text-stone-700">Confirm password</label><Input type="password" autoComplete="new-password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} minLength={12} required className="h-12 rounded-xl"/></div>}{error&&<div className="rounded-xl border border-rose-100 bg-rose-50 p-3 text-sm text-rose-800" role="alert">{error}</div>}<Button type="submit" disabled={busy} className="h-12 w-full rounded-xl bg-rose-600 text-white hover:bg-rose-700">{busy&&<Loader2 className="mr-2 h-4 w-4 animate-spin"/>}{status==='setup'?'Create Admin Account':'Sign In'}</Button></form><div className="mt-8 flex items-center justify-center gap-2 text-xs text-stone-400"><LockKeyhole className="h-3.5 w-3.5"/> Authenticated workspace</div></div></div></div></div>;
 
-  const handleLogout = async () => {
-    clearMessages(); setBusy(true);
-    try { await fetch(AUTH_URL, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ logout: true }) }); }
-    finally { setBusy(false); setStatus('login'); setView('dashboard'); setAdminUsername(''); setPassword(''); }
-  };
-
-  const seedDemoContent = async () => {
-    clearMessages(); setDemoLoading(true);
-    try {
-      const { response, data } = await readJson(await fetch(DEMO_URL, { method: 'POST', credentials: 'include' }));
-      if (!response.ok || !data.success) throw new Error(data.message || 'Demo content could not be loaded');
-      setSuccess(`${data.created || 0} demo items are ready. ${data.skipped || 0} already existed.`);
-      await loadStats();
-      setView('content');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Demo content could not be loaded'); } finally { setDemoLoading(false); }
-  };
-
-  const navigate = (nextView: View) => { if (nextView === 'dashboard' || nextView === 'content' || nextView === 'settings') { setView(nextView); clearMessages(); setMobileNavOpen(false); } };
-
-  if (status === 'checking') return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100"><div className="text-center"><img src={logo} alt="Layali Al Zahra" className="mx-auto h-20 w-auto" /><Loader2 className="mx-auto mt-5 h-7 w-7 animate-spin text-rose-700" /><p className="mt-3 text-sm text-rose-900/60">Preparing your workspace…</p></div></div>;
-
-  if (status !== 'authenticated') return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 p-4 sm:p-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-5xl overflow-hidden rounded-[28px] bg-white shadow-2xl shadow-rose-900/10 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="relative hidden overflow-hidden bg-gradient-to-br from-rose-600 via-pink-600 to-rose-800 p-10 text-white lg:flex lg:flex-col lg:justify-between">
-          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10" /><div className="absolute -bottom-28 -left-24 h-80 w-80 rounded-full bg-white/10" />
-          <div className="relative"><img src={logo} alt="Layali Al Zahra Beauty Lounge" className="h-20 w-auto brightness-0 invert" /><p className="mt-8 font-tangerine text-6xl leading-none">Beauty, beautifully managed.</p><p className="mt-5 max-w-sm text-sm leading-7 text-white/80">A private workspace for managing the Layali Al Zahra website content, stories and updates.</p></div>
-          <div className="relative flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/70"><Sparkles className="h-4 w-4" /> Layali Al Zahra Admin</div>
-        </div>
-        <div className="flex items-center p-6 sm:p-10 lg:p-14">
-          <div className="w-full max-w-md mx-auto">
-            <div className="mb-8 lg:hidden"><img src={logo} alt="Layali Al Zahra Beauty Lounge" className="mx-auto h-16 w-auto" /></div>
-            <div className="mb-8"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-600">Private workspace</p><h1 className="mt-2 text-3xl font-semibold tracking-tight text-rose-950">{status === 'setup' ? 'Create your admin account' : 'Welcome back'}</h1><p className="mt-2 text-sm leading-6 text-gray-500">{status === 'setup' ? 'Complete the one-time secure setup for the website CMS.' : 'Sign in to manage your website content.'}</p></div>
-            {success && <div className="mb-5 rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-800">{success}</div>}
-            <form onSubmit={status === 'setup' ? handleSetup : handleLogin} className="space-y-5">
-              {status === 'setup' && <div><label className="mb-2 block text-sm font-medium text-gray-700">Setup token</label><Input type="password" autoComplete="off" value={setupToken} onChange={e => setSetupToken(e.target.value)} required className="h-12 rounded-xl" /></div>}
-              <div><label className="mb-2 block text-sm font-medium text-gray-700">Admin email</label><Input type="email" autoComplete="username" value={username} onChange={e => setUsername(e.target.value)} required className="h-12 rounded-xl" /></div>
-              <div><label className="mb-2 block text-sm font-medium text-gray-700">Password</label><Input type="password" autoComplete={status === 'setup' ? 'new-password' : 'current-password'} value={password} onChange={e => setPassword(e.target.value)} minLength={12} required className="h-12 rounded-xl" /></div>
-              {status === 'setup' && <div><label className="mb-2 block text-sm font-medium text-gray-700">Confirm password</label><Input type="password" autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} minLength={12} required className="h-12 rounded-xl" /></div>}
-              {error && <div className="rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{error}</div>}
-              <Button type="submit" className="h-12 w-full rounded-xl bg-rose-600 text-white shadow-lg shadow-rose-600/20 hover:bg-rose-700" disabled={busy}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{status === 'setup' ? 'Create Admin Account' : 'Sign In'}</Button>
-            </form>
-            <div className="mt-8 flex items-center justify-center gap-2 text-xs text-gray-400"><LockKeyhole className="h-3.5 w-3.5" /> Secure authenticated access</div>
-          </div>
-        </div>
-      </div>
+  return <div className="min-h-screen bg-[#fff8f0] text-stone-900" style={{fontFamily:'Montserrat, sans-serif'}}>
+    <header className="sticky top-0 z-40 border-b border-rose-100 bg-white/95 backdrop-blur"><div className="flex h-[70px] items-center justify-between px-4 sm:px-6 lg:px-8"><div className="flex items-center gap-3"><button type="button" onClick={()=>setMobileNavOpen(true)} className="rounded-lg p-2 text-rose-700 hover:bg-rose-50 lg:hidden" aria-label="Open navigation"><Menu className="h-5 w-5"/></button><img src={logo} alt="Layali Al Zahra Beauty Lounge" className="h-10 w-auto max-w-[150px] object-contain"/><div className="hidden sm:block border-l border-rose-100 pl-4"><p className="text-sm font-semibold text-rose-950">Admin Workspace</p><p className="text-[11px] text-stone-500">Layali Al Zahra Beauty Lounge</p></div></div><div className="flex items-center gap-2"><a href="/home" target="_blank" rel="noreferrer" className="hidden md:inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50"><ExternalLink className="mr-2 h-4 w-4"/>View website</a><span className="hidden sm:inline rounded-full bg-rose-50 px-3 py-2 text-xs text-rose-800">{adminUsername}</span><Button variant="outline" onClick={handleLogout} disabled={busy} className="h-9 rounded-lg border-rose-100 text-rose-800 hover:bg-rose-50"><LogOut className="mr-2 h-4 w-4"/>Logout</Button></div></div></header>
+    {mobileNavOpen&&<div className="fixed inset-0 z-50 lg:hidden"><button className="absolute inset-0 bg-rose-950/40" onClick={()=>setMobileNavOpen(false)} aria-label="Close navigation"/><aside className="relative h-full w-[280px] bg-white p-5 shadow-2xl"><div className="flex items-center justify-between"><img src={logo} alt="Layali Al Zahra" className="h-11 w-auto"/><button onClick={()=>setMobileNavOpen(false)} className="rounded-lg p-2 text-stone-500"><X className="h-5 w-5"/></button></div><AdminNav view={view} onNavigate={navigate}/></aside></div>}
+    <div className="mx-auto flex max-w-[1500px]">
+      <aside className="hidden w-[230px] shrink-0 border-r border-rose-100 bg-white lg:block"><div className="sticky top-[70px] p-5"><p className="px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">Workspace</p><AdminNav view={view} onNavigate={navigate}/><div className="mt-8 rounded-2xl bg-rose-50 p-4"><Sparkles className="h-4 w-4 text-rose-600"/><p className="mt-3 text-sm font-semibold text-rose-950">Keep it simple.</p><p className="mt-1 text-xs leading-5 text-stone-500">Create, edit and publish without touching code.</p></div></div></aside>
+      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-9 lg:py-8">
+        {success&&<div className="mb-5 flex items-center gap-2 rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-800"><CheckCircle2 className="h-4 w-4"/>{success}</div>}{error&&<div className="mb-5 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{error}</div>}
+        {view==='content'?<AdminContentManager onBack={()=>navigate('dashboard')}/>:view==='settings'?<SettingsView adminUsername={adminUsername} currentPassword={currentPassword} newPassword={newPassword} confirmNewPassword={confirmNewPassword} setCurrentPassword={setCurrentPassword} setNewPassword={setNewPassword} setConfirmNewPassword={setConfirmNewPassword} onSubmit={handlePasswordChange} busy={busy}/>:<Dashboard stats={stats} onContent={()=>navigate('content')} onCreate={()=>{navigate('content');}} onSeed={seedDemoContent} demoLoading={demoLoading}/>} 
+      </main>
     </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-[#fff8f0] text-gray-900" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      <header className="sticky top-0 z-40 border-b border-rose-100 bg-white/95 shadow-sm backdrop-blur">
-        <div className="flex h-[72px] items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3"><button type="button" className="rounded-xl p-2 text-rose-700 hover:bg-rose-50 lg:hidden" onClick={() => setMobileNavOpen(true)} aria-label="Open admin navigation"><Menu className="h-5 w-5" /></button><img src={logo} alt="Layali Al Zahra Beauty Lounge" className="h-11 w-auto" /><div className="hidden border-l border-rose-100 pl-4 sm:block"><p className="text-sm font-semibold text-rose-950">Admin Workspace</p><p className="text-xs text-gray-500">Layali Al Zahra Beauty Lounge</p></div></div>
-          <div className="flex items-center gap-2"><a href="/home" target="_blank" rel="noreferrer" className="hidden rounded-xl px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50 md:inline-flex"><ExternalLink className="mr-2 h-4 w-4" />View website</a><span className="hidden rounded-full bg-rose-50 px-3 py-2 text-xs font-medium text-rose-800 sm:inline">{adminUsername}</span><Button variant="outline" onClick={handleLogout} disabled={busy} className="rounded-xl border-rose-100 text-rose-800 hover:bg-rose-50"><LogOut className="mr-2 h-4 w-4" />Logout</Button></div>
-        </div>
-      </header>
-
-      {mobileNavOpen && <div className="fixed inset-0 z-50 lg:hidden"><button className="absolute inset-0 bg-rose-950/40" aria-label="Close navigation" onClick={() => setMobileNavOpen(false)} /><aside className="relative h-full w-[290px] bg-white p-5 shadow-2xl"><div className="flex items-center justify-between"><img src={logo} alt="Layali Al Zahra" className="h-12 w-auto" /><button onClick={() => setMobileNavOpen(false)} className="rounded-xl p-2 text-gray-500 hover:bg-rose-50"><X className="h-5 w-5" /></button></div><AdminNav view={view} onNavigate={navigate} /></aside></div>}
-
-      <div className="mx-auto flex max-w-[1600px]">
-        <aside className="hidden w-64 shrink-0 border-r border-rose-100 bg-white/75 px-4 py-7 lg:block"><div className="px-3"><p className="font-tangerine text-4xl text-rose-800">Your workspace</p><p className="mt-1 text-xs leading-5 text-gray-500">Simple tools for publishing beautiful content without touching code.</p></div><AdminNav view={view} onNavigate={navigate} /><div className="mt-8 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-5 text-white shadow-lg shadow-rose-600/10"><Sparkles className="h-5 w-5" /><p className="mt-3 text-sm font-semibold">Keep it beautiful.</p><p className="mt-1 text-xs leading-5 text-white/80">Publish, review and update your website from one place.</p></div></aside>
-
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-9">
-          {error && <div className="mb-5 rounded-2xl border border-rose-100 bg-white px-5 py-4 text-sm text-rose-800 shadow-sm" role="alert">{error}</div>}
-          {success && <div className="mb-5 flex items-center gap-2 rounded-2xl border border-green-100 bg-white px-5 py-4 text-sm text-green-800 shadow-sm" role="status"><CheckCircle2 className="h-4 w-4" />{success}</div>}
-
-          {view === 'content' ? <AdminContentManager onBack={() => navigate('dashboard')} /> : view === 'settings' ? <SettingsView adminUsername={adminUsername} busy={busy} error={error} success={success} currentPassword={currentPassword} newPassword={newPassword} confirmNewPassword={confirmNewPassword} setCurrentPassword={setCurrentPassword} setNewPassword={setNewPassword} setConfirmNewPassword={setConfirmNewPassword} onSubmit={handlePasswordChange} onBack={() => navigate('dashboard')} /> : <Dashboard stats={stats} onContent={() => navigate('content')} onSeed={seedDemoContent} demoLoading={demoLoading} />}
-        </main>
-      </div>
-    </div>
-  );
-}
-
-function AdminNav({ view, onNavigate }: { view: View; onNavigate: (view: View) => void }) {
-  return <nav className="mt-8 space-y-1">{navSections.map(item => { const Icon = item.icon; const active = item.view === view && !item.disabled; return <button key={item.label} type="button" disabled={item.disabled} onClick={() => !item.disabled && onNavigate(item.view)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium transition ${active ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-md shadow-rose-500/15' : item.disabled ? 'cursor-not-allowed text-gray-300' : 'text-gray-600 hover:bg-rose-50 hover:text-rose-900'}`}><Icon className="h-4 w-4" /><span>{item.label}</span>{item.disabled && <span className="ml-auto text-[10px] uppercase tracking-wide">Soon</span>}</button>; })}</nav>;
-}
-
-function Dashboard({ stats, onContent, onSeed, demoLoading }: { stats: { blog: number; tip: number; news: number }; onContent: () => void; onSeed: () => void; demoLoading: boolean }) {
-  const total = stats.blog + stats.tip + stats.news;
-  const statCards = [
-    { label: 'Beauty Journal', value: stats.blog, icon: FileText, color: 'bg-rose-50 text-rose-700' },
-    { label: 'Beauty Tips', value: stats.tip, icon: Sparkles, color: 'bg-pink-50 text-pink-700' },
-    { label: 'Salon News', value: stats.news, icon: Tag, color: 'bg-amber-50 text-amber-700' },
-  ];
-  return <div className="space-y-8">
-    <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-600">Dashboard</p><h1 className="mt-2 font-tangerine text-6xl leading-none text-rose-950 md:text-7xl">Welcome back.</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600">Everything you need to keep the Layali Al Zahra website fresh, useful and beautiful.</p></div><Button onClick={onContent} className="rounded-xl bg-rose-600 px-5 py-3 text-white shadow-lg shadow-rose-600/15 hover:bg-rose-700"><Plus className="mr-2 h-4 w-4" />Create content</Button></div>
-    <div className="grid gap-4 md:grid-cols-3">{statCards.map(item => { const Icon = item.icon; return <Card key={item.label} className="rounded-2xl border-rose-100 bg-white shadow-sm"><CardContent className="p-5"><div className="flex items-center justify-between"><div className={`flex h-11 w-11 items-center justify-center rounded-xl ${item.color}`}><Icon className="h-5 w-5" /></div><span className="text-3xl font-semibold text-rose-950">{item.value}</span></div><p className="mt-4 text-sm font-medium text-gray-700">{item.label}</p><p className="mt-1 text-xs text-gray-500">Published and draft items</p></CardContent></Card>; })}</div>
-    <div className="grid gap-5 xl:grid-cols-[1.4fr_1fr]">
-      <Card className="rounded-2xl border-rose-100 bg-white shadow-sm"><CardHeader><CardTitle className="text-xl text-rose-950">Content workspace</CardTitle></CardHeader><CardContent className="grid gap-3 sm:grid-cols-3">{[
-        { title: 'Blog', desc: 'Beauty Journal articles', icon: FileText }, { title: 'Tips', desc: 'Practical beauty advice', icon: Sparkles }, { title: 'News', desc: 'Salon updates & stories', icon: Tag },
-      ].map(item => { const Icon = item.icon; return <button key={item.title} onClick={onContent} className="rounded-2xl border border-rose-100 bg-rose-50/60 p-4 text-left transition hover:-translate-y-0.5 hover:bg-rose-50 hover:shadow-md"><Icon className="h-5 w-5 text-rose-700" /><p className="mt-4 text-sm font-semibold text-rose-950">{item.title}</p><p className="mt-1 text-xs leading-5 text-gray-500">{item.desc}</p></button>; })}</CardContent></Card>
-      <Card className="rounded-2xl border-rose-100 bg-gradient-to-br from-rose-600 to-pink-600 text-white shadow-lg shadow-rose-600/15"><CardHeader><CardTitle className="flex items-center gap-2 text-xl"><Database className="h-5 w-5" /> Demo content</CardTitle></CardHeader><CardContent><p className="text-sm leading-6 text-white/85">Load researched sample Blogs, Tips and News into the CMS and public website for management review. The action is safe to repeat and skips existing demo slugs.</p><Button onClick={onSeed} disabled={demoLoading} className="mt-5 rounded-xl bg-white text-rose-800 hover:bg-rose-50">{demoLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Load demo content</Button><p className="mt-3 text-xs text-white/60">Current content items: {total}</p></CardContent></Card>
-    </div>
-    <div className="grid gap-5 md:grid-cols-3">{[
-      { title: 'Website', desc: 'Services and Packages management will be enabled in a later module.', icon: Store },
-      { title: 'Media', desc: 'Images are already stored securely through the connected media system.', icon: Image },
-      { title: 'Testimonials', desc: 'Client reviews and ratings will be managed in a later module.', icon: Users },
-    ].map(item => { const Icon = item.icon; return <Card key={item.title} className="rounded-2xl border-rose-100 bg-white/70 opacity-75 shadow-sm"><CardContent className="p-5"><Icon className="h-5 w-5 text-rose-500" /><p className="mt-4 text-sm font-semibold text-rose-950">{item.title}</p><p className="mt-1 text-xs leading-5 text-gray-500">{item.desc}</p><span className="mt-4 inline-block text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Coming later</span></CardContent></Card>; })}</div>
   </div>;
 }
 
-function SettingsView(props: { adminUsername: string; busy: boolean; error: string; success: string; currentPassword: string; newPassword: string; confirmNewPassword: string; setCurrentPassword: (v: string) => void; setNewPassword: (v: string) => void; setConfirmNewPassword: (v: string) => void; onSubmit: (event: React.FormEvent) => void; onBack: () => void }) {
-  return <div className="max-w-3xl space-y-7"><div><button onClick={props.onBack} className="text-sm font-medium text-rose-700 hover:text-rose-900">← Dashboard</button><p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-rose-600">Settings</p><h1 className="mt-2 font-tangerine text-6xl text-rose-950">Admin account</h1><p className="mt-2 text-sm text-gray-500">Signed in as {props.adminUsername}</p></div><Card className="rounded-2xl border-rose-100 bg-white shadow-sm"><CardHeader><CardTitle className="text-xl text-rose-950">Change password</CardTitle></CardHeader><CardContent><form onSubmit={props.onSubmit} className="max-w-xl space-y-5"><div><label className="mb-2 block text-sm font-medium text-gray-700">Current password</label><Input type="password" autoComplete="current-password" value={props.currentPassword} onChange={e => props.setCurrentPassword(e.target.value)} required className="h-12 rounded-xl" /></div><div><label className="mb-2 block text-sm font-medium text-gray-700">New password</label><Input type="password" autoComplete="new-password" value={props.newPassword} onChange={e => props.setNewPassword(e.target.value)} minLength={12} required className="h-12 rounded-xl" /></div><div><label className="mb-2 block text-sm font-medium text-gray-700">Confirm new password</label><Input type="password" autoComplete="new-password" value={props.confirmNewPassword} onChange={e => props.setConfirmNewPassword(e.target.value)} minLength={12} required className="h-12 rounded-xl" /></div>{props.error && <p className="text-sm text-rose-700">{props.error}</p>}{props.success && <p className="text-sm text-green-700">{props.success}</p>}<Button type="submit" disabled={props.busy} className="rounded-xl bg-rose-600 text-white hover:bg-rose-700">{props.busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Change password</Button></form></CardContent></Card></div>;
-}
+function AdminNav({view,onNavigate}:{view:View;onNavigate:(view:View)=>void}){return <nav className="mt-4 space-y-1">{nav.map(item=>{const Icon=item.icon;const active=view===item.view;return <button key={item.label} type="button" onClick={()=>onNavigate(item.view)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${active?'bg-rose-600 text-white shadow-sm':'text-stone-600 hover:bg-rose-50 hover:text-rose-800'}`}><Icon className="h-4 w-4"/>{item.label}<ArrowRight className={`ml-auto h-3.5 w-3.5 ${active?'opacity-100':'opacity-0 group-hover:opacity-100'}`}/></button>})}</nav>}
+
+function Dashboard({stats,onContent,onCreate,onSeed,demoLoading}:{stats:{blog:number;tip:number;news:number};onContent:()=>void;onCreate:()=>void;onSeed:()=>void;demoLoading:boolean}){const cards=[{label:'Blog',count:stats.blog,icon:BookOpen,desc:'Beauty Journal articles'},{label:'Beauty Tips',count:stats.tip,icon:Lightbulb,desc:'Practical beauty advice'},{label:'News',count:stats.news,icon:Newspaper,desc:'Salon updates'}];return <div><div className="flex flex-col gap-4 border-b border-rose-100 pb-7 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-600">Dashboard</p><h1 className="mt-2 font-tangerine text-6xl leading-none text-rose-950">Welcome back.</h1><p className="mt-3 max-w-2xl text-sm text-stone-500">Everything you need to keep the website fresh, useful and beautiful.</p></div><Button onClick={onCreate} className="h-11 rounded-xl bg-rose-600 px-5 text-white hover:bg-rose-700"><Plus className="mr-2 h-4 w-4"/>Create content</Button></div><div className="mt-7 grid gap-4 md:grid-cols-3">{cards.map(card=>{const Icon=card.icon;return <button key={card.label} onClick={onContent} className="group rounded-2xl border border-rose-100 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><div className="flex items-center justify-between"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600"><Icon className="h-5 w-5"/></div><span className="text-3xl font-semibold text-rose-950">{card.count}</span></div><p className="mt-5 text-sm font-semibold text-stone-800">{card.label}</p><p className="mt-1 text-xs text-stone-500">{card.desc}</p><span className="mt-4 inline-flex items-center text-xs font-medium text-rose-700">Open library<ArrowRight className="ml-1 h-3.5 w-3.5 transition group-hover:translate-x-1"/></span></button>})}</div><div className="mt-7 grid gap-5 lg:grid-cols-[1fr_330px]"><Card className="border-rose-100 bg-white shadow-sm"><CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><BarChart3 className="h-4 w-4 text-rose-600"/>Content workspace</CardTitle></CardHeader><CardContent><div className="grid gap-3 sm:grid-cols-3">{cards.map(card=><div key={card.label} className="rounded-xl bg-rose-50/70 p-4"><p className="text-xs text-stone-500">{card.label}</p><p className="mt-1 text-lg font-semibold text-rose-950">{card.count} items</p><button onClick={onContent} className="mt-2 text-xs font-medium text-rose-700">Manage →</button></div>)}</div></CardContent></Card><Card className="border-rose-100 bg-white shadow-sm"><CardHeader className="pb-3"><CardTitle className="text-base">Management review</CardTitle></CardHeader><CardContent><p className="text-sm leading-6 text-stone-500">Load the researched sample content to review the complete CMS and public website experience.</p><Button onClick={onSeed} disabled={demoLoading} className="mt-5 h-10 w-full rounded-xl bg-rose-600 text-white hover:bg-rose-700">{demoLoading&&<Loader2 className="mr-2 h-4 w-4 animate-spin"/>}{demoLoading?'Loading…':'Load demo content'}</Button><p className="mt-3 text-[11px] leading-5 text-stone-400">Creates 2 Blogs, 2 Tips and 2 News items. Repeating the action will not duplicate existing demo slugs.</p></CardContent></Card></div></div>}
+
+function SettingsView({adminUsername,currentPassword,newPassword,confirmNewPassword,setCurrentPassword,setNewPassword,setConfirmNewPassword,onSubmit,busy}:{adminUsername:string;currentPassword:string;newPassword:string;confirmNewPassword:string;setCurrentPassword:(v:string)=>void;setNewPassword:(v:string)=>void;setConfirmNewPassword:(v:string)=>void;onSubmit:(e:React.FormEvent)=>void;busy:boolean}){return <div className="max-w-2xl"><div className="mb-7"><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-600">Settings</p><h1 className="mt-2 text-3xl font-semibold text-rose-950">Admin account</h1><p className="mt-2 text-sm text-stone-500">Signed in as {adminUsername}</p></div><Card className="border-rose-100 bg-white shadow-sm"><CardHeader><CardTitle>Change password</CardTitle></CardHeader><CardContent><form onSubmit={onSubmit} className="space-y-5"><div><label className="mb-2 block text-sm font-medium text-stone-700">Current password</label><Input type="password" autoComplete="current-password" value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)} required className="h-11 rounded-xl"/></div><div><label className="mb-2 block text-sm font-medium text-stone-700">New password</label><Input type="password" autoComplete="new-password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} minLength={12} required className="h-11 rounded-xl"/></div><div><label className="mb-2 block text-sm font-medium text-stone-700">Confirm new password</label><Input type="password" autoComplete="new-password" value={confirmNewPassword} onChange={e=>setConfirmNewPassword(e.target.value)} minLength={12} required className="h-11 rounded-xl"/></div><Button type="submit" disabled={busy} className="h-11 rounded-xl bg-rose-600 text-white hover:bg-rose-700">{busy&&<Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Change password</Button></form></CardContent></Card></div>}
