@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowRight, BookOpen, ChevronLeft, ChevronRight, Loader2, Newspaper, Lightbulb } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Button } from './ui/button';
@@ -26,7 +27,40 @@ function ContentCarousel({ type, items, onNavigate }: { type: ContentType; items
 export default function HomeContentShowcase({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [items, setItems] = useState<Record<ContentType, Item[]>>({ tip: [], blog: [], news: [] });
   const [loading, setLoading] = useState(true);
+  const [mountNode, setMountNode] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const headings = Array.from(document.querySelectorAll('main h2'));
+    const reviewHeading = headings.find((heading) => heading.textContent?.trim() === 'What Our Clients Say');
+    const legacyTipsHeading = headings.find((heading) => heading.textContent?.trim() === 'Beauty Tips');
+    const reviewSection = reviewHeading?.closest('section');
+    const legacyTipsSection = legacyTipsHeading?.closest('section');
+    if (!reviewSection || !reviewSection.parentElement) return;
+
+    if (legacyTipsSection) {
+      legacyTipsSection.setAttribute('data-legacy-home-tips', 'true');
+      legacyTipsSection.style.display = 'none';
+    }
+
+    const node = document.createElement('div');
+    node.setAttribute('data-home-content-showcase', 'true');
+    reviewSection.parentElement.insertBefore(node, reviewSection);
+    setMountNode(node);
+
+    return () => {
+      active = false;
+      node.remove();
+      if (legacyTipsSection) {
+        legacyTipsSection.style.removeProperty('display');
+        legacyTipsSection.removeAttribute('data-legacy-home-tips');
+      }
+    };
+  }, []);
+
   useEffect(() => { let active = true; Promise.all((['tip', 'blog', 'news'] as ContentType[]).map(async type => { try { const response = await fetch(`/api/content?type=${type}&page=1&limit=6`, { cache: 'no-store' }); const data = await response.json().catch(() => ({})); return [type, response.ok && data.success ? (data.items || []) : []] as const; } catch { return [type, []] as const; } })).then(results => { if (!active) return; setItems(Object.fromEntries(results) as Record<ContentType, Item[]>); }).finally(() => { if (active) setLoading(false); }); return () => { active = false; }; }, []);
-  if (loading) return <section className="flex min-h-[220px] items-center justify-center bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100"><Loader2 className="h-7 w-7 animate-spin text-rose-700" /></section>;
-  return <><ContentCarousel type="tip" items={items.tip} onNavigate={onNavigate} /><ContentCarousel type="blog" items={items.blog} onNavigate={onNavigate} /><ContentCarousel type="news" items={items.news} onNavigate={onNavigate} /></>;
+
+  const content = loading ? <section className="flex min-h-[220px] items-center justify-center bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100"><Loader2 className="h-7 w-7 animate-spin text-rose-700" /></section> : <><ContentCarousel type="tip" items={items.tip} onNavigate={onNavigate} /><ContentCarousel type="blog" items={items.blog} onNavigate={onNavigate} /><ContentCarousel type="news" items={items.news} onNavigate={onNavigate} /></>;
+
+  return mountNode ? createPortal(content, mountNode) : null;
 }

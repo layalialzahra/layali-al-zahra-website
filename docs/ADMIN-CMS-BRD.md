@@ -44,7 +44,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The temporary image-test content was deleted after public verification; no test content remains in the CMS.
 - Stage 4 mobile polish is complete: admin controls, filters, editor cards, action buttons and spacing now adapt cleanly to narrow screens.
 - Stage 4 News UX is complete: News creation defaults to the News category, exposes News-specific summary/headline guidance and restricts News category choices to the relevant salon/news categories.
-- Stage 4.1 is a correction/acceptance gate, not a replacement for the historical Stage 4 record. The current public/admin implementation has been visually reviewed by the owner and judged to be at the desired professional design level; remaining 4.1 work is functional live acceptance and any small defects found during that acceptance.
+- Stage 4.1 is a correction/acceptance gate, not a replacement for the historical Stage 4 record. The current public/admin implementation has been visually reviewed by the owner and judged to be at the desired professional design level; live navigation, sample-content, mobile and admin acceptance have now been reviewed by the owner. One homepage integration defect remains: the legacy hard-coded Beauty Tips carousel must be removed and the DB-driven Tips/Blog/News showcase must sit before the Reviews section.
 - Six management sample records are loaded in the active CMS environment: two Blog items, two Beauty Tips and two News items.
 
 ## 4. Master Status
@@ -55,7 +55,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
 | 3 — CMS Foundation | 🟢 Complete | API safety, CRUD, draft privacy, publish/unpublish, public API and Blog detail acceptance completed |
 | 4 — Admin Content Editor | 🟢 Complete | Responsive editor/list, News UX, Blob storage, image upload and live acceptance completed |
-| 4.1 — Public Content Presentation & Admin UX | 🟡 In progress | Correction pass is deployed; owner approves the design direction; live desktop/mobile and functional acceptance remain |
+| 4.1 — Public Content Presentation & Admin UX | 🟡 In progress | Owner has passed public navigation, content, mobile and admin checks; homepage integration correction and final regression/security checks remain |
 | 5 — Public Tips/Blog/News | 🔒 Blocked until Stage 4.1 passes | Route/API foundations exist; six-tip migration and final acceptance wait for the 4.1 gate |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS/public content is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
@@ -176,18 +176,19 @@ This is the current correction/acceptance gate between the completed core CMS (S
 ### Public routing and navigation
 - [x] Explicit public route handling for `/home`, `/services`, `/packages`, `/offers`, `/tips`, `/blog`, `/news` and `/contact`.
 - [x] Vercel SPA rewrites for existing public pages that previously failed direct navigation: `/home`, `/services`, `/packages`, `/offers`, `/contact`.
-- [ ] Live desktop/mobile verification of every primary header navigation item.
+- [x] Owner verified all primary public header pages open correctly.
+- [x] Owner verified mobile navigation/pages.
 
 ### Public content presentation
 - [x] Blog/News listing cards no longer display hashtag-style tags.
 - [x] Listing/detail image containers use stable aspect-ratio geometry and `object-fit: cover`.
 - [x] Blog, Tips and News listing/detail layouts use the established Offers visual language as the design reference.
 - [x] Public content detail pages use editorial title, metadata, excerpt/body and structured tip-step presentation.
-- [ ] Live desktop verification against Offers at representative viewport widths.
-- [ ] Live mobile verification against Offers at representative viewport widths.
-- [ ] Verify all six sample records render correctly on public listing and detail pages.
-- [ ] Verify homepage Tips/Blog/News showcases render correctly with the six sample records and do not duplicate or break existing homepage content.
-- [ ] Verify image crops remain consistent at desktop/tablet/mobile widths.
+- [x] Owner verified the public content presentation on desktop.
+- [x] Owner verified the public content presentation on mobile.
+- [x] Owner verified all six sample records on public listing/detail pages.
+- [ ] Homepage Tips/Blog/News showcase integration is pending correction: remove the legacy hard-coded Beauty Tips section and render the DB-driven Tips/Blog/News showcase before the Reviews section.
+- [x] Owner verified image crops at the tested responsive widths.
 - [ ] Verify detail-page 404 behavior for invalid slugs.
 
 ### Admin UX
@@ -197,16 +198,16 @@ This is the current correction/acceptance gate between the completed core CMS (S
 - [x] Editor with primary content column plus media/publishing rail.
 - [x] Settings/password-change area.
 - [x] Desktop sidebar and mobile navigation drawer.
-- [ ] Live desktop/mobile acceptance of login/setup/dashboard/library/editor/settings as one coherent workspace.
-- [ ] Verify a first-time admin can identify create/edit/publish/unpublish/duplicate/delete actions without developer assistance.
-- [ ] Verify validation, loading, success, failure and confirmation states for the main CMS actions.
+- [x] Owner completed live desktop/mobile acceptance of login/setup/dashboard/library/editor/settings as one coherent workspace.
+- [x] First-time admin can identify create/edit/publish/unpublish/duplicate/delete actions without developer assistance.
+- [x] Main CMS validation, loading, success, failure and confirmation states were exercised during acceptance.
 
 ### Sample content
 - [x] Six management sample records are loaded: two Blog, two Beauty Tip and two News.
 - [x] Sample content was researched from current beauty/hair/nail/skin guidance and current beauty-trend context before seeding.
-- [ ] Verify every sample record has correct public image, title, excerpt/body, category and publication state.
-- [ ] Verify no sample record is unintentionally future-dated or private.
-- [ ] Verify sample content can be edited, unpublished and republished without code deployment.
+- [x] Owner verified the sample records' public image, title, excerpt/body, category and publication state.
+- [x] Owner verified sample records are not unintentionally future-dated or private.
+- [x] Owner verified sample content can be edited, unpublished and republished without code deployment.
 
 ### Regression/security gate
 - [x] Existing authentication/session behavior preserved.
@@ -218,7 +219,7 @@ This is the current correction/acceptance gate between the completed core CMS (S
 - [ ] Confirm no secrets or diagnostic metadata are exposed publicly.
 
 ### Stage 4.1 acceptance rule
-Stage 4.1 remains 🟡 In progress until the remaining live checks above are verified. Stage 5 execution and production-domain cutover are gated on this acceptance, unless the owner explicitly overrides the gate.
+Stage 4.1 remains 🟡 In progress until the remaining homepage integration, 404 and final regression/security checks are verified. Stage 5 execution and production-domain cutover are gated on this acceptance, unless the owner explicitly overrides the gate.
 
 ## 11. Stage 5 — Public Tips/Blog/News — BLOCKED UNTIL 4.1 PASSES
 - [x] Beauty Tips DB-driven published-only API.
@@ -452,6 +453,14 @@ Stage 4.1 remains 🟡 In progress until the remaining live checks above are ver
 - Added the current Stage 4.1 correction gate and domain-cutover checklist without deleting the historical record.
 - This BRD recovery is documentation-only; no application code is changed by this recovery.
 - Future BRD updates must append or precisely edit the relevant status/checklist/change-log entry; they must not replace the document with a shortened summary.
+
+### 2026-09-14 — Stage 4.1 live acceptance pass and homepage integration correction
+- Owner verified all primary public pages open correctly and completed desktop/mobile public-content checks.
+- Owner verified all six management sample records on the public pages and completed the responsive/mobile acceptance pass.
+- Owner completed live admin acceptance for login/setup/dashboard/content library/editor/settings and the principal CMS actions.
+- Identified one remaining homepage integration defect: the legacy hard-coded Beauty Tips carousel is still rendered, while the new DB-driven Tips/Blog/News showcase is currently after Reviews.
+- Corrected the homepage integration so the legacy hard-coded Beauty Tips section is suppressed and the DB-driven Tips/Blog/News showcase is mounted immediately before Reviews.
+- Stage 4.1 remains in progress until this correction is live-verified, the invalid-slug 404 behavior is checked, and final regression/security checks are completed.
 
 ## 19. Recovery / Source-of-truth rule
 The comprehensive BRD version at commit `c95bbf465b5bced148ae066e3feefddb0e460f46` is the recovered historical baseline for the project record. The current file preserves that baseline and adds the Stage 4.1 correction/acceptance layer. Repository history remains available for exact historical comparison.
