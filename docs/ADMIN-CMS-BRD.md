@@ -36,7 +36,7 @@ ADMIN → /admin → Secure Login → Dashboard → Content / Website / Settings
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟢 Audit complete / verification open | Codebase audited; production build check still pending |
-| 1 — MongoDB Production Connection | 🟡 In progress | Code foundation complete; Atlas cluster/user/network access configured; Vercel connection and production verification pending |
+| 1 — MongoDB Production Connection | 🟡 In progress | Code foundation complete; Atlas cluster/user/network configured; new Vercel production URI configured and redeployed; live health verification pending |
 | 2 — Secure Admin Authentication | ⬜ Not started | Pending Stage 1 verification |
 | 3 — CMS Foundation | ⬜ Not started | Pending |
 | 4 — Admin Content Editor | ⬜ Not started | Pending |
@@ -58,20 +58,26 @@ ADMIN → /admin → Secure Login → Dashboard → Content / Website / Settings
 
 ## 6. Stage 1 — MongoDB Production Connection
 
+### Code foundation
 - [x] Reusable cached MongoDB connection helper.
 - [x] Server-side-only database URI usage.
 - [x] Production-safe DB health endpoint.
 - [x] Shared helper and safe errors in test endpoint.
 - [x] `.gitignore` and `.env.example` added without secrets.
+
+### Atlas / Vercel configuration
 - [x] Create MongoDB Atlas project and Free cluster.
 - [x] Create database user.
 - [x] Rotate database-user password after accidental screenshot exposure.
 - [x] Configure Atlas IP Access List for Vercel using `0.0.0.0/0`; entry is Active.
-- [ ] Add `MONGODB_URI` to Vercel environment variables.
-- [ ] Deploy and verify `/api/health/db`.
+- [x] Remove old Vercel MongoDB environment variable/configuration.
+- [x] Add new production `MONGODB_URI` pointing to the new Atlas cluster.
+- [x] Add production `MONGODB_DB_NAME=layalialzahra`.
+- [x] Redeploy Vercel after environment-variable changes.
+- [ ] Verify `/api/health/db` successfully reaches the new Atlas cluster.
 - [ ] Add CMS collections/models.
 
-**Stage 1 completion condition:** Production can securely read/write MongoDB data.
+**Stage 1 completion condition:** Production can securely read/write MongoDB data and the live health check confirms the new Atlas cluster is being used.
 
 ## 7. Stage 2 — Secure Admin Authentication
 
