@@ -25,10 +25,11 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - The production Content screen previously displayed `Content service unavailable` while MongoDB health remained healthy.
 - Content API index initialization is now non-blocking for CRUD reads/writes: individual index warnings are logged without making the Content API unavailable, and application-level type/slug collision checks are enforced before content writes.
 - An authenticated `/api/admin/content-health` diagnostic endpoint has been added to isolate database connection, `content` collection, basic query, serialization and index visibility failures without exposing content data.
-- The first deployed diagnostic returned an empty `checks` object because its combined module import failed before any individual check could be recorded. The diagnostic was then hardened to isolate MongoDB-module import, content-module import and database-operation failures separately.
-- The deployed diagnostic subsequently identified a `SyntaxError` while importing the shared content module. The cause was a legacy octal escape (`\2`) inside a JavaScript string replacement in `sanitizeBody`, which is invalid in an ES module.
-- The content sanitizer replacement has now been corrected to use the replacement-string capture `$2`, removing the syntax error while preserving the intended safe URL replacement behavior.
-- Production acceptance remains open until the corrected deployment is retested and the Content API returns successfully.
+- The deployed diagnostic identified and the codebase corrected a `SyntaxError` in the shared content sanitizer caused by a legacy octal escape.
+- The corrected diagnostic now confirms MongoDB, content module, database, collection, query, serialization and four content indexes are healthy in production.
+- A real Blog Post was created and published from the admin CMS and persisted in the Content list.
+- The first public Blog detail route test currently returns `Content not found` for the newly published slug. The public API read path has therefore been hardened so index initialization is a background task and cannot block public reads on cold serverless instances.
+- Production acceptance remains open until the public API/detail route is retested and draft privacy, edit/delete and remaining CRUD acceptance are verified.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -36,9 +37,9 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and repeatable production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟢 Complete | Login/logout/password-change, protected API rejection and session-expiry implementation verification completed |
-| 3 — CMS Foundation | 🟡 In progress | Shared content module syntax fixed; deployed Content API and CRUD/privacy acceptance remain |
+| 3 — CMS Foundation | 🟡 In progress | Admin create/publish is proven; public published-content read path requires retest after public API resilience fix |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard/editor and upload foundation implemented; production Blob configuration/failure checks and final acceptance remain |
-| 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration and Blog/News foundations exist; production migration and final route/SEO acceptance remain |
+| 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration and Blog/News foundations exist; first live Blog detail route currently needs API/detail troubleshooting |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
@@ -118,6 +119,8 @@ Architecture must allow categories to be extended without changing the database 
 - [x] Authenticated content health diagnostic covering DB connection, content collection, basic query, serialization and index visibility.
 - [x] Diagnostic module-import isolation so failed module loads are identified separately from database-operation failures.
 - [x] Corrected shared sanitizer ES-module syntax after deployed diagnostic identified a `SyntaxError` from a legacy octal escape in a replacement string.
+- [x] Production Content Manager successfully created and published a real Blog record.
+- [x] Public API index initialization changed to a non-blocking background task so public reads are not held behind cold-start index setup.
 - [ ] Verify unique slugs against actual production data.
 - [ ] Verify draft privacy against the public API in production.
 - [ ] Verify safe API errors/no secrets in production.
@@ -125,7 +128,7 @@ Architecture must allow categories to be extended without changing the database 
 ### Production acceptance
 - [ ] Authenticated APIs safely create/edit/delete/publish content in production.
 - [ ] Public APIs expose only intended published content in production.
-- [ ] Retest corrected deployment and confirm the production `Content service unavailable` failure is resolved.
+- [ ] Retest the published Blog detail route after the public API resilience fix and confirm the current `Content not found` failure is resolved.
 
 ## 9. Stage 4 — Admin Content Editor
 ### Dashboard and lists
@@ -168,7 +171,7 @@ Architecture must allow categories to be extended without changing the database 
 - [ ] Preserve existing public design for all new routes.
 - [ ] Beauty Journal listing final UX, filters and pagination/load-more as required.
 - [ ] Final live verification of all public route forms.
-- [ ] Stable slugs, H1, alt text, publication info, category/tags, related service/internal links and 404 handling verified.
+- [ ] Stable slugs, H1, alt text, publication info, category/tags, related service/internal links and 404 handling.
 - [ ] Per-content SEO: title, meta, canonical, OG image, structured content and internal links.
 - [ ] Publishing must not require code deployment.
 
@@ -286,9 +289,19 @@ Architecture must allow categories to be extended without changing the database 
 
 ### 2026-09-14 — Stage 3 content-module syntax fix
 - Owner retested the deployed diagnostic and it isolated `contentModule` as failed with `SyntaxError`, while `mongodbModule` passed.
-- Root cause was identified in `api/_lib/content.js`: the sanitizer replacement string contained `\2`, which is a legacy octal escape and invalid syntax in an ES module.
+- Root cause was identified in `api/_lib/content.js`: the sanitizer replacement string contained `\\2`, which is a legacy octal escape and invalid syntax in an ES module.
 - Replaced the invalid replacement-string backreference with `$2` and committed the correction.
-- Production Content API acceptance remains open pending the next deployed diagnostic and Content screen retest.
+- Production Content API acceptance remained open pending deployed verification.
+
+### 2026-09-14 — Stage 3 empty collection and production create/publish verification
+- Corrected the health diagnostic so a non-existent or empty `content` collection is treated as a valid empty CMS state.
+- Owner verified the production diagnostic: MongoDB module, content module, database, collection, query, serialization and four content indexes all passed.
+- Owner created and published `5 Simple Hair Care Tips for Healthier Hair` from the admin Content Manager and verified the published record appears in the Content list.
+
+### 2026-09-14 — Stage 5 public read resilience
+- Owner opened the published Blog detail URL and the public detail page returned `Content not found`.
+- Hardened `api/content.js` so content index initialization runs as a background task instead of blocking public reads on serverless cold starts.
+- Public published-content acceptance remains open pending deployment and retest of the same published Blog URL.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
