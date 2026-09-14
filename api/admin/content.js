@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   try {
     const { getDb } = await import("../_lib/mongodb.js");
-    const { CONTENT_TYPES, ensureContentIndexes, validateContentInput, serializeContent, toObjectId } = await import("../_lib/content.js");
+    const { CONTENT_TYPES, ensureContentIndexes, assertUniqueContentSlug, validateContentInput, serializeContent, toObjectId } = await import("../_lib/content.js");
     await ensureContentIndexes();
     const db = await getDb();
     const collection = db.collection("content");
@@ -51,6 +51,7 @@ export default async function handler(req, res) {
 
     if (req.method === "POST") {
       const data = validateContentInput(req.body, false);
+      await assertUniqueContentSlug(collection, data.type, data.slug);
       const now = new Date();
       const document = { ...data, status: data.status || "draft", publishDate: data.status === "published" ? (data.publishDate || now) : (data.publishDate || null), createdAt: now, updatedAt: now };
       const result = await collection.insertOne(document);
@@ -73,6 +74,7 @@ export default async function handler(req, res) {
       copyInput.slug = `${existing.slug}-copy-${Date.now().toString(36)}`.slice(0, 160);
       copyInput.status = "draft";
       copyInput.publishDate = null;
+      await assertUniqueContentSlug(collection, copyInput.type, copyInput.slug);
       const now = new Date();
       const copyDocument = { ...copyInput, createdAt: now, updatedAt: now };
       const result = await collection.insertOne(copyDocument);
@@ -80,6 +82,9 @@ export default async function handler(req, res) {
     }
 
     const data = validateContentInput(req.body, true);
+    const effectiveType = data.type || existing.type;
+    const effectiveSlug = data.slug || existing.slug;
+    await assertUniqueContentSlug(collection, effectiveType, effectiveSlug, id);
     if (data.status === "published" && !data.publishDate && !existing.publishDate) data.publishDate = new Date();
     if (data.status === "draft") data.publishDate = null;
     data.updatedAt = new Date();
