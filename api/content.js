@@ -7,9 +7,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, message: "Method not allowed" });
   }
   try {
-    await ensureContentIndexes();
     const db = await getDb();
     const collection = db.collection("content");
+    ensureContentIndexes().catch((error) => console.error("Content index initialization failed", error));
     const type = req.query?.type ? String(req.query.type).trim().toLowerCase() : null;
     const category = req.query?.category ? String(req.query.category).trim() : null;
     const slug = req.query?.slug ? String(req.query.slug).trim().toLowerCase() : null;
