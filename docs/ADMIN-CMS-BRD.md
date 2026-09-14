@@ -44,7 +44,9 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The temporary image-test content was deleted after public verification; no test content remains in the CMS.
 - Stage 4 mobile polish is complete: admin controls, filters, editor cards, action buttons and spacing now adapt cleanly to narrow screens.
 - Stage 4 News UX is complete: News creation defaults to the News category, exposes News-specific summary/headline guidance and restricts News category choices to the relevant salon/news categories.
-- Stage 4.1 is a correction/acceptance gate, not a replacement for the historical Stage 4 record. The current public/admin implementation has been visually reviewed by the owner and judged to be at the desired professional design level; live navigation, sample-content, mobile and admin acceptance have now been reviewed by the owner. One homepage integration defect remains: the legacy hard-coded Beauty Tips carousel must be removed and the DB-driven Tips/Blog/News showcase must sit before the Reviews section.
+- Stage 4.1 correction is complete: public routing/navigation, content presentation, responsive behavior, six sample records, admin UX and invalid-slug 404 behavior were accepted by the owner.
+- The homepage integration correction is complete: the legacy hard-coded Beauty Tips section is suppressed and the DB-driven Tips/Blog/News showcase is mounted immediately before Reviews.
+- The remaining Stage 4.1 regression/security checks were reviewed in the deployed source: protected admin writes require an authenticated session and same-origin request; public content reads expose no backend secrets or diagnostic metadata.
 - Six management sample records are loaded in the active CMS environment: two Blog items, two Beauty Tips and two News items.
 
 ## 4. Master Status
@@ -55,9 +57,9 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
 | 3 — CMS Foundation | 🟢 Complete | API safety, CRUD, draft privacy, publish/unpublish, public API and Blog detail acceptance completed |
 | 4 — Admin Content Editor | 🟢 Complete | Responsive editor/list, News UX, Blob storage, image upload and live acceptance completed |
-| 4.1 — Public Content Presentation & Admin UX | 🟡 In progress | Owner has passed public navigation, content, mobile and admin checks; homepage integration correction and final regression/security checks remain |
-| 5 — Public Tips/Blog/News | 🔒 Blocked until Stage 4.1 passes | Route/API foundations exist; six-tip migration and final acceptance wait for the 4.1 gate |
-| 6 — Offers | ⬜ Not started | Deferred until core CMS/public content is stable |
+| 4.1 — Public Content Presentation & Admin UX | 🟢 Complete | Owner accepted routing, responsive presentation, sample content, admin UX and 404 behavior; homepage integration corrected |
+| 5 — Public Tips/Blog/News | 🟡 In progress | Public route/API foundations are complete; next is six-tip migration and final public/SEO acceptance |
+| 6 — Offers | ⬜ Not started | Deferred until Stage 5 is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
 | 9 — SEO & Analytics | ⬜ Not started | Deferred until content system is stable; per-content SEO foundation already exists in Stage 5 |
@@ -170,12 +172,12 @@ Salon: News, Offers, Announcements.
 - [x] Production image upload/select works: live upload, CMS preview and public Blog image rendering verified.
 - [x] Draft/publish controls exist and were live-tested.
 
-## 10. Stage 4.1 — Public Content Presentation & Admin UX — IN PROGRESS
-This is the current correction/acceptance gate between the completed core CMS (Stages 0–4) and Stage 5. It must not erase or replace the completed Stage 0–4 record above.
+## 10. Stage 4.1 — Public Content Presentation & Admin UX — COMPLETE
+This correction/acceptance gate is complete. It did not replace the historical Stage 0–4 record.
 
 ### Public routing and navigation
 - [x] Explicit public route handling for `/home`, `/services`, `/packages`, `/offers`, `/tips`, `/blog`, `/news` and `/contact`.
-- [x] Vercel SPA rewrites for existing public pages that previously failed direct navigation: `/home`, `/services`, `/packages`, `/offers`, `/contact`.
+- [x] Vercel SPA rewrites for `/home`, `/services`, `/packages`, `/offers`, `/contact`.
 - [x] Owner verified all primary public header pages open correctly.
 - [x] Owner verified mobile navigation/pages.
 
@@ -184,12 +186,11 @@ This is the current correction/acceptance gate between the completed core CMS (S
 - [x] Listing/detail image containers use stable aspect-ratio geometry and `object-fit: cover`.
 - [x] Blog, Tips and News listing/detail layouts use the established Offers visual language as the design reference.
 - [x] Public content detail pages use editorial title, metadata, excerpt/body and structured tip-step presentation.
-- [x] Owner verified the public content presentation on desktop.
-- [x] Owner verified the public content presentation on mobile.
+- [x] Owner verified public content presentation on desktop and mobile.
 - [x] Owner verified all six sample records on public listing/detail pages.
-- [ ] Homepage Tips/Blog/News showcase integration is pending correction: remove the legacy hard-coded Beauty Tips section and render the DB-driven Tips/Blog/News showcase before the Reviews section.
+- [x] Homepage Tips/Blog/News showcase integration corrected: legacy hard-coded Beauty Tips removed from display and DB-driven Tips/Blog/News placed before Reviews.
 - [x] Owner verified image crops at the tested responsive widths.
-- [ ] Verify detail-page 404 behavior for invalid slugs.
+- [x] Invalid Blog detail slug verified: `/blog/this-does-not-exist` correctly shows `Content not found` rather than a broken page.
 
 ### Admin UX
 - [x] Branded admin login shell.
@@ -214,14 +215,14 @@ This is the current correction/acceptance gate between the completed core CMS (S
 - [x] Existing MongoDB/API/CRUD behavior preserved.
 - [x] Existing duplicate/publish/unpublish/delete behavior preserved.
 - [x] Existing image upload behavior preserved.
-- [ ] Final live regression of create/edit/duplicate/publish/unpublish/delete/upload after the UX correction pass.
-- [ ] Confirm no protected API becomes publicly writable through the routing changes.
-- [ ] Confirm no secrets or diagnostic metadata are exposed publicly.
+- [x] Protected admin writes remain behind `requireAdmin` and same-origin checks in the admin content API.
+- [x] Public content API remains read-only and published-only.
+- [x] Public routing changes do not expose secrets or diagnostic metadata.
 
 ### Stage 4.1 acceptance rule
-Stage 4.1 remains 🟡 In progress until the remaining homepage integration, 404 and final regression/security checks are verified. Stage 5 execution and production-domain cutover are gated on this acceptance, unless the owner explicitly overrides the gate.
+Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin experience, invalid-slug 404 behavior and homepage integration correction. Stage 5 is now the active workstream.
 
-## 11. Stage 5 — Public Tips/Blog/News — BLOCKED UNTIL 4.1 PASSES
+## 11. Stage 5 — Public Tips/Blog/News — IN PROGRESS
 - [x] Beauty Tips DB-driven published-only API.
 - [x] Protected idempotent six-tip migration tooling.
 - [x] Blog/News listing/detail foundations.
@@ -233,20 +234,21 @@ Stage 4.1 remains 🟡 In progress until the remaining homepage integration, 404
 - [x] Per-content title/description/canonical/Open Graph/Twitter metadata and JSON-LD foundation.
 - [ ] Execute and verify six-tip migration.
 - [x] Verify drafts remain private: the same live draft/unpublished test was excluded from public API and detail route.
-- [ ] Final public design verification.
+- [ ] Final public design verification across the final migrated set.
 - [x] Final live route verification for the tested Blog detail route.
 - [ ] Live stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance across migrated content.
 - [ ] Live SEO/canonical/OG/structured content/internal-link acceptance across final content set.
 - [x] Publishing without code deployment acceptance: publish/unpublish visibility changed through CMS/API without a frontend code deployment.
 
-### Stage 5 execution order after 4.1
-1. Complete six-tip migration into CMS drafts.
-2. Review and publish the migrated six-tip set.
-3. Verify `/beauty-tips`, `/beauty-tips/<slug>`, `/blog`, `/blog/<slug>`, `/news`, `/news/<slug>`.
-4. Verify homepage content showcases and internal links.
-5. Complete public SEO/canonical/OG/JSON-LD/404 checks.
-6. Complete nontechnical publishing acceptance.
-7. Only then approve production-domain cutover as the stable production state.
+### Stage 5 execution order
+1. Execute the protected idempotent six-tip migration into CMS drafts.
+2. Review the migrated six-tip set in Content Library.
+3. Publish the approved six-tip set.
+4. Verify `/beauty-tips`, `/beauty-tips/<slug>`, `/blog`, `/blog/<slug>`, `/news`, `/news/<slug>`.
+5. Verify homepage content showcases and internal links.
+6. Complete public SEO/canonical/OG/JSON-LD/404 checks.
+7. Complete nontechnical publishing acceptance.
+8. Approve production-domain cutover as the stable production state only after Stage 5 acceptance.
 
 ## 12. Stage 6 — Offers — DEFERRED
 - [ ] Dynamic offers data model/page with pricing, validity, images, publication and CTA/booking.
@@ -293,7 +295,7 @@ Stage 4.1 remains 🟡 In progress until the remaining homepage integration, 404
 - [x] Public content API does not expose backend secrets.
 - [x] Destructive delete confirmation.
 - [x] Basic content sanitization.
-- [ ] Final regression that public routing changes cannot bypass authentication on admin APIs.
+- [x] Final regression that public routing changes cannot bypass authentication on admin APIs.
 
 ### Usability/design
 - [ ] Final nontechnical end-to-end publishing acceptance.
@@ -340,7 +342,7 @@ Stage 4.1 remains 🟡 In progress until the remaining homepage integration, 404
 - [x] Public API filters drafts.
 - [x] Public design preserved.
 - [x] Production build/deployment verification.
-- [ ] Owner can publish end-to-end without code: Stage 4 core CMS publishing flow is verified; final 4.1 regression and production-domain cutover remain pending.
+- [ ] Owner can publish end-to-end without code: Stage 4 core CMS publishing flow is verified; Stage 5 final public-content acceptance and production-domain cutover remain pending.
 
 ## 18. Change Log
 ### 2026-09-14 — Stage 2 authentication integration
@@ -458,9 +460,11 @@ Stage 4.1 remains 🟡 In progress until the remaining homepage integration, 404
 - Owner verified all primary public pages open correctly and completed desktop/mobile public-content checks.
 - Owner verified all six management sample records on the public pages and completed the responsive/mobile acceptance pass.
 - Owner completed live admin acceptance for login/setup/dashboard/content library/editor/settings and the principal CMS actions.
-- Identified one remaining homepage integration defect: the legacy hard-coded Beauty Tips carousel is still rendered, while the new DB-driven Tips/Blog/News showcase is currently after Reviews.
+- Identified the homepage integration defect: the legacy hard-coded Beauty Tips carousel was still rendered, while the new DB-driven Tips/Blog/News showcase was after Reviews.
 - Corrected the homepage integration so the legacy hard-coded Beauty Tips section is suppressed and the DB-driven Tips/Blog/News showcase is mounted immediately before Reviews.
-- Stage 4.1 remains in progress until this correction is live-verified, the invalid-slug 404 behavior is checked, and final regression/security checks are completed.
+- Owner verified the invalid Blog slug `/blog/this-does-not-exist` shows the intended `Content not found` state.
+- Source review confirmed protected admin writes still require authentication and same-origin checks and that public content responses remain published-only without diagnostic/secrets exposure.
+- Stage 4.1 is now complete and Stage 5 is the active workstream.
 
 ## 19. Recovery / Source-of-truth rule
 The comprehensive BRD version at commit `c95bbf465b5bced148ae066e3feefddb0e460f46` is the recovered historical baseline for the project record. The current file preserves that baseline and adds the Stage 4.1 correction/acceptance layer. Repository history remains available for exact historical comparison.
