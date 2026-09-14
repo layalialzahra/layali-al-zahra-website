@@ -5,310 +5,251 @@
 **Primary admin URL:** `https://layalialzahra.com/admin`  
 **Status:** 🟡 Implementation in progress
 
-> **Project change-control rule:** Keep this BRD synchronized with implementation. Every repository/code/configuration change must update the BRD status/checklist in the same change.
->
-> **Implementation fidelity rule:** A stage is complete only when its applicable checklist and acceptance criteria are implemented and verified.
+> **Change-control:** Every repository/code/configuration change must update this BRD in the same change. A stage is complete only when its applicable checklist and acceptance criteria are implemented and verified.
 
 ## 1. Purpose
-Convert the hard-coded salon website into a professional, manageable CMS while preserving the existing public website design unless a redesign is explicitly requested. The CMS must allow a non-technical salon owner/admin to manage content without GitHub, source-code edits, Vercel, or developer assistance.
+Convert the hard-coded salon website into a professional CMS while preserving the public design unless a redesign is explicitly requested. A non-technical admin must be able to manage content without GitHub, source-code edits, Vercel or developer assistance.
 
 ## 2. Target Architecture
-Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → secure login/session → authenticated admin APIs → MongoDB Atlas.
+Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → secure session authentication → authenticated admin APIs → MongoDB Atlas.
 
 ## 3. Current State
-- MongoDB Atlas production connection is complete; the live database health endpoint previously confirmed database `layalialzahra`.
-- Secure authentication is implemented with salted `scrypt` password hashing, signed 8-hour HttpOnly sessions, same-origin checks, login/logout, password change and one-time initial setup.
-- Stage 2 authentication is complete and its deployed protected-API rejection was independently verified.
-- Stage 3 has a unified `blog | tip | news` content model, validation/normalization/sanitization, MongoDB indexes, authenticated CRUD/search/filter/duplicate/publish APIs and a published-only public API.
-- Stage 4 has a branded admin content manager with create/edit/delete/duplicate/publish controls and image upload foundation.
-- Stage 5 has DB-driven Beauty Tips plus Blog/News public route foundations and protected migration tooling.
-- The production Content screen previously displayed `Content service unavailable` while MongoDB health remained healthy.
-- Content API index initialization is now non-blocking for CRUD reads/writes: individual index warnings are logged without making the Content API unavailable, and application-level type/slug collision checks are enforced before content writes.
-- An authenticated `/api/admin/content-health` diagnostic endpoint has been added to isolate database connection, `content` collection, basic query, serialization and index visibility failures without exposing content data.
-- The deployed diagnostic identified and the codebase corrected a `SyntaxError` in the shared content sanitizer caused by a legacy octal escape.
-- The corrected diagnostic now confirms MongoDB, content module, database, collection, query, serialization and four content indexes are healthy in production.
-- A real Blog Post was created and published from the admin CMS and persisted in the Content list.
-- The first public Blog detail route test currently returns `Content not found` for the newly published slug. The public API read path has therefore been hardened so index initialization is a background task and cannot block public reads on cold serverless instances.
-- Production acceptance remains open until the public API/detail route is retested and draft privacy, edit/delete and remaining CRUD acceptance are verified.
+- MongoDB Atlas production connection is complete; database `layalialzahra` is reachable.
+- Secure authentication is complete: salted `scrypt`, signed 8-hour HttpOnly sessions, same-origin checks, login/logout, password change, setup and login-abuse protection.
+- Stage 3 unified content model/API is implemented for `blog | tip | news`, including validation, normalization, sanitization, indexes, CRUD, search/filter/pagination, duplicate, publish/unpublish and public published-only reads.
+- Stage 4 branded admin content editor is implemented with create/edit/delete/duplicate/publish controls and image-upload foundation.
+- Stage 5 public Blog/News/Beauty Tips route foundations are implemented.
+- Production Content API previously failed because of a shared content-module `SyntaxError`; diagnostic isolation identified it and the sanitizer syntax was corrected.
+- Production content health then confirmed MongoDB, content module, database, collection, query, serialization and four indexes.
+- A real Blog Post was created and published from the CMS and appears in the admin list.
+- The public detail API initially returned `Content not found` for that published slug. `api/content.js` has now been hardened so detail requests first locate the published record and then apply publication-date validation in application code, including compatibility with legacy string-form dates.
+- Latest code commit: `95d391869ac75de4bdb9c62a9b57ce5acf89b20c`.
+- Latest public API fix is awaiting owner production retest.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
-| 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and repeatable production-build verification completed |
-| 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟢 Complete | Login/logout/password-change, protected API rejection and session-expiry implementation verification completed |
-| 3 — CMS Foundation | 🟡 In progress | Admin create/publish is proven; public published-content read path requires retest after public API resilience fix |
-| 4 — Admin Content Editor | 🟡 In progress | Branded dashboard/editor and upload foundation implemented; production Blob configuration/failure checks and final acceptance remain |
-| 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration and Blog/News foundations exist; first live Blog detail route currently needs API/detail troubleshooting |
-| 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
+| 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
+| 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
+| 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
+| 3 — CMS Foundation | 🟡 In progress | CMS create/publish works; public detail read requires retest after publication-date compatibility fix |
+| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; production image storage and final acceptance remain |
+| 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven foundations implemented; live detail/public acceptance remains |
+| 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
 | 9 — SEO & Analytics | ⬜ Not started | Deferred until content system is stable |
 
 ## 5. Stage 0 — Baseline & Safety — COMPLETE
-- [x] Inspect existing routes and code.
+- [x] Inspect existing routes/code.
 - [x] Identify database/API experiments and limitations.
 - [x] Preserve public design.
 - [x] Establish and maintain this BRD.
 - [x] Establish rollback checkpoint `checkpoint/pre-stage-0-2-3-close`.
-- [x] Add repeatable GitHub Actions production-build verification.
-- [x] Current mainline build verification completed successfully.
+- [x] Add repeatable production-build verification.
 
 ## 6. Stage 1 — MongoDB Production Connection — COMPLETE
 - [x] Production MongoDB Atlas cluster configured.
 - [x] Vercel `MONGODB_URI` configured as a Production secret.
 - [x] `MONGODB_DB_NAME=layalialzahra` configured.
-- [x] Reusable cached MongoDB connection helper implemented.
-- [x] Generic production health/error handling implemented.
-- [x] Live health check confirmed the production API reaches `layalialzahra`.
+- [x] Cached MongoDB connection helper.
+- [x] Generic production health/error handling.
+- [x] Live DB health confirmed.
 
 ## 7. Stage 2 — Secure Admin Authentication — COMPLETE
-### Access and security
-- [x] `/admin` is the direct private admin URL.
-- [x] Login uses admin email/password and server-side verification.
-- [x] First-time setup requires `ADMIN_SETUP_TOKEN` and password confirmation.
-- [x] Passwords use salted `scrypt`; hashes are never returned.
-- [x] Signed sessions enforce an 8-hour expiry; production cookie matches the expiry.
-- [x] HttpOnly, SameSite=Lax and Secure production cookie attributes.
-- [x] Same-origin protection for authentication writes.
-- [x] MongoDB-backed login abuse protection: five failures in 15 minutes trigger a 30-minute lockout.
-- [x] Admin password change verifies current password and clears the active session.
-- [x] Admin username uniqueness index and TTL cleanup for abuse records.
-### Production acceptance
-- [x] Login/logout verified by owner.
-- [x] Logout + refresh + incognito rejection verified by owner.
-- [x] Password change and fresh login verified by owner.
-- [x] Direct unauthenticated `/api/admin/content` returned the expected HTTP 401 JSON after hardening.
-- [x] Session-expiry implementation technically verified from deployed source.
+- [x] Direct `/admin` route.
+- [x] Server-side admin login/session verification.
+- [x] One-time setup token and password confirmation.
+- [x] Salted `scrypt` password hashing; hashes never returned.
+- [x] Signed 8-hour HttpOnly Secure SameSite=Lax sessions.
+- [x] Same-origin protection for writes.
+- [x] Five failures/15 minutes → 30-minute lockout.
+- [x] Password change invalidates active session.
+- [x] Admin username uniqueness and abuse-record TTL cleanup.
+- [x] Owner verified login/logout/password change.
+- [x] Owner verified unauthenticated protected-API rejection.
+- [x] Session-expiry implementation verified from deployed source.
 
 ## 8. Stage 3 — CMS Foundation
-### Unified content model
-Use one content system with `type: blog | tip | news`.
-
-Required fields: type, title, slug, excerpt, body, featured image, alt text, category, tags, author, related service, SEO title, meta description, social image, draft/published, publish date, created/updated timestamps and stable ID.
-
-Beauty Tips additionally support structured `tip1` through `tip5` fields.
+### Content model
+One model with `type: blog | tip | news`. Required content metadata includes title, slug, excerpt/body, featured image/alt text, category/tags, author, related service, SEO title/meta/social image, status, publish date, timestamps and stable ID. Beauty Tips additionally support `tip1`–`tip5`.
 
 ### Categories
-**Hair:** Hair Care, Hair Treatments, Hair Colour, Hair Extensions  
-**Beauty:** Skincare, Nails, Brows & Lashes, Waxing  
-**Lifestyle:** Dubai Beauty, UAE Beauty, Seasonal, Events  
-**Salon:** News, Offers, Announcements
+Hair: Hair Care, Hair Treatments, Hair Colour, Hair Extensions.  
+Beauty: Skincare, Nails, Brows & Lashes, Waxing.  
+Lifestyle: Dubai Beauty, UAE Beauty, Seasonal, Events.  
+Salon: News, Offers, Announcements.
 
-Architecture must allow categories to be extended without changing the database model.
-
-### Database/API requirements
-- [x] Shared content helper with `blog | tip | news` validation.
-- [x] Slugs normalized consistently.
-- [x] Tags normalized and deduplicated.
-- [x] Server-side field validation and normalization.
-- [x] Basic body sanitization for stored content.
-- [x] MongoDB indexes defined for unique type/slug, published feeds, category feeds and update ordering.
-- [x] Index initialization retries after a failed initialization attempt.
-- [x] Index initialization is resilient to individual index-creation warnings and no longer blocks Content API CRUD reads/writes.
-- [x] Application-level `{type, slug}` collision checks run before create/update/duplicate writes, with the MongoDB unique index retained as the preferred database-level constraint.
-- [x] Authenticated content create/read/update/delete API.
-- [x] Authenticated search, status/type/category filters and pagination.
-- [x] Authenticated duplicate operation; duplicates are forced to draft state with a unique copy slug.
-- [x] Publish/unpublish through the content status field.
-- [x] Published-only public API with due-date filtering and type/category/slug filters.
-- [x] Beauty Tip `tip1`–`tip5` persistence.
-- [x] Admin filter validation, bounded category/search input and escaped search regex.
-- [x] Duplicate input rebuilt through the shared validator.
-- [x] Long featured-image values bounded server-side.
-- [x] Authenticated content health diagnostic covering DB connection, content collection, basic query, serialization and index visibility.
-- [x] Diagnostic module-import isolation so failed module loads are identified separately from database-operation failures.
-- [x] Corrected shared sanitizer ES-module syntax after deployed diagnostic identified a `SyntaxError` from a legacy octal escape in a replacement string.
-- [x] Production Content Manager successfully created and published a real Blog record.
-- [x] Public API index initialization changed to a non-blocking background task so public reads are not held behind cold-start index setup.
-- [ ] Verify unique slugs against actual production data.
-- [ ] Verify draft privacy against the public API in production.
+### Database/API
+- [x] Shared content helper and type validation.
+- [x] Slug normalization.
+- [x] Tag normalization/deduplication.
+- [x] Server validation/normalization.
+- [x] Basic body sanitization.
+- [x] Unique `{type,slug}` and feed/update indexes.
+- [x] Index initialization retry and non-blocking warning handling.
+- [x] Application-level slug collision guard.
+- [x] Authenticated CRUD/search/filter/pagination.
+- [x] Duplicate operation with forced draft + unique copy slug.
+- [x] Publish/unpublish.
+- [x] Published-only public API.
+- [x] `tip1`–`tip5` persistence.
+- [x] Search regex/filter/input hardening.
+- [x] Long image URL bound.
+- [x] Authenticated content-health diagnostic.
+- [x] Diagnostic module-import isolation.
+- [x] Corrected sanitizer syntax after production diagnostic.
+- [x] Production Blog create/publish proven.
+- [x] Public API index setup made non-blocking.
+- [x] Public detail publication-date compatibility hardened for BSON Date/string values.
+- [ ] Verify unique slugs against production data.
+- [ ] Verify draft privacy publicly.
 - [ ] Verify safe API errors/no secrets in production.
 
 ### Production acceptance
-- [ ] Authenticated APIs safely create/edit/delete/publish content in production.
-- [ ] Public APIs expose only intended published content in production.
-- [ ] Retest the published Blog detail route after the public API resilience fix and confirm the current `Content not found` failure is resolved.
+- [ ] Authenticated APIs safely create/edit/delete/publish in production.
+- [ ] Public APIs expose only intended published content.
+- [ ] Published Blog detail API and `/blog/<slug>` route pass live acceptance.
 
 ## 9. Stage 4 — Admin Content Editor
-### Dashboard and lists
-- [x] Layali Al Zahra logo/Admin Portal branding.
-- [x] Dashboard/workspace navigation and active/disabled states.
+### Dashboard/list
+- [x] Layali Al Zahra admin branding.
+- [x] Dashboard/workspace navigation.
 - [x] Content list with title/category/status/date.
-- [x] Search and type/status filters.
-- [x] Create, edit, duplicate, publish/unpublish and delete confirmation.
+- [x] Search/type/status filters.
+- [x] Create/edit/duplicate/publish/unpublish/delete confirmation.
 - [x] Loading/error/empty states.
-- [ ] Mobile-friendly final polish.
+- [ ] Mobile polish.
 
 ### Editors
-- [x] Blog title/slug/category/image/alt/excerpt/body/tags/related service/SEO/status/publish date.
-- [x] Basic bold/italic/underline/link formatting controls.
-- [x] Beauty Tip title/description/image/tip1–tip5/relationships/SEO/status.
-- [x] News content type with shared title/text/image/date/status/category fields.
+- [x] Blog fields: title/slug/category/image/alt/excerpt/body/tags/related service/SEO/status/publish date.
+- [x] Basic bold/italic/underline/link controls.
+- [x] Beauty Tip description + `tip1`–`tip5` + relationships/SEO/status.
+- [x] News shared content fields.
 - [ ] Richer News-specific UX.
 
 ### Images
-- [x] Vercel Blob selected as object-storage layer.
-- [x] Authenticated `/api/admin/upload` endpoint.
-- [x] JPG/PNG/WebP/GIF restriction and 4 MB limit.
-- [x] Editor file picker, upload state and preview.
-- [ ] Connect/create production Blob store and verify authentication.
-- [ ] Verify deployed upload failure handling.
+- [x] Vercel Blob selected.
+- [x] Authenticated upload endpoint.
+- [x] JPG/PNG/WebP/GIF, max 4 MB.
+- [x] File picker/upload state/preview.
+- [ ] Production Blob store configuration and authentication verification.
+- [ ] Upload failure handling verification.
 
 ### Acceptance
-- [ ] Nontechnical admin can create/edit/delete content in production.
-- [ ] Admin can upload/select images in production.
-- [x] Draft/publish controls exist in the editor foundation.
+- [ ] Nontechnical admin can create/edit/delete production content end-to-end.
+- [ ] Production image upload/select works.
+- [x] Draft/publish controls exist.
 
 ## 10. Stage 5 — Public Tips/Blog/News
-- [x] Beauty Tips converted to published-only DB-driven content API.
-- [x] Protected, idempotent migration tooling for six existing Beauty Tips.
-- [x] Public Blog/News listing/detail component foundations.
-- [x] SPA recognition and Vercel rewrites for `/beauty-tips`, `/blog`, `/news` and slug routes.
+- [x] Beauty Tips DB-driven published-only API.
+- [x] Protected idempotent six-tip migration tooling.
+- [x] Blog/News listing/detail foundations.
+- [x] SPA route recognition and Vercel rewrites for listing/detail routes.
 - [x] Listing cards use stable slug URLs.
-- [ ] Execute six-tip migration in production and verify all six records.
-- [ ] Verify drafts remain private publicly.
-- [ ] Preserve existing public design for all new routes.
-- [ ] Beauty Journal listing final UX, filters and pagination/load-more as required.
-- [ ] Final live verification of all public route forms.
-- [ ] Stable slugs, H1, alt text, publication info, category/tags, related service/internal links and 404 handling.
-- [ ] Per-content SEO: title, meta, canonical, OG image, structured content and internal links.
-- [ ] Publishing must not require code deployment.
+- [ ] Execute and verify six-tip migration.
+- [ ] Verify drafts remain private.
+- [ ] Final public design verification.
+- [ ] Beauty Journal listing UX/pagination/load-more acceptance.
+- [ ] Final live route verification.
+- [ ] Stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance.
+- [ ] Per-content SEO/canonical/OG/structured content/internal links.
+- [ ] Publishing without code deployment acceptance.
 
-## 11. Stage 6 — Offers
-- [ ] title, short/full description, included services, price, original price, dates, image, category/tag, published state and CTA/booking.
-- [ ] Dynamic Offers page with current/expiry behavior.
+## 11. Stages 6–9 — Deferred
+### Stage 6 — Offers
+- [ ] Dynamic offers data model/page with pricing, validity, images, publication and CTA/booking.
 
-## 12. Stage 7 — Services & Packages
-- [ ] Services: name, description, category, image, price/starting price, duration, active/published, ordering, SEO, related content/CTA.
-- [ ] Packages: name, description, included services, price, original/reference price, image, validity, active/published, ordering.
-- [ ] Public Services/Packages pages become DB-driven while preserving design.
+### Stage 7 — Services & Packages
+- [ ] DB-driven services and packages with pricing, duration, ordering, publication, SEO and CTAs while preserving design.
 
-## 13. Stage 8 — Gallery & Testimonials
-### Gallery
-- [ ] Categories: Hair, Nails, Makeup, Bridal, Salon.
-- [ ] Upload, title/caption, alt text, category, ordering, visibility, delete/replace.
-- [ ] Public gallery becomes DB-driven.
-### Testimonials
-- [ ] Client name, review, rating, date, optional photo, published/unpublished, ordering.
+### Stage 8 — Gallery & Testimonials
+- [ ] DB-driven gallery with categories/upload/order/visibility.
+- [ ] Testimonials with client name/review/rating/date/photo/publication/order.
 
-## 14. Stage 9 — SEO & Analytics
-- [ ] Sitewide/default title and meta, OG image, canonical domain, robots/indexability, sitemap, canonicals and structured data.
-- [ ] GA/equivalent and Search Console readiness.
-- [ ] Dashboard performance/article/published-content statistics.
+### Stage 9 — SEO & Analytics
+- [ ] Sitewide SEO defaults, OG, canonical, robots, sitemap and structured data.
+- [ ] Analytics/Search Console readiness.
+- [ ] CMS performance/statistics dashboard.
 
-## 15. Cross-stage Non-negotiables
+## 12. Cross-stage Non-negotiables
 ### Security
-- [ ] No secrets in GitHub.
+- [ ] Final secret audit.
 - [x] Server-side environment variables.
 - [x] Server-side authentication/session validation.
-- [x] Admin content writes require a valid session.
-- [x] Content API does not return sensitive backend details.
-- [x] Destructive deletion requires confirmation.
+- [x] Admin writes require valid session.
+- [x] Public content API does not expose backend secrets.
+- [x] Destructive delete confirmation.
 - [x] Basic content sanitization.
 
-### Usability
-- [ ] Nontechnical workflow with no GitHub/code/Vercel required for publishing.
-- [x] Validation and loading/success/failure states in auth/settings/content flows.
-- [x] Useful empty state for content lists.
-- [ ] Mobile-friendly admin final polish.
-
-### Design
-- [x] Public design preserved during backend/admin foundation work.
-- [x] Admin portal has Layali Al Zahra branding and structured CMS shell.
+### Usability/design
+- [ ] Final nontechnical end-to-end publishing acceptance.
+- [x] Loading/success/failure states.
+- [x] Useful empty state.
+- [ ] Mobile admin polish.
+- [x] Public design preserved.
+- [x] Branded admin shell.
 
 ### Performance/reliability
 - [x] Cached MongoDB connections.
-- [x] Core content indexes defined.
-- [x] Content API pagination.
-- [ ] Production index/query performance verification.
-- [ ] No large image binaries in MongoDB.
-- [ ] Performant public pages.
-- [x] Content API remains available when individual index creation emits an initialization warning.
+- [x] Core indexes.
+- [x] API pagination.
+- [ ] Production query/index performance verification.
+- [ ] No large binaries in MongoDB.
+- [ ] Final public performance verification.
+- [x] Content API remains available when individual index initialization emits warnings.
 
-## 16. Core MVP Checklist
-- [x] Real authentication foundation.
+## 13. Core MVP Checklist
+- [x] Real authentication.
 - [x] Secure MongoDB production connection.
-- [x] Authentication API foundation.
-- [x] Unified content model foundation.
-- [x] Authenticated content CRUD foundation.
-- [x] Draft/publish status support.
-- [ ] Images in production.
-- [x] Categories/tags fields.
-- [x] Related service field.
+- [x] Authentication API.
+- [x] Unified content model.
+- [x] Authenticated CRUD foundation.
+- [x] Draft/publish.
+- [ ] Production images.
+- [x] Categories/tags.
+- [x] Related service.
 - [x] Per-content SEO fields.
-- [ ] Migrate six existing tips.
+- [ ] Six-tip migration.
 - [x] DB-driven public API foundation.
 - [x] Slug normalization/uniqueness foundation.
-- [x] Public API filters drafts out.
-- [x] Public site preserved.
-- [x] Production build/deployment verification through repository workflow.
-- [ ] Owner can publish without code.
+- [x] Public API filters drafts.
+- [x] Public design preserved.
+- [x] Production build/deployment verification.
+- [ ] Owner can publish end-to-end without code.
 
-## 17. Change Log
+## 14. Change Log
 ### 2026-09-14 — Stage 2 authentication integration
 - Replaced mock client-only admin login with server-backed session authentication.
-- Added first-time admin setup, login, session-check, logout and generic error states.
+- Added setup, login, session-check, logout and generic error handling.
 
 ### 2026-09-14 — Authentication hardening and acceptance
-- Corrected MongoDB helper import paths in authentication/setup modules.
+- Corrected MongoDB helper import paths.
 - Added direct `/admin` routing and Vercel SPA rewrite.
-- Added durable MongoDB-backed login abuse protection.
-- Added password-change settings and session invalidation.
-- Added admin username uniqueness and login-abuse TTL cleanup.
-- Owner verified login/logout/password-change flows and protected API rejection.
-- Closed Stage 2 after technical verification of the 8-hour session expiry implementation.
+- Added login-abuse protection, password change/session invalidation and indexes.
+- Owner verified login/logout/password change and protected API rejection.
+- Closed Stage 2 after technical session-expiry verification.
 
 ### 2026-09-14 — Unified CMS foundation and admin editor
-- Added unified `blog | tip | news` content model, validation, sanitization, serialization and indexes.
-- Added authenticated CRUD/search/filter/duplicate/publish APIs and published-only public API.
-- Added structured Beauty Tip fields, admin content editor, dashboard integration and branding.
-- Added Vercel Blob upload foundation and six-tip migration tooling.
-- Converted public Beauty Tips to the DB-driven published-only API and added Blog/News route foundations.
+- Added unified `blog | tip | news` model, validation, sanitization, serialization and indexes.
+- Added authenticated CRUD/search/filter/duplicate/publish APIs and public published-only API.
+- Added structured Beauty Tip fields, admin editor, branding, upload foundation and migration tooling.
+- Converted public Beauty Tips to DB-driven content and added Blog/News route foundations.
 
 ### 2026-09-14 — Stage 3 security/reliability hardening
-- Hardened admin content filters, search regex handling, duplicate input validation and field bounds.
-- Added retry behavior for failed content index initialization.
+- Hardened filters/search/duplicate validation and field bounds.
+- Added content-index retry behavior, then made individual index warnings non-blocking.
+- Added application-level `{type,slug}` collision checks.
 
-### 2026-09-14 — Stage 3 production Content service failure
-- Owner opened the authenticated `/admin` Content screen and observed `Content service unavailable` with an empty content list.
-- MongoDB health remained healthy, narrowing the failure to the Content API path rather than the database connection itself.
-- Production Stage 3 CRUD acceptance was left open.
+### 2026-09-14 — Stage 3 production Content service failure/recovery
+- Owner observed `Content service unavailable` in the Content screen while MongoDB health remained healthy.
+- Added authenticated `/api/admin/content-health` diagnostic.
+- Diagnostic isolated a shared content-module `SyntaxError`; sanitizer syntax was corrected.
+- Diagnostic then confirmed MongoDB, content module, database, collection, query, serialization and four indexes.
+- Owner created and published a real Blog Post successfully.
 
-### 2026-09-14 — Recover Content API read path
-- Changed content index initialization from a blocking prerequisite to a background reliability task so CRUD reads/writes are not held behind index creation.
-- Added application-level `{type,slug}` collision checks to create/update/duplicate paths.
-- Added clearer client-safe 400 responses for common content validation failures.
-- Production Stage 3 acceptance remains open until the deployed Content screen is retested.
-
-### 2026-09-14 — Stage 3 diagnostic isolation
-- Added authenticated `/api/admin/content-health` diagnostic endpoint.
-- Diagnostic checks production MongoDB access, `content` collection existence, a basic read query, content serialization and visible indexes while returning no content payload.
-- The first deployed diagnostic returned an empty check set because MongoDB and content helper imports were bundled into one failure path.
-- Diagnostic module-import isolation was then added so the failing module could be identified without exposing backend details.
-
-### 2026-09-14 — Stage 3 content-module syntax fix
-- Owner retested the deployed diagnostic and it isolated `contentModule` as failed with `SyntaxError`, while `mongodbModule` passed.
-- Root cause was identified in `api/_lib/content.js`: the sanitizer replacement string contained `\\2`, which is a legacy octal escape and invalid syntax in an ES module.
-- Replaced the invalid replacement-string backreference with `$2` and committed the correction.
-- Production Content API acceptance remained open pending deployed verification.
-
-### 2026-09-14 — Stage 3 empty collection and production create/publish verification
-- Corrected the health diagnostic so a non-existent or empty `content` collection is treated as a valid empty CMS state.
-- Owner verified the production diagnostic: MongoDB module, content module, database, collection, query, serialization and four content indexes all passed.
-- Owner created and published `5 Simple Hair Care Tips for Healthier Hair` from the admin Content Manager and verified the published record appears in the Content list.
-
-### 2026-09-14 — Stage 5 public read resilience
-- Owner opened the published Blog detail URL and the public detail page returned `Content not found`.
-- Hardened `api/content.js` so content index initialization runs as a background task instead of blocking public reads on serverless cold starts.
-- Public published-content acceptance remains open pending deployment and retest of the same published Blog URL.
-
-## 18. Continuation Protocol
-Before each implementation pass:
-1. Read this BRD first.
-2. Inspect the current GitHub state before changing code.
-3. Identify the first incomplete applicable requirement.
-4. Implement the full requirement rather than a placeholder where practical.
-5. Verify the implementation as far as the available environment permits.
-6. Update this BRD immediately after every repository/code/configuration change.
-7. Record the change in the Change Log.
+### 2026-09-14 — Stage 3 public Blog detail troubleshooting
+- Owner confirmed the published Blog appears in the CMS but its public API returned `Content not found`.
+- Hardened `api/content.js` detail lookup to fetch the published record first and perform publication-date validation in application code, including legacy string-form dates.
+- Updated this BRD immediately with the code change.
+- **Next:** retest the same public API URL, then the public Blog detail route; do not close Stage 3 until both pass.
