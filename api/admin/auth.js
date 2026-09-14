@@ -1,4 +1,4 @@
-import { adminExists, findAdmin, getSession, setSession, clearSession, sameOrigin, verifyPassword } from "../_lib/auth.js";
+import { adminExists, findAdmin, getSession, setSession, clearSession, sameOrigin, verifyPassword, checkLoginRateLimit, recordLoginFailure, clearLoginFailures } from "../_lib/auth.js";
 
 export default async function handler(req, res) {
   try {
@@ -21,8 +21,17 @@ export default async function handler(req, res) {
     const username = String(req.body?.username || "").trim().toLowerCase();
     const password = String(req.body?.password || "");
     if (!username || !password) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    const limit = await checkLoginRateLimit(req, username);
+    if (!limit.allowed) {
+      res.setHeader("Retry-After", String(limit.retryAfterSeconds || 1800));
+      return res.status(429).json({ success: false, message: "Too many login attempts. Please try again later." });
+    }
     const admin = await findAdmin(username);
-    if (!admin || !verifyPassword(password, admin.passwordHash)) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    if (!admin || !verifyPassword(password, admin.passwordHash)) {
+      await recordLoginFailure(req, username);
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+    await clearLoginFailures(req, username);
     setSession(res, admin);
     return res.status(200).json({ success: true, authenticated: true, admin: { username: admin.username } });
   } catch (error) {
