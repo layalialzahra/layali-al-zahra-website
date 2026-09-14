@@ -23,14 +23,15 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Deployment issues were identified in both authentication server modules: their MongoDB helper relative imports were incorrect. Both have now been corrected to the proper paths.
 - The frontend now explicitly recognizes direct pathname `/admin` and suppresses the public header/footer/cookie UI on the admin route.
 - Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
-- Production acceptance testing, basic login abuse protection and admin password-change flow remain open before Stage 2 can be marked complete.
+- Login abuse protection is now implemented using a MongoDB-backed attempt record keyed by a hashed IP/username combination: five failures within the active window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
+- Production acceptance testing and the admin password-change flow remain open before Stage 2 can be marked complete.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Backend and `/admin` integration implemented; deployment acceptance, rate limiting and password change remain |
+| 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing and rate limiting implemented; password change and production acceptance remain |
 | 3 — CMS Foundation | ⬜ Not started | Depends on Stage 2 |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
@@ -80,7 +81,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Protected API helper validates the session server-side.
 - [x] Same-origin protection is applied to authentication writes.
 - [x] Generic authentication errors avoid exposing sensitive backend details.
-- [ ] Add basic login abuse/rate limiting.
+- [x] Basic login abuse/rate limiting is implemented with MongoDB-backed attempt tracking.
 - [ ] Add authenticated admin password-change flow under Settings → Admin Account.
 
 ### 7.4 `/admin` integration
@@ -102,7 +103,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [ ] Valid credentials create a valid session.
 - [ ] Logout removes authenticated access.
 - [ ] Session expiry is enforced.
-- [ ] Basic abuse protection is present.
+- [x] Basic abuse protection is present.
 - [ ] Admin can change their password securely.
 - [ ] Production deployment passes end-to-end acceptance.
 
@@ -278,5 +279,11 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Add Vercel `/admin` SPA rewrite
 - Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
-- The browser pathname remains `/admin`, allowing the frontend route added above to render the admin page.
+- The browser pathname remains `/admin`, allowing the frontend route added above to render.
 - Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
+
+### 2026-09-14 — Add durable login abuse protection
+- Added MongoDB-backed login attempt tracking keyed by a SHA-256 hash of client IP and normalized username.
+- Five failures within a 15-minute window trigger a 30-minute lockout; blocked responses include `Retry-After`.
+- Successful login clears the failure record.
+- Stage 2 remains in progress pending password change and production acceptance.
