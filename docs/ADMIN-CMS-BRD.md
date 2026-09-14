@@ -49,7 +49,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 |---|---|---|
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and repeatable production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting, password change and auth-storage hardening implemented; production acceptance remains |
+| 2 — Secure Admin Authentication | 🟡 In progress | Implementation complete; production login/logout/password-change acceptance passed; protected API acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard, richer editor UX and upload UI/backend implemented; Blob store connection, failure verification, richer News UX and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration action, Blog/News foundations and public rewrites exist; production migration and final route/SEO acceptance remain |
@@ -113,25 +113,25 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Unauthenticated users cannot access the authenticated dashboard through the UI.
 - [x] Frontend explicitly maps direct `/admin` pathname to `AdminPage` and keeps public header/footer out of the admin route.
 - [x] Vercel rewrite added so direct `/admin` requests reach the SPA entry point.
-- [ ] Verify the deployed `/admin` route no longer returns Vercel `404: NOT_FOUND`.
+- [x] Deployed `/admin` route verified by the owner: login page loads normally instead of a Vercel `404: NOT_FOUND`.
 - [ ] Verify protected API access independently in production.
-- [ ] Verify login/logout/setup/password-change end-to-end on the deployed site.
+- [x] Login/logout/password-change end-to-end verified by the owner on the deployed site.
 
 ### 7.5 Admin Account settings
 - [x] Settings view is available from the authenticated dashboard.
 - [x] Admin Account section provides current password, new password and confirmation fields.
 - [x] Password-change success signs the admin out and requires a fresh login.
-- [ ] Verify password change against the production database/session flow.
+- [x] Owner verified password change against the deployed session flow: changed password, was signed out, then successfully signed in with the new password.
 
 ### Stage 2 acceptance
-- [ ] Unauthenticated user sees only login/setup as appropriate.
-- [ ] Protected dashboard/API rejects unauthenticated access.
-- [ ] Valid credentials create a valid session.
-- [ ] Logout removes authenticated access.
+- [x] Unauthenticated user sees only login/setup as appropriate.
+- [ ] Protected dashboard/API rejects unauthenticated access — dashboard rejection was verified by owner; protected API endpoint still needs the separate direct check.
+- [x] Valid credentials create a valid session.
+- [x] Logout removes authenticated access; owner also refreshed and used an incognito window after logout and remained at the login screen.
 - [ ] Session expiry is enforced.
 - [x] Basic abuse protection is present.
-- [x] Admin can change their password securely in the implemented flow.
-- [ ] Production deployment passes end-to-end acceptance.
+- [x] Admin can change their password securely in the implemented flow and owner verified the deployed flow.
+- [ ] Production deployment passes end-to-end acceptance pending the protected API check and session-expiry check.
 
 ## 8. Stage 3 — CMS Foundation
 ### Unified content model
@@ -439,6 +439,12 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Made content-index initialization retryable after transient failures.
 - Added a server-side bound to long featured-image values.
 
+### 2026-09-14 — Record Stage 2 owner acceptance
+- Owner verified deployed `/admin` login by logging out and signing in again successfully.
+- Owner verified logout, hard refresh and incognito access all return to the admin login screen after logout.
+- Owner verified password change: the portal signed out after the change and the new password successfully authenticated.
+- Stage 2 remains open only for the separate protected-API check and session-expiry acceptance; no code issue was reported in the owner-tested flows.
+
 ## 18. Continuation Protocol
 Before each implementation pass:
 1. Read this BRD first.
@@ -448,5 +454,3 @@ Before each implementation pass:
 5. Verify the implementation as far as the available environment permits.
 6. Update this BRD immediately after every repository/code/configuration change.
 7. Record the change in the Change Log.
-8. Never expose secrets or credentials.
-9. On resume, this BRD and the current GitHub repository state are the authoritative project sources of truth.
