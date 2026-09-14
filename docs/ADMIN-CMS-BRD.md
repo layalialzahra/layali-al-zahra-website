@@ -22,8 +22,9 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Stage 3 has a unified `blog | tip | news` content model, validation/normalization/sanitization, MongoDB indexes, authenticated CRUD/search/filter/duplicate/publish APIs and a published-only public API.
 - Stage 4 has a branded admin content manager with create/edit/delete/duplicate/publish controls and image upload foundation.
 - Stage 5 has DB-driven Beauty Tips plus Blog/News public route foundations and protected migration tooling.
-- The current production Content screen reached the authenticated dashboard but displayed `Content service unavailable`. The underlying content API was therefore not accepted as production-ready yet.
-- The content API has now been hardened so index initialization warnings do not take the CMS offline; application-level type/slug collision checks are also enforced before create/update/duplicate writes. Production acceptance remains open until the deployed Content screen is retested.
+- The production Content screen previously displayed `Content service unavailable` while MongoDB health remained healthy.
+- Content API index initialization is now non-blocking for CRUD reads/writes: individual index warnings are logged without making the Content API unavailable, and application-level type/slug collision checks are enforced before content writes.
+- Production acceptance remains open until the deployed Content screen is retested successfully.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -31,7 +32,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and repeatable production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟢 Complete | Login/logout/password-change, protected API rejection and session-expiry implementation verification completed |
-| 3 — CMS Foundation | 🟡 In progress | Foundation implemented; production Content service currently requires retest after resilience fix, then CRUD/privacy acceptance |
+| 3 — CMS Foundation | 🟡 In progress | Foundation implemented; deployed Content screen retest and CRUD/privacy acceptance remain |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard/editor and upload foundation implemented; production Blob configuration/failure checks and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration and Blog/News foundations exist; production migration and final route/SEO acceptance remain |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
@@ -99,8 +100,8 @@ Architecture must allow categories to be extended without changing the database 
 - [x] Basic body sanitization for stored content.
 - [x] MongoDB indexes defined for unique type/slug, published feeds, category feeds and update ordering.
 - [x] Index initialization retries after a failed initialization attempt.
-- [x] **Resilience update:** individual index-creation failures are logged as initialization warnings rather than taking the Content API offline; CRUD remains available when MongoDB index creation encounters a warning.
-- [x] **Uniqueness update:** application-level `{type, slug}` collision checks run before create/update/duplicate writes, with the MongoDB unique index retained as the preferred database-level constraint.
+- [x] Index initialization is resilient to individual index-creation warnings and no longer blocks Content API CRUD reads/writes.
+- [x] Application-level `{type, slug}` collision checks run before create/update/duplicate writes, with the MongoDB unique index retained as the preferred database-level constraint.
 - [x] Authenticated content create/read/update/delete API.
 - [x] Authenticated search, status/type/category filters and pagination.
 - [x] Authenticated duplicate operation; duplicates are forced to draft state with a unique copy slug.
@@ -260,11 +261,13 @@ Architecture must allow categories to be extended without changing the database 
 
 ### 2026-09-14 — Stage 3 production Content service failure
 - Owner opened the authenticated `/admin` Content screen and observed `Content service unavailable` with an empty content list.
-- This showed that Stage 3 production CRUD acceptance could not yet be considered passed.
+- MongoDB health remained healthy, narrowing the failure to the Content API path rather than the database connection itself.
+- Production Stage 3 CRUD acceptance was left open.
 
-### 2026-09-14 — Recover Content API from index initialization warnings
-- Updated content index initialization to create each index independently and log index-creation warnings without taking the Content API offline.
-- Added application-level `{type, slug}` collision checks before create/update/duplicate writes while retaining the preferred MongoDB unique index.
+### 2026-09-14 — Recover Content API read path
+- Changed content index initialization from a blocking prerequisite to a background reliability task so CRUD reads/writes are not held behind index creation.
+- Added application-level `{type, slug}` collision checks to create/update/duplicate paths.
+- Added clearer client-safe 400 responses for common content validation failures.
 - Production Stage 3 acceptance remains open until the deployed Content screen is retested.
 
 ## 18. Continuation Protocol
