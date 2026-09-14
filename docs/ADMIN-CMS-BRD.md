@@ -19,15 +19,16 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - MongoDB Atlas production connection is complete and the live database health endpoint previously confirmed database `layalialzahra`.
 - Secure authentication backend is implemented: password hashing, signed 8-hour HttpOnly session cookie, session verification, same-origin checks, login/logout, and one-time initial admin setup.
 - `/admin` now uses the real authentication API rather than client-only fake credentials. It checks the existing session on load, supports first-time setup, login, logout, loading states and generic errors.
-- CMS modules are being built incrementally; the authenticated dashboard is now connected to the Stage 4 content editor foundation.
+- CMS modules are being built incrementally; the authenticated dashboard is connected to the Stage 4 content editor foundation.
 - Deployment issues were identified in both authentication server modules: their MongoDB helper relative imports were incorrect. Both have now been corrected to the proper paths.
-- The frontend now explicitly recognizes direct pathname `/admin` and suppresses the public header/footer/cookie UI on the admin route.
-- Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
+- The frontend explicitly recognizes direct pathname `/admin` and suppresses the public header/footer/cookie UI on the admin route.
+- Vercel configuration rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
 - Login abuse protection is implemented using MongoDB-backed attempt records keyed by a hashed IP/username combination: five failures within a 15-minute window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
-- Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
-- Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
-- Beauty Tip records now support dedicated `tip1` through `tip5` fields for the planned editor.
-- Stage 4 now has a working admin content manager UI connected to the authenticated content API, with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
+- Admin Account settings expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
+- Stage 3 content foundation has shared server-side validation, normalization, sanitization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
+- Beauty Tip records support dedicated `tip1` through `tip5` fields for the planned editor.
+- Stage 4 has a working admin content manager UI connected to the authenticated content API, with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
+- The admin dashboard shell has now been branded with the existing Layali Al Zahra logo, a dedicated admin-portal header, workspace navigation, clearer module cards, disabled future modules, and a more structured visual hierarchy.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -186,6 +187,14 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [x] Category and related content fields available through the unified editor.
 - [ ] Add richer news-specific UX where required.
 
+### Admin dashboard UX / branding
+- [x] Use the existing Layali Al Zahra logo in the admin login and authenticated header.
+- [x] Add clear Admin Portal branding and workspace context.
+- [x] Replace the initial plain four-card shell with a structured dashboard hierarchy.
+- [x] Add clear module icons, active navigation and visual distinction between available and upcoming modules.
+- [x] Keep future modules visibly planned without presenting unfinished modules as functional.
+- [ ] Final mobile-friendly admin polish after all modules are implemented.
+
 ### Image handling
 - [ ] Upload/select image.
 - [ ] Use object storage rather than MongoDB binary storage.
@@ -248,6 +257,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### Design
 - [x] Public design preserved while backend/admin foundation is developed.
+- [x] Admin visual identity now uses the existing Layali Al Zahra brand assets and a structured workspace shell.
 
 ### Performance/reliability
 - [x] Cached MongoDB connections.
@@ -283,70 +293,53 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added first-time admin setup using the one-time setup token.
 - Added login, session-check, logout, loading and generic error states to `/admin`.
 - Kept the dashboard as a shell until CMS stages are implemented.
-- Kept Stage 2 open because production acceptance, rate limiting and password change are not yet complete.
+- Kept Stage 2 open because production acceptance, rate limiting and password change were not yet complete.
 
 ### 2026-09-14 — Fix authentication module import path
 - Corrected the MongoDB helper import in `api/_lib/auth.js` from an invalid relative path to `./mongodb.js`.
 - This removes a serverless module-resolution failure that could prevent authentication endpoints from loading in production.
-- Stage 2 remains in progress pending direct `/admin` routing and production acceptance.
 
 ### 2026-09-14 — Fix admin setup module import path
 - Corrected the MongoDB helper import in `api/admin/setup.js` from an invalid relative path to `../_lib/mongodb.js`.
 - This removes the corresponding setup-endpoint module-resolution failure.
-- Stage 2 remains in progress pending direct `/admin` routing and production acceptance.
 
-### 2026-09-14 — Add direct `/admin` frontend routing
-- Updated `src/App.tsx` to recognize the browser pathname `/admin` in addition to the existing hash-based public routing.
-- The admin route now renders `AdminPage` directly and excludes the public header, footer and cookie-consent UI.
-- Stage 2 remains in progress until Vercel's server-side request routing is corrected/verified and production acceptance passes.
+### 2026-09-14 — Direct `/admin` frontend routing
+- Added explicit pathname handling so direct `/admin` loads the admin page rather than the public route shell.
+- Prevented the public header, footer and cookie UI from appearing inside the private admin area.
 
-### 2026-09-14 — Add Vercel `/admin` SPA rewrite
-- Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
-- The browser pathname remains `/admin`, allowing the frontend route added above to render.
-- Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
+### 2026-09-14 — Vercel `/admin` rewrite
+- Added a Vercel rewrite from `/admin` to the SPA entry point so direct production navigation reaches the frontend route.
 
-### 2026-09-14 — Add durable login abuse protection
-- Added MongoDB-backed login attempt tracking keyed by a SHA-256 hash of client IP and normalized username.
-- Five failures within a 15-minute window trigger a 30-minute lockout; blocked responses include `Retry-After`.
-- Successful login clears the failure record.
-- Stage 2 remains in progress pending password change and production acceptance.
+### 2026-09-14 — Durable login abuse protection
+- Added MongoDB-backed login attempt tracking keyed by a hashed IP/username combination.
+- Five failed attempts in a 15-minute window trigger a 30-minute lockout and `Retry-After` response.
+- Successful authentication clears the failure record.
 
-### 2026-09-14 — Add admin account password settings
-- Added authenticated `/api/admin/password` endpoint with current-password verification, 12-character minimum replacement password, confirmation, salted hashing and session clearing after a successful change.
-- Added Settings → Admin Account UI with a password-change form.
-- Stage 2 remains in progress pending production verification of the password-change/session flow.
+### 2026-09-14 — Admin account password settings
+- Added authenticated password-change API and Admin Account settings UI.
+- Password replacement is validated and hashed server-side; the active session is cleared after a successful change.
 
-### 2026-09-14 — Create unified content data foundation
-- Added shared content helpers for `blog | tip | news`, required-field validation, slug/tag normalization, basic server-side body sanitization and safe serialization.
-- Added MongoDB index definitions for unique type/slug, published feeds, category feeds and update ordering.
-- Stage 3 is now in progress; content API endpoints are the next implementation item.
+### 2026-09-14 — Unified content data foundation
+- Added the shared `blog | tip | news` content model, category taxonomy, field validation, normalization, sanitization and MongoDB indexes.
+- Added structured Beauty Tip fields `tip1` through `tip5`.
 
-### 2026-09-14 — Add authenticated content CRUD API
-- Added `/api/admin/content` with server-side session protection.
-- Added create/read/update/delete, type/status/category/search filters, pagination and duplicate-to-draft behavior.
-- Added publish/unpublish support through the content status field and duplicate slug generation.
-- Stage 3 remains in progress pending the public published-only API and production verification.
+### 2026-09-14 — Authenticated content CRUD API
+- Added protected content listing, search, filtering, pagination, create, update, duplicate, publish/unpublish and delete operations.
 
-### 2026-09-14 — Add published-only public content API
-- Added `/api/content` for public content retrieval.
-- Public queries are restricted to `status=published` and publish dates that are due; drafts are excluded by construction.
-- Added public type/category/slug filters and pagination.
-- Stage 3 remains in progress pending production verification and the admin content editor.
-
-### 2026-09-14 — Add structured Beauty Tip fields
-- Extended the unified content model to persist `tip1` through `tip5` for Beauty Tip records.
-- This supports the BRD's dedicated Beauty Tip editor without creating a separate content system.
+### 2026-09-14 — Published-only public content API
+- Added public content retrieval that exposes only due published content and supports type/category/slug filters and pagination.
 
 ### 2026-09-14 — Build admin content editor foundation
-- Added `AdminContentManager` with content list, search, type/status filters, create/edit forms, draft/publish, duplicate and delete actions.
-- Added Blog, Beauty Tip and Salon News editing modes while keeping the unified content model.
-- Added SEO, media URL, alt text, tags, related service and publishing fields to the editor.
-- Stage 4 remains in progress pending image upload/object storage, final UX polish and production acceptance.
+- Added the admin content manager with content lists, editor forms, status controls, SEO fields, Beauty Tip structured fields and media/relationship fields.
 
 ### 2026-09-14 — Fix content editor view state
-- Corrected the content manager's list/editor state so the editor opens only after an explicit create/edit action rather than rendering on initial load.
+- Corrected editor/list view state so selecting a new or existing item reliably opens the editor.
 
 ### 2026-09-14 — Connect dashboard to content editor
-- Connected the authenticated `/admin` dashboard's Content card to `AdminContentManager`.
-- Content management is now reachable from the dashboard while Website and Media remain intentionally deferred to their planned stages.
-- Stage 4 remains in progress pending image upload/object storage, final UX polish and production acceptance.
+- Connected the dashboard Content module to the authenticated content manager.
+
+### 2026-09-14 — Polish admin panel branding and navigation
+- Applied the existing Layali Al Zahra logo to the admin login and authenticated header.
+- Added a branded Admin Portal header, workspace sidebar, module icons, active navigation, clearer dashboard hierarchy and explicit upcoming-module states.
+- Kept unfinished modules visibly disabled rather than implying that they are already functional.
+- Updated Stage 4 and the design/usability checklists to record the completed admin branding foundation; final mobile polish and remaining CMS modules remain open.
