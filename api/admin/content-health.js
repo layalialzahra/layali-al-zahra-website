@@ -49,8 +49,27 @@ export default async function handler(req, res) {
       if (collectionExists) {
         const indexes = await collection.listIndexes().toArray();
         checks.indexes = result(true, { count: indexes.length, names: indexes.map((index) => index.name).filter(Boolean) });
+
+        // Safe authenticated metadata only: enough to diagnose slug/type/status
+        // mismatches without exposing article bodies, images or SEO content.
+        const [count, metadata] = await Promise.all([
+          collection.countDocuments(),
+          collection.find({}, { projection: { _id: 1, type: 1, title: 1, slug: 1, status: 1, publishDate: 1 } }).sort({ updatedAt: -1 }).limit(20).toArray(),
+        ]);
+        checks.contentSummary = result(true, {
+          count,
+          items: metadata.map((item) => ({
+            id: String(item._id),
+            type: item.type,
+            title: item.title,
+            slug: item.slug,
+            status: item.status,
+            publishDate: item.publishDate?.toISOString?.() || item.publishDate || null,
+          })),
+        });
       } else {
         checks.indexes = result(true, { skipped: "content collection has not been created yet" });
+        checks.contentSummary = result(true, { count: 0, items: [] });
       }
     } catch (error) {
       console.error("Admin content health database checks failed", error);
