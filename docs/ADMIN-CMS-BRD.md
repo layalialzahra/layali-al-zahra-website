@@ -24,9 +24,11 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Stage 5 has DB-driven Beauty Tips plus Blog/News public route foundations and protected migration tooling.
 - The production Content screen previously displayed `Content service unavailable` while MongoDB health remained healthy.
 - Content API index initialization is now non-blocking for CRUD reads/writes: individual index warnings are logged without making the Content API unavailable, and application-level type/slug collision checks are enforced before content writes.
-- An authenticated `/api/admin/content-health` diagnostic endpoint has now been added to isolate database connection, `content` collection, basic query, serialization and index visibility failures without exposing content data.
-- The first deployed diagnostic returned an empty `checks` object because its combined module import failed before any individual check could be recorded. The diagnostic has now been hardened to isolate MongoDB-module import, content-module import and database-operation failures separately.
-- Production acceptance remains open until the deployed diagnostic identifies/resolves the underlying Content API failure and the Content screen is retested successfully.
+- An authenticated `/api/admin/content-health` diagnostic endpoint has been added to isolate database connection, `content` collection, basic query, serialization and index visibility failures without exposing content data.
+- The first deployed diagnostic returned an empty `checks` object because its combined module import failed before any individual check could be recorded. The diagnostic was then hardened to isolate MongoDB-module import, content-module import and database-operation failures separately.
+- The deployed diagnostic subsequently identified a `SyntaxError` while importing the shared content module. The cause was a legacy octal escape (`\2`) inside a JavaScript string replacement in `sanitizeBody`, which is invalid in an ES module.
+- The content sanitizer replacement has now been corrected to use the replacement-string capture `$2`, removing the syntax error while preserving the intended safe URL replacement behavior.
+- Production acceptance remains open until the corrected deployment is retested and the Content API returns successfully.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -34,7 +36,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and repeatable production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟢 Complete | Login/logout/password-change, protected API rejection and session-expiry implementation verification completed |
-| 3 — CMS Foundation | 🟡 In progress | Foundation implemented; deployed Content screen retest and CRUD/privacy acceptance remain |
+| 3 — CMS Foundation | 🟡 In progress | Shared content module syntax fixed; deployed Content API and CRUD/privacy acceptance remain |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard/editor and upload foundation implemented; production Blob configuration/failure checks and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration and Blog/News foundations exist; production migration and final route/SEO acceptance remain |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
@@ -115,6 +117,7 @@ Architecture must allow categories to be extended without changing the database 
 - [x] Long featured-image values bounded server-side.
 - [x] Authenticated content health diagnostic covering DB connection, content collection, basic query, serialization and index visibility.
 - [x] Diagnostic module-import isolation so failed module loads are identified separately from database-operation failures.
+- [x] Corrected shared sanitizer ES-module syntax after deployed diagnostic identified a `SyntaxError` from a legacy octal escape in a replacement string.
 - [ ] Verify unique slugs against actual production data.
 - [ ] Verify draft privacy against the public API in production.
 - [ ] Verify safe API errors/no secrets in production.
@@ -122,7 +125,7 @@ Architecture must allow categories to be extended without changing the database 
 ### Production acceptance
 - [ ] Authenticated APIs safely create/edit/delete/publish content in production.
 - [ ] Public APIs expose only intended published content in production.
-- [ ] Resolve the current production `Content service unavailable` failure using the diagnostic endpoint.
+- [ ] Retest corrected deployment and confirm the production `Content service unavailable` failure is resolved.
 
 ## 9. Stage 4 — Admin Content Editor
 ### Dashboard and lists
@@ -278,9 +281,14 @@ Architecture must allow categories to be extended without changing the database 
 ### 2026-09-14 — Stage 3 diagnostic isolation
 - Added authenticated `/api/admin/content-health` diagnostic endpoint.
 - Diagnostic checks production MongoDB access, `content` collection existence, a basic read query, content serialization and visible indexes while returning no content payload.
-- The first deployed diagnostic returned an empty check set because MongoDB and content helper imports were evaluated together.
-- Hardened the diagnostic to report MongoDB-module import, content-module import and database-operation failures independently.
-- Production Stage 3 acceptance remains open pending the isolated deployed result.
+- The first deployed diagnostic returned an empty check set because MongoDB and content helper imports were bundled into one failure path.
+- Diagnostic module-import isolation was then added so the failing module could be identified without exposing backend details.
+
+### 2026-09-14 — Stage 3 content-module syntax fix
+- Owner retested the deployed diagnostic and it isolated `contentModule` as failed with `SyntaxError`, while `mongodbModule` passed.
+- Root cause was identified in `api/_lib/content.js`: the sanitizer replacement string contained `\2`, which is a legacy octal escape and invalid syntax in an ES module.
+- Replaced the invalid replacement-string backreference with `$2` and committed the correction.
+- Production Content API acceptance remains open pending the next deployed diagnostic and Content screen retest.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
