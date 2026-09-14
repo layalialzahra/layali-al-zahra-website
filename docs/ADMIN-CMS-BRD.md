@@ -25,6 +25,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
 - Login abuse protection is implemented using MongoDB-backed attempt records keyed by a hashed IP/username combination: five failures within a 15-minute window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
 - Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
+- Stage 3 content foundation now has a shared server-side content model helper with `blog | tip | news` type validation, slug normalization, tag normalization, body sanitization, serialization and MongoDB indexes.
 - Production authentication acceptance testing remains open.
 
 ## 4. Master Status
@@ -33,7 +34,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
-| 3 — CMS Foundation | ⬜ Not started | Depends on Stage 2 |
+| 3 — CMS Foundation | 🟡 In progress | Shared content model helper, validation/sanitization and indexes implemented; APIs remain |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
@@ -129,10 +130,14 @@ Required fields: type, title, slug, excerpt, body, featured image, alt text, cat
 Architecture must allow categories to be added without code changes.
 
 ### Database/API requirements
-- [ ] Unique slugs within namespace/type.
-- [ ] Server validation and normalization.
-- [ ] Drafts private.
-- [ ] Appropriate indexes on type/status/slug/publish date/common filters.
+- [x] Shared content helper created with `blog | tip | news` type validation.
+- [x] Slugs normalized consistently.
+- [x] Tags normalized and deduplicated.
+- [x] Server-side field validation and normalization foundation implemented.
+- [x] Basic body sanitization implemented for stored content.
+- [x] MongoDB indexes prepared for type/slug uniqueness, published feeds, category feeds and updated time.
+- [ ] Unique slugs within namespace/type verified against production data.
+- [ ] Drafts private through API.
 - [ ] Safe API errors; no secrets in responses.
 - [ ] Authenticated CRUD: create/read/update/delete, publish/unpublish, drafts, search/filter, duplicate.
 - [ ] Public APIs expose only published content.
@@ -224,7 +229,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [ ] Every write requires a valid session.
 - [ ] No sensitive errors in responses.
 - [ ] Destructive actions require confirmation.
-- [ ] Content sanitization.
+- [x] Basic content sanitization foundation.
 
 ### Usability
 - [ ] Nontechnical workflow; no GitHub/code/Vercel for publishing.
@@ -237,7 +242,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### Performance/reliability
 - [x] Cached MongoDB connections.
-- [ ] Appropriate indexes and pagination.
+- [x] Core content indexes defined.
+- [ ] Appropriate indexes and pagination verified for all content queries.
 - [ ] No large image binaries in MongoDB.
 - [ ] Performant public pages.
 - [ ] Graceful API failure.
@@ -286,7 +292,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Add Vercel `/admin` SPA rewrite
 - Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
-- The browser pathname remains `/admin`, allowing the frontend route added above to render the admin page.
+- The browser pathname remains `/admin`, allowing the frontend route added above to render.
 - Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
 
 ### 2026-09-14 — Add durable login abuse protection
@@ -299,3 +305,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added authenticated `/api/admin/password` endpoint with current-password verification, 12-character minimum replacement password, confirmation, salted hashing and session clearing after a successful change.
 - Added Settings → Admin Account UI with a password-change form.
 - Stage 2 remains in progress pending production verification of the password-change/session flow.
+
+### 2026-09-14 — Create unified content data foundation
+- Added shared content helpers for `blog | tip | news`, required-field validation, slug/tag normalization, basic server-side body sanitization and safe serialization.
+- Added MongoDB index definitions for unique type/slug, published feeds, category feeds and update ordering.
+- Stage 3 is now in progress; content API endpoints are the next implementation item.
