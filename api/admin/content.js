@@ -1,6 +1,4 @@
-import { getDb } from "../_lib/mongodb.js";
 import { requireAdmin, sameOrigin } from "../_lib/auth.js";
-import { CONTENT_TYPES, ensureContentIndexes, validateContentInput, serializeContent, toObjectId } from "../_lib/content.js";
 
 function sendError(res, status, message) { return res.status(status).json({ success: false, message }); }
 function escapeRegex(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
@@ -12,7 +10,10 @@ export default async function handler(req, res) {
     return sendError(res, 405, "Method not allowed");
   }
   if (req.method !== "GET" && !sameOrigin(req)) return sendError(res, 403, "Forbidden");
+
   try {
+    const { getDb } = await import("../_lib/mongodb.js");
+    const { CONTENT_TYPES, ensureContentIndexes, validateContentInput, serializeContent, toObjectId } = await import("../_lib/content.js");
     await ensureContentIndexes();
     const db = await getDb();
     const collection = db.collection("content");
