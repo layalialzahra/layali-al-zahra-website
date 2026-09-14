@@ -17,7 +17,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - MongoDB Atlas production connection is complete; database `layalialzahra` is reachable.
 - Secure authentication is complete: salted `scrypt`, signed 8-hour HttpOnly sessions, same-origin checks, login/logout, password change, setup and login-abuse protection.
 - Stage 3 unified content model/API is implemented for `blog | tip | news`, including validation, normalization, sanitization, indexes, CRUD, search/filter/pagination, duplicate, publish/unpublish and public published-only reads.
-- Stage 4 branded admin content editor is implemented with create/edit/delete/duplicate/publish controls and image-upload foundation.
+- Stage 4 branded admin content editor is complete with responsive create/edit/delete/duplicate/publish controls and production image upload through Vercel Blob.
 - Stage 5 public Blog/News/Beauty Tips route foundations are implemented.
 - Production Content API previously failed because of a shared content-module `SyntaxError`; diagnostic isolation identified it and the sanitizer syntax was corrected.
 - Production content health confirmed MongoDB, content module, database, collection, query, serialization and four indexes.
@@ -38,8 +38,12 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - Public content detail pages now set per-content title, description, canonical URL, Open Graph/Twitter metadata and JSON-LD, and expose related-service context when present.
 - Content-body sanitization was tightened to remove additional executable/embed/form elements and dangerous URL schemes.
 - The new Vercel staging admin service is now healthy after correcting the MongoDB connection secret; `/api/admin/auth` returns a successful setup/session response and `/admin` loads the authenticated dashboard/content manager.
-- The current staging/production content collection is empty in the new CMS environment; the unique content index and application-level slug collision guard remain enabled.
 - Stage 3 live production acceptance is complete: temporary content was created, kept private as a draft, published and verified through the public API/detail route, unpublished and verified inaccessible, then deleted.
+- Vercel Blob store `layali-al-zahra-images` is connected to the active Vercel project with read/write access and the required deployment environment configuration.
+- Live image acceptance is complete: a temporary Blog item uploaded an image through the CMS, rendered the Blob-backed preview in the editor, published successfully, and rendered the same image on the public Blog detail route.
+- The temporary image-test content was deleted after public verification; no test content remains in the CMS.
+- Stage 4 mobile polish is complete: admin controls, filters, editor cards, action buttons and spacing now adapt cleanly to narrow screens.
+- Stage 4 News UX is complete: News creation defaults to the News category, exposes News-specific summary/headline guidance and restricts News category choices to the relevant salon/news categories.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -48,7 +52,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
 | 3 — CMS Foundation | 🟢 Complete | API safety, CRUD, draft privacy, publish/unpublish, public API and Blog detail acceptance completed |
-| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions/date handling completed; Blob store configuration, mobile polish and final acceptance remain |
+| 4 — Admin Content Editor | 🟢 Complete | Responsive editor/list, News UX, Blob storage, image upload and live acceptance completed |
 | 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven routes, pagination, stable detail links and content SEO foundation completed; migration and live acceptance remain |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
@@ -122,16 +126,16 @@ Salon: News, Offers, Announcements.
 - [x] Admin local/UTC publish-date conversion corrected.
 - [x] Corrected JSX closing-tag regression introduced while applying the publish-date editor fix.
 - [x] Public API responses explicitly disable caching for immediate CMS publishing visibility.
-- [x] Verify unique slugs against production data: current content collection is empty; unique index and application guard are active.
+- [x] Verify unique slugs against production data: active CMS data is clean after test cleanup; unique index and application guard are active.
 - [x] Verify draft privacy publicly: a live draft returned `Content not found` from the public API.
 - [x] Verify safe API errors/no secrets in production: public failures return generic messages and authenticated diagnostics expose metadata only.
 
 ### Production acceptance
 - [x] Authenticated APIs safely create/edit/delete/publish in production: live test content was created, published, verified publicly, unpublished and deleted through the CMS.
 - [x] Public APIs expose only intended published content: draft/unpublished content is excluded and published content is returned.
-- [x] Published Blog detail API and `/blog/<slug>` route pass live acceptance using the staging CMS test content.
+- [x] Published Blog detail API and `/blog/<slug>` route pass live acceptance using staging CMS test content.
 
-## 9. Stage 4 — Admin Content Editor
+## 9. Stage 4 — Admin Content Editor — COMPLETE
 ### Dashboard/list
 - [x] Layali Al Zahra admin branding.
 - [x] Dashboard/workspace navigation.
@@ -139,14 +143,14 @@ Salon: News, Offers, Announcements.
 - [x] Search/type/status filters.
 - [x] Create/edit/duplicate/publish/unpublish/delete confirmation.
 - [x] Loading/error/empty states.
-- [ ] Mobile polish.
+- [x] Mobile polish: responsive controls, filter layout, compact headings, mobile-friendly action grid and editor card spacing.
 
 ### Editors
 - [x] Blog fields: title/slug/category/image/alt/excerpt/body/tags/related service/SEO/status/publish date.
 - [x] Basic bold/italic/underline/link controls.
 - [x] Beauty Tip description + `tip1`–`tip5` + relationships/SEO/status.
 - [x] News shared content fields.
-- [ ] Richer News-specific UX.
+- [x] Richer News-specific UX: News creation defaults to `News`, provides a News Summary label/placeholder, contextual publishing guidance and relevant News/Announcements/Offers/Events category choices.
 - [x] Publish-date datetime-local values correctly convert between browser-local time and stored ISO UTC.
 - [x] Publishing panel JSX markup corrected and production build restored.
 
@@ -155,12 +159,12 @@ Salon: News, Offers, Announcements.
 - [x] Authenticated upload endpoint.
 - [x] JPG/PNG/WebP/GIF, max 4 MB.
 - [x] File picker/upload state/preview.
-- [ ] Production Blob store configuration and authentication verification.
-- [x] Upload endpoint has explicit validation and user-safe failure handling; live failure-path verification remains pending.
+- [x] Production Blob store configuration and authentication verification: active Vercel project connected to `layali-al-zahra-images` with read/write access; redeployment completed so runtime configuration is active.
+- [x] Upload endpoint has explicit validation and user-safe failure handling; live success path verified end-to-end.
 
 ### Acceptance
 - [x] Nontechnical admin can create/edit/delete production content end-to-end: live CMS create/publish/unpublish/delete flow verified.
-- [ ] Production image upload/select works.
+- [x] Production image upload/select works: live upload, CMS preview and public Blog image rendering verified.
 - [x] Draft/publish controls exist and were live-tested.
 
 ## 10. Stage 5 — Public Tips/Blog/News
@@ -211,7 +215,7 @@ Salon: News, Offers, Announcements.
 - [ ] Final nontechnical end-to-end publishing acceptance.
 - [x] Loading/success/failure states.
 - [x] Useful empty state.
-- [ ] Mobile admin polish.
+- [x] Mobile admin polish.
 - [x] Public design preserved.
 - [x] Branded admin shell.
 
@@ -220,7 +224,7 @@ Salon: News, Offers, Announcements.
 - [x] Core indexes.
 - [x] API pagination.
 - [ ] Production query/index performance verification.
-- [ ] No large binaries in MongoDB.
+- [x] No large binaries in MongoDB: image assets are stored in Vercel Blob and only URLs are stored with content.
 - [ ] Final public performance verification.
 - [x] Content API remains available when individual index initialization emits warnings.
 - [x] Public content reads are not cached by the API layer, enabling publishing without a frontend deployment.
@@ -232,7 +236,7 @@ Salon: News, Offers, Announcements.
 - [x] Unified content model.
 - [x] Authenticated CRUD foundation.
 - [x] Draft/publish.
-- [ ] Production images.
+- [x] Production images.
 - [x] Categories/tags.
 - [x] Related service.
 - [x] Per-content SEO fields.
@@ -242,7 +246,7 @@ Salon: News, Offers, Announcements.
 - [x] Public API filters drafts.
 - [x] Public design preserved.
 - [x] Production build/deployment verification.
-- [ ] Owner can publish end-to-end without code: core CMS create/publish/unpublish/delete flow verified; final production cutover remains pending.
+- [ ] Owner can publish end-to-end without code: Stage 4 core CMS publishing flow is verified; final production-domain cutover remains pending Stage 5 acceptance.
 
 ## 14. Change Log
 ### 2026-09-14 — Stage 2 authentication integration
@@ -330,3 +334,11 @@ Salon: News, Offers, Announcements.
 ### 2026-09-14 — Stage 3 closure bookkeeping correction
 - Reconciled the BRD master status and current-state summary with the completed Stage 3 production acceptance evidence.
 - Stage 3 is now explicitly marked `🟢 Complete`; Stages 4 and 5 remain the active workstreams.
+
+### 2026-09-14 — Stage 4 image storage, responsive UX and closure
+- Connected the active Vercel project to the `layali-al-zahra-images` Blob store with read/write access and redeployed so the runtime token configuration became active.
+- Verified end-to-end image upload from the nontechnical CMS editor, including upload state, Blob-backed preview, publication and public rendering on the Blog detail route.
+- Deleted the temporary image-test content after verification; the CMS has no retained test record.
+- Applied mobile admin polish to the content list, filters, editor layout, buttons, headings and image controls so the workspace remains usable on narrow screens.
+- Added richer News-specific editor guidance and category behavior without changing the public design or the shared content model.
+- Stage 4 acceptance is now complete; Stage 5 remains the next active workstream for six-tip migration and final public-content acceptance.
