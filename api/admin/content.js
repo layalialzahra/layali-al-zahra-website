@@ -3,6 +3,17 @@ import { requireAdmin, sameOrigin } from "../_lib/auth.js";
 function sendError(res, status, message) { return res.status(status).json({ success: false, message }); }
 function escapeRegex(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
+async function ensureUniqueSlug(collection, type, slug) {
+  const base = slug || "content";
+  let candidate = base;
+  let suffix = 2;
+  while (await collection.findOne({ type, slug: candidate }, { projection: { _id: 1 } })) {
+    candidate = `${base}-${suffix}`.slice(0, 160);
+    suffix += 1;
+  }
+  return candidate;
+}
+
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) return;
   if (!["GET", "POST", "PUT", "DELETE"].includes(req.method)) {
@@ -16,9 +27,6 @@ export default async function handler(req, res) {
     const { CONTENT_TYPES, ensureContentIndexes, assertUniqueContentSlug, validateContentInput, serializeContent, toObjectId } = await import("../_lib/content.js");
     const db = await getDb();
     const collection = db.collection("content");
-
-    // Index creation is a background reliability task. Reads/writes must not
-    // become unavailable merely because an index is still initializing.
     ensureContentIndexes().catch((error) => console.error("Content index initialization failed", error));
 
     if (req.method === "GET") {
@@ -54,7 +62,9 @@ export default async function handler(req, res) {
 
     if (req.method === "POST") {
       const data = validateContentInput(req.body, false);
-      await assertUniqueContentSlug(collection, data.type, data.slug);
+      const requestedSlug = String(req.body?.slug || "").trim();
+      if (!requestedSlug) data.slug = await ensureUniqueSlug(collection, data.type, data.slug);
+      else await assertUniqueContentSlug(collection, data.type, data.slug);
       const now = new Date();
       const document = { ...data, status: data.status || "draft", publishDate: data.status === "published" ? (data.publishDate || now) : (data.publishDate || null), createdAt: now, updatedAt: now };
       const result = await collection.insertOne(document);
