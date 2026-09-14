@@ -37,6 +37,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - The public Beauty Tips page has been converted from hard-coded data to the published-only content API while preserving its existing visual design, including loading, error and empty states.
 - Public Blog/News listing and detail component foundations have been added, Vercel rewrites now route the planned public content paths to the SPA entry point, and listing cards now link to real slug URLs.
 - Stage 2 authentication storage is now hardened with a unique admin username index and automatic TTL cleanup for login-abuse records.
+- Stage 3 admin content filtering is hardened with explicit type/status validation, escaped search expressions, bounded category/search inputs and sanitized duplicate creation.
 - A rollback checkpoint branch `checkpoint/pre-stage-0-2-3-close` has been created from the current mainline before the Stage 0/2/3 closeout pass.
 - Production authentication/content acceptance testing remains open where live verification cannot be independently performed from the current environment.
 
@@ -158,6 +159,9 @@ Architecture must allow categories to be added without code changes.
 - [x] Publish/unpublish supported through the content status field.
 - [x] Public content API added; it exposes only published items whose publish date is due and supports type/category/slug filters and pagination.
 - [x] Beauty Tip structured fields `tip1`–`tip5` accepted and persisted.
+- [x] Admin content list filters validate supported type/status values and bound user-controlled filter lengths.
+- [x] Admin content search terms are escaped before MongoDB regex matching.
+- [x] Duplicate content is rebuilt through the shared validator instead of copying arbitrary request fields into MongoDB.
 - [ ] Unique slugs within namespace/type verified against production data.
 - [ ] Draft privacy verified against the public API in production.
 - [ ] Safe API errors; no secrets in responses verified in production.
@@ -415,6 +419,12 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Establish Stage 0 rollback checkpoint
 - Created `checkpoint/pre-stage-0-2-3-close` from main commit `1e6aced4d65fe4975729151e3736dbc1c1598de1` before the Stage 0/2/3 closeout pass.
+
+### 2026-09-14 — Harden Stage 3 content query handling
+- Added explicit validation for supported admin content type/status filters.
+- Bounded category and search filter inputs.
+- Escaped admin search terms before MongoDB regex matching.
+- Rebuilt duplicate content through the shared content validator to prevent arbitrary request fields from being copied into content records.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
