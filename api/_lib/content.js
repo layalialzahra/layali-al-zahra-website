@@ -31,7 +31,10 @@ export async function ensureContentIndexes() {
       db.collection("content").createIndex({ type: 1, status: 1, publishDate: -1 }, { name: "published_feed" }),
       db.collection("content").createIndex({ category: 1, status: 1, publishDate: -1 }, { name: "category_feed" }),
       db.collection("content").createIndex({ updatedAt: -1 }, { name: "updated_at" }),
-    ]);
+    ]).catch((error) => {
+      indexesPromise = undefined;
+      throw error;
+    });
   }
   await indexesPromise;
 }
@@ -57,7 +60,7 @@ export function validateContentInput(input, partial = false) {
     if (data[field] !== undefined) result[field] = String(data[field] || "").trim().slice(0, field === "metaDescription" ? 320 : 500);
   }
   if (data.body !== undefined) result.body = sanitizeBody(data.body);
-  if (data.featuredImage !== undefined) result.featuredImage = String(data.featuredImage || "").trim();
+  if (data.featuredImage !== undefined) result.featuredImage = String(data.featuredImage || "").trim().slice(0, 2000);
   if (data.category !== undefined) result.category = String(data.category || "").trim().slice(0, 100);
   if (data.tags !== undefined) result.tags = normalizeTags(data.tags);
   if (data.status !== undefined) {
