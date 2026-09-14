@@ -20,7 +20,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Secure authentication backend is implemented: password hashing, signed 8-hour HttpOnly session cookie, session verification, same-origin checks, login/logout, and one-time initial admin setup.
 - `/admin` now uses the real authentication API rather than client-only fake credentials. It checks the existing session on load, supports first-time setup, login, logout, loading states and generic errors.
 - CMS modules are intentionally not implemented yet; the authenticated dashboard currently acts as the Stage 2 shell.
-- A deployment issue was identified: the auth helper imported the MongoDB helper using an invalid relative path. This has been corrected to the path appropriate for `api/_lib/auth.js`.
+- Deployment issues were identified in both authentication server modules: their MongoDB helper relative imports were incorrect. Both have now been corrected to the proper paths.
 - Production acceptance testing, direct `/admin` routing, basic login abuse protection and admin password-change flow remain open before Stage 2 can be marked complete.
 
 ## 4. Master Status
@@ -260,4 +260,9 @@ SETTINGS: SEO, Contact Details, Admin Account
 ### 2026-09-14 — Fix authentication module import path
 - Corrected the MongoDB helper import in `api/_lib/auth.js` from an invalid relative path to `./mongodb.js`.
 - This removes a serverless module-resolution failure that could prevent authentication endpoints from loading in production.
+- Stage 2 remains in progress pending direct `/admin` routing and production acceptance.
+
+### 2026-09-14 — Fix admin setup module import path
+- Corrected the MongoDB helper import in `api/admin/setup.js` from an invalid relative path to `../_lib/mongodb.js`.
+- This removes the corresponding setup-endpoint module-resolution failure.
 - Stage 2 remains in progress pending direct `/admin` routing and production acceptance.
