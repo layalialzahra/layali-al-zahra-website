@@ -6,7 +6,9 @@ const SESSION_TTL_SECONDS = 60 * 60 * 8;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_FAILURES = 5;
 const LOGIN_LOCKOUT_MS = 30 * 60 * 1000;
+const RATE_LIMIT_RECORD_TTL_SECONDS = 24 * 60 * 60;
 const SCRYPT = { N: 16384, r: 8, p: 1, keyLength: 64 };
+let authIndexesPromise;
 
 function base64url(value) { return Buffer.from(value).toString("base64url"); }
 function fromBase64url(value) { return Buffer.from(value, "base64url"); }
@@ -60,7 +62,21 @@ function getClientKey(req, username = "") {
   const ip = forwarded || String(req.socket?.remoteAddress || "unknown");
   return crypto.createHash("sha256").update(`${ip}|${String(username).trim().toLowerCase()}`).digest("hex");
 }
+async function ensureAuthIndexes() {
+  if (!authIndexesPromise) {
+    const db = await getDb();
+    authIndexesPromise = Promise.all([
+      db.collection("admins").createIndex({ username: 1 }, { unique: true, name: "username_unique" }),
+      db.collection("auth_rate_limits").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, name: "expires_at_ttl" }),
+    ]);
+  }
+  await authIndexesPromise;
+}
+function withRateLimitExpiry(record, now) {
+  return { ...record, expiresAt: new Date(now.getTime() + RATE_LIMIT_RECORD_TTL_SECONDS * 1000) };
+}
 export async function checkLoginRateLimit(req, username = "") {
+  await ensureAuthIndexes();
   const db = await getDb();
   const key = getClientKey(req, username);
   const now = new Date();
@@ -70,26 +86,28 @@ export async function checkLoginRateLimit(req, username = "") {
   if (!record.windowStartedAt || now.getTime() - record.windowStartedAt.getTime() >= LOGIN_WINDOW_MS) return { allowed: true };
   if ((record.failures || 0) >= LOGIN_MAX_FAILURES) {
     const lockedUntil = new Date(now.getTime() + LOGIN_LOCKOUT_MS);
-    await db.collection("auth_rate_limits").updateOne({ _id: key }, { $set: { lockedUntil } });
+    await db.collection("auth_rate_limits").updateOne({ _id: key }, { $set: withRateLimitExpiry({ lockedUntil }, now) });
     return { allowed: false, retryAfterSeconds: Math.ceil(LOGIN_LOCKOUT_MS / 1000) };
   }
   return { allowed: true };
 }
 export async function recordLoginFailure(req, username = "") {
+  await ensureAuthIndexes();
   const db = await getDb();
   const key = getClientKey(req, username);
   const now = new Date();
   const existing = await db.collection("auth_rate_limits").findOne({ _id: key });
   if (!existing || !existing.windowStartedAt || now.getTime() - existing.windowStartedAt.getTime() >= LOGIN_WINDOW_MS) {
-    await db.collection("auth_rate_limits").replaceOne({ _id: key }, { _id: key, failures: 1, windowStartedAt: now, lockedUntil: null }, { upsert: true });
+    await db.collection("auth_rate_limits").replaceOne({ _id: key }, withRateLimitExpiry({ _id: key, failures: 1, windowStartedAt: now, lockedUntil: null }, now), { upsert: true });
     return;
   }
   const failures = (existing.failures || 0) + 1;
-  const set = { failures };
+  const set = withRateLimitExpiry({ failures }, now);
   if (failures >= LOGIN_MAX_FAILURES) set.lockedUntil = new Date(now.getTime() + LOGIN_LOCKOUT_MS);
   await db.collection("auth_rate_limits").updateOne({ _id: key }, { $set: set });
 }
 export async function clearLoginFailures(req, username = "") {
+  await ensureAuthIndexes();
   const db = await getDb();
   await db.collection("auth_rate_limits").deleteOne({ _id: getClientKey(req, username) });
 }
@@ -118,10 +136,12 @@ export function sameOrigin(req) {
   return origin === `${protocol}://${host}`;
 }
 export async function adminExists() {
+  await ensureAuthIndexes();
   const db = await getDb();
   return (await db.collection("admins").countDocuments({}, { limit: 1 })) > 0;
 }
 export async function findAdmin(username) {
+  await ensureAuthIndexes();
   const db = await getDb();
   return db.collection("admins").findOne({ username: String(username).trim().toLowerCase() });
 }
