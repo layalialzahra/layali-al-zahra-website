@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { getDb } from "../../_lib/mongodb.js";
+import { getDb } from "./mongodb.js";
 
 const COOKIE_NAME = "layali_admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 8;
