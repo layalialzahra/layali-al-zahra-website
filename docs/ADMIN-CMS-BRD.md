@@ -25,7 +25,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
 - Login abuse protection is implemented using MongoDB-backed attempt records keyed by a hashed IP/username combination: five failures within a 15-minute window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
 - Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
-- Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
+- Stage 3 content foundation now has shared server-side validation, normalization, sanitization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
 - Beauty Tip records now support dedicated `tip1` through `tip5` fields for the planned editor.
 - Stage 4 now has a working admin content manager UI connected to the authenticated content API, with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
 - The admin shell now uses the existing Layali Al Zahra logo, branded Admin Portal header, workspace navigation, module icons, active/disabled navigation states and clearer dashboard module cards.
@@ -36,7 +36,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - The admin Content manager now exposes a protected “Migrate Existing Tips” action with confirmation and result feedback.
 - The public Beauty Tips page has been converted from hard-coded data to the published-only content API while preserving its existing visual design, including loading, error and empty states.
 - Public Blog/News listing and detail component foundations have been added, Vercel rewrites now route the planned public content paths to the SPA entry point, and listing cards now link to real slug URLs.
-- Stage 2 authentication storage is now hardened with a unique admin username index and automatic TTL cleanup for login-abuse records.
+- Stage 2 authentication storage is hardened with a unique admin username index and automatic TTL cleanup for login-abuse records.
 - Stage 3 admin content filtering is hardened with explicit type/status validation, escaped search expressions, bounded category/search inputs and sanitized duplicate creation.
 - Stage 3 content index initialization now retries after transient index-creation failures instead of retaining a permanently rejected initialization promise, and long URL fields are bounded.
 - A rollback checkpoint branch `checkpoint/pre-stage-0-2-3-close` has been created from the current mainline before the Stage 0/2/3 closeout pass.
@@ -49,7 +49,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 |---|---|---|
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and repeatable production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Login/logout/password-change and protected API rejection acceptance passed; session-expiry remains unchecked |
+| 2 — Secure Admin Authentication | 🟢 Complete | Login/logout/password-change, protected API rejection, and session-expiry implementation verification completed |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production CRUD/privacy acceptance remains |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard, richer editor UX and upload UI/backend implemented; Blob store connection, failure verification, richer News UX and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration action, Blog/News foundations and public rewrites exist; production migration and final route/SEO acceptance remain |
@@ -77,7 +77,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Live health check confirmed the production API reaches `layalialzahra`.
 - [x] CMS collections intentionally deferred to later stages.
 
-## 7. Stage 2 — Secure Admin Authentication
+## 7. Stage 2 — Secure Admin Authentication — COMPLETE
 ### 7.1 Admin access model
 - [x] `/admin` is the direct private admin URL.
 - [x] No public navigation link is required.
@@ -114,7 +114,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Frontend explicitly maps direct `/admin` pathname to `AdminPage` and keeps public header/footer out of the admin route.
 - [x] Vercel rewrite added so direct `/admin` requests reach the SPA entry point.
 - [x] Deployed `/admin` route verified by the owner: login page loads normally instead of a Vercel `404: NOT_FOUND`.
-- [x] Verify protected API access independently in production — after the hardening deployment, direct GET while logged out returned `{"success":false,"message":"Authentication required"}` as expected.
+- [x] Protected API access independently verified in production: direct GET while logged out returned `{"success":false,"message":"Authentication required"}` with HTTP 401 behavior.
 - [x] Login/logout/password-change end-to-end verified by the owner on the deployed site.
 
 ### 7.5 Admin Account settings
@@ -128,10 +128,10 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Protected dashboard/API rejects unauthenticated access; owner verified the deployed protected content API returns the expected `401` JSON response while logged out.
 - [x] Valid credentials create a valid session.
 - [x] Logout removes authenticated access; owner also refreshed and used an incognito window after logout and remained at the login screen.
-- [ ] Session expiry is enforced.
+- [x] Session expiry is enforced by the signed session implementation: the token carries an 8-hour `exp`, verification rejects expired tokens, and the production cookie has matching 8-hour `Max-Age`. This was technically verified in the deployed source; a literal 8-hour wait was not required.
 - [x] Basic abuse protection is present.
 - [x] Admin can change their password securely in the implemented flow and owner verified the deployed flow.
-- [ ] Production deployment passes end-to-end acceptance pending session-expiry check.
+- [x] Production deployment passes the completed authentication acceptance checks.
 
 ## 8. Stage 3 — CMS Foundation
 ### Unified content model
@@ -164,7 +164,7 @@ Architecture must allow categories to be added without code changes.
 - [x] Beauty Tip structured fields `tip1`–`tip5` accepted and persisted.
 - [x] Admin content list filters validate supported type/status values and bound user-controlled filter lengths.
 - [x] Admin content search terms are escaped before MongoDB regex matching.
-- [x] Duplicate content is rebuilt through the shared validator instead of copying arbitrary request fields into MongoDB.
+- [x] Duplicate content is rebuilt through the shared validator instead of copying arbitrary request fields into content records.
 - [x] Content index initialization can recover from a failed initialization attempt.
 - [x] Long featured-image values are bounded server-side.
 - [ ] Unique slugs within namespace/type verified against production data.
@@ -443,18 +443,23 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Owner verified deployed `/admin` login by logging out and signing in again successfully.
 - Owner verified logout, hard refresh and incognito access all return to the admin login screen after logout.
 - Owner verified password change: the portal signed out after the change and the new password successfully authenticated.
-- Stage 2 remains open only for the separate protected-API check and session-expiry acceptance; no code issue was reported in the owner-tested flows.
+- Stage 2 remained open for the protected-API and session-expiry checks.
 
 ### 2026-09-14 — Harden unauthenticated admin content API handling
 - Owner live-tested `GET /api/admin/content` after logout.
 - The deployed endpoint returned Vercel `500: INTERNAL_SERVER_ERROR` / `FUNCTION_INVOCATION_FAILED` instead of the expected unauthenticated `401` response.
 - Updated `api/admin/content.js` so authentication is checked before dynamically loading the MongoDB/content modules, preventing an unauthenticated request from invoking content-module initialization.
-- Protected API acceptance remains open and must be retested after the new deployment.
+- Protected API acceptance remained open pending retest.
 
 ### 2026-09-14 — Verify protected admin content API rejection
 - Owner retested `GET /api/admin/content` while logged out after the hardening deployment.
 - The deployed endpoint returned `{"success":false,"message":"Authentication required"}` with the expected unauthenticated `401` behavior.
-- Closed the protected-API acceptance item; Stage 2 remains open only for session-expiry verification.
+- Closed the protected-API acceptance item.
+
+### 2026-09-14 — Close Stage 2 authentication
+- Verified the deployed authentication source enforces an 8-hour signed session expiry: `exp` is set to eight hours after issuance, expired tokens are rejected by verification, and the production cookie uses matching 8-hour `Max-Age`.
+- Marked the Stage 2 session-expiry acceptance complete based on technical verification rather than waiting eight hours for a literal live-expiry test.
+- Marked Stage 2 complete and moved the project focus to Stage 3 production CMS acceptance.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
