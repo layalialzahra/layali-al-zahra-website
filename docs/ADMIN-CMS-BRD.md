@@ -38,6 +38,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Public Blog/News listing and detail component foundations have been added, Vercel rewrites now route the planned public content paths to the SPA entry point, and listing cards now link to real slug URLs.
 - Stage 2 authentication storage is now hardened with a unique admin username index and automatic TTL cleanup for login-abuse records.
 - Stage 3 admin content filtering is hardened with explicit type/status validation, escaped search expressions, bounded category/search inputs and sanitized duplicate creation.
+- Stage 3 content index initialization now retries after transient index-creation failures instead of retaining a permanently rejected initialization promise, and long URL fields are bounded.
 - A rollback checkpoint branch `checkpoint/pre-stage-0-2-3-close` has been created from the current mainline before the Stage 0/2/3 closeout pass.
 - A GitHub Actions build-verification workflow now installs dependencies and runs the production build on pushes and pull requests to `main`.
 - The build-verification workflow for the current mainline completed successfully: dependency installation and `npm run build` both passed.
@@ -164,6 +165,8 @@ Architecture must allow categories to be added without code changes.
 - [x] Admin content list filters validate supported type/status values and bound user-controlled filter lengths.
 - [x] Admin content search terms are escaped before MongoDB regex matching.
 - [x] Duplicate content is rebuilt through the shared validator instead of copying arbitrary request fields into MongoDB.
+- [x] Content index initialization can recover from a failed initialization attempt.
+- [x] Long featured-image values are bounded server-side.
 - [ ] Unique slugs within namespace/type verified against production data.
 - [ ] Draft privacy verified against the public API in production.
 - [ ] Safe API errors; no secrets in responses verified in production.
@@ -431,6 +434,10 @@ SETTINGS: SEO, Contact Details, Admin Account
 ### 2026-09-14 — Add Stage 0 build verification workflow
 - Added `.github/workflows/build.yml` to run dependency installation and `npm run build` for pushes and pull requests targeting `main`.
 - The first current-mainline workflow completed successfully for dependency installation and application build.
+
+### 2026-09-14 — Harden Stage 3 index initialization and field bounds
+- Made content-index initialization retryable after transient failures.
+- Added a server-side bound to long featured-image values.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
