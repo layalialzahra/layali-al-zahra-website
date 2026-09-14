@@ -23,15 +23,16 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Deployment issues were identified in both authentication server modules: their MongoDB helper relative imports were incorrect. Both have now been corrected to the proper paths.
 - The frontend now explicitly recognizes direct pathname `/admin` and suppresses the public header/footer/cookie UI on the admin route.
 - Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
-- Login abuse protection is now implemented using a MongoDB-backed attempt record keyed by a hashed IP/username combination: five failures within the active window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
-- Production acceptance testing and the admin password-change flow remain open before Stage 2 can be marked complete.
+- Login abuse protection is implemented using MongoDB-backed attempt records keyed by a hashed IP/username combination: five failures within a 15-minute window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
+- Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
+- Production authentication acceptance testing remains open.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing and rate limiting implemented; password change and production acceptance remain |
+| 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
 | 3 — CMS Foundation | ⬜ Not started | Depends on Stage 2 |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
@@ -70,7 +71,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] First-time setup is available only when no admin account exists and requires `ADMIN_SETUP_TOKEN`.
 - [x] Password confirmation is required during setup.
 - [x] Loading states and generic user-facing errors are implemented.
-- [x] Password values are not persisted in frontend state after successful authentication.
+- [x] Password values are cleared after successful authentication/change flows.
 
 ### 7.3 Server-side security
 - [x] Credentials are validated server-side.
@@ -82,7 +83,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Same-origin protection is applied to authentication writes.
 - [x] Generic authentication errors avoid exposing sensitive backend details.
 - [x] Basic login abuse/rate limiting is implemented with MongoDB-backed attempt tracking.
-- [ ] Add authenticated admin password-change flow under Settings → Admin Account.
+- [x] Authenticated admin password-change endpoint verifies the current password, hashes the replacement password and clears the active session.
 
 ### 7.4 `/admin` integration
 - [x] Removed fake client-only `isLoggedIn` authentication flow.
@@ -95,7 +96,13 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Vercel rewrite added so direct `/admin` requests reach the SPA entry point.
 - [ ] Verify the deployed `/admin` route no longer returns Vercel `404: NOT_FOUND`.
 - [ ] Verify protected API access independently in production.
-- [ ] Verify login/logout/setup end-to-end on the deployed site.
+- [ ] Verify login/logout/setup/password-change end-to-end on the deployed site.
+
+### 7.5 Admin Account settings
+- [x] Settings view is available from the authenticated dashboard.
+- [x] Admin Account section provides current password, new password and confirmation fields.
+- [x] Password-change success signs the admin out and requires a fresh login.
+- [ ] Verify password change against the production database/session flow.
 
 ### Stage 2 acceptance
 - [ ] Unauthenticated user sees only login/setup as appropriate.
@@ -104,7 +111,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [ ] Logout removes authenticated access.
 - [ ] Session expiry is enforced.
 - [x] Basic abuse protection is present.
-- [ ] Admin can change their password securely.
+- [x] Admin can change their password securely in the implemented flow.
 - [ ] Production deployment passes end-to-end acceptance.
 
 ## 8. Stage 3 — CMS Foundation
@@ -221,7 +228,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### Usability
 - [ ] Nontechnical workflow; no GitHub/code/Vercel for publishing.
-- [ ] Form validation and clear loading/success/failure states.
+- [x] Form validation and clear loading/success/failure states in admin authentication/settings flows.
 - [ ] Useful empty states.
 - [ ] Mobile-friendly admin.
 
@@ -279,7 +286,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Add Vercel `/admin` SPA rewrite
 - Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
-- The browser pathname remains `/admin`, allowing the frontend route added above to render.
+- The browser pathname remains `/admin`, allowing the frontend route added above to render the admin page.
 - Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
 
 ### 2026-09-14 — Add durable login abuse protection
@@ -287,3 +294,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Five failures within a 15-minute window trigger a 30-minute lockout; blocked responses include `Retry-After`.
 - Successful login clears the failure record.
 - Stage 2 remains in progress pending password change and production acceptance.
+
+### 2026-09-14 — Add admin account password settings
+- Added authenticated `/api/admin/password` endpoint with current-password verification, 12-character minimum replacement password, confirmation, salted hashing and session clearing after a successful change.
+- Added Settings → Admin Account UI with a password-change form.
+- Stage 2 remains in progress pending production verification of the password-change/session flow.
