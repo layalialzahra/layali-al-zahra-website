@@ -22,21 +22,28 @@ import React, { useState, useEffect } from 'react';
         contact: 'Contact Us & Book Appointment | Layali Al Zahra Dubai',
         terms: 'Terms & Conditions | Layali Al Zahra Beauty Lounge',
         privacy: 'Privacy Policy | Layali Al Zahra Beauty Lounge',
+        admin: 'Admin | Layali Al Zahra Beauty Lounge',
       };
 
       export default function App() {
         const [currentPage, setCurrentPage] = useState('home');
 
         useEffect(() => {
-          const handleHashChange = () => {
-            const hash = window.location.hash.slice(1) || 'home';
-            setCurrentPage(hash);
-            document.title = pageTitles[hash] || pageTitles['home'];
+          const handleLocationChange = () => {
+            const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+            const hash = window.location.hash.slice(1);
+            const page = pathname === '/admin' ? 'admin' : (hash || 'home');
+            setCurrentPage(page);
+            document.title = pageTitles[page] || pageTitles['home'];
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
-          window.addEventListener('hashchange', handleHashChange);
-          handleHashChange();
-          return () => window.removeEventListener('hashchange', handleHashChange);
+          window.addEventListener('hashchange', handleLocationChange);
+          window.addEventListener('popstate', handleLocationChange);
+          handleLocationChange();
+          return () => {
+            window.removeEventListener('hashchange', handleLocationChange);
+            window.removeEventListener('popstate', handleLocationChange);
+          };
         }, []);
 
         const handleNavigate = (page: string) => {
@@ -69,14 +76,14 @@ import React, { useState, useEffect } from 'react';
           }
         };
 
-        const showHeaderFooter = currentPage !== '404' && !currentPage.startsWith('error');
+        const showHeaderFooter = currentPage !== 'admin' && currentPage !== '404' && !currentPage.startsWith('error');
 
         return (
           <div className="min-h-screen">
             {showHeaderFooter && <Header currentPage={currentPage} onNavigate={handleNavigate} />}
             <main>{renderPage()}</main>
             {showHeaderFooter && <Footer />}
-            <CookieConsent />
+            {currentPage !== 'admin' && <CookieConsent />}
           </div>
         );
       }
