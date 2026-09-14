@@ -35,7 +35,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - A protected migration endpoint now exists to migrate the six existing hard-coded Beauty Tips into the unified `tip` content collection as drafts, preserving their titles, descriptions, five tip steps, image references and SEO-friendly alt text. It is idempotent by type/slug and skips already migrated records.
 - The admin Content manager now exposes a protected “Migrate Existing Tips” action with confirmation and result feedback.
 - The public Beauty Tips page has been converted from hard-coded data to the published-only content API while preserving its existing visual design, including loading, error and empty states.
-- Public Blog/News listing and detail component foundations have now been added; final routing integration, production content and final SEO/design acceptance remain.
+- Public Blog/News listing and detail component foundations have been added, and Vercel rewrites now route the planned public content paths to the SPA entry point.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -46,7 +46,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard, richer editor UX and upload UI/backend implemented; Blob store connection, failure verification, richer News UX and final acceptance remain |
-| 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration action and Blog/News component foundations exist; routing, production migration and final acceptance remain |
+| 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration action, Blog/News foundations and public rewrites exist; production migration and final route/SEO acceptance remain |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
@@ -223,11 +223,12 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [x] Add protected, idempotent migration tooling for the six existing hard-coded Beauty Tips.
 - [x] Add public Blog/News listing component foundation.
 - [x] Add public content detail component foundation with published-only API retrieval and draft-safe 404 behavior.
+- [x] Add Vercel rewrites for `/beauty-tips`, `/blog`, `/news` and their slug routes.
 - [ ] Execute the six-tip migration in production and verify all six records.
-- [ ] Keep drafts private.
+- [ ] Keep drafts private and verify publicly.
 - [ ] Preserve existing public design for all new Blog/News routes.
 - [ ] Build Beauty Journal listing with featured article, filters, latest cards and pagination/load-more if needed.
-- [ ] Integrate `/beauty-tips`, `/beauty-tips/:slug`, `/blog`, `/blog/:slug`, `/news`, `/news/:slug` into application routing.
+- [ ] Final application routing integration and live verification for all six public route forms.
 - [ ] Stable slugs, full content, H1, image alt, publication info, category/tags, related service/internal links and 404 handling verified end-to-end.
 - [ ] Per-content SEO: title, meta, canonical, OG image, structured content, alt text and internal links.
 - [ ] No code deployment required to publish content.
@@ -396,7 +397,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 ### 2026-09-14 — Add public Blog/News component foundations
 - Added a reusable public listing component for published Blog Posts and Salon News.
 - Added a reusable public detail component for published Blog, News and Beauty Tip records, including metadata, body/tip rendering, tags and draft-safe not-found handling.
-- Final application routing integration remains open.
+- Added SPA route recognition and Vercel rewrites for the planned public content paths.
+- Final production routing, migrated content and SEO acceptance remain open.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
