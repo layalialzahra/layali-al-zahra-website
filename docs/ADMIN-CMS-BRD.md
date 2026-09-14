@@ -25,8 +25,8 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
 - Login abuse protection is implemented using MongoDB-backed attempt records keyed by a hashed IP/username combination: five failures within a 15-minute window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
 - Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
-- Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus an authenticated CRUD/search/filter/duplicate API for content.
-- Production authentication acceptance testing and the public content API remain open.
+- Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
+- Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -34,7 +34,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
-| 3 — CMS Foundation | 🟡 In progress | Content model, indexes and authenticated CRUD/search/filter/duplicate API implemented; public API remains |
+| 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
@@ -140,14 +140,14 @@ Architecture must allow categories to be added without code changes.
 - [x] Authenticated content search, status/type/category filters and pagination added.
 - [x] Authenticated duplicate operation added; duplicates are forced to draft state with a unique copy slug.
 - [x] Publish/unpublish supported through the content status field.
+- [x] Public content API added; it exposes only published items whose publish date is due and supports type/category/slug filters and pagination.
 - [ ] Unique slugs within namespace/type verified against production data.
-- [ ] Drafts private through public API.
+- [ ] Draft privacy verified against the public API in production.
 - [ ] Safe API errors; no secrets in responses verified in production.
-- [ ] Public APIs expose only published content.
 
 ### Acceptance
 - [ ] Authenticated APIs safely create/edit/delete/publish content in production.
-- [ ] Public APIs expose only intended published content.
+- [ ] Public APIs expose only intended published content in production.
 
 ## 9. Stage 4 — Admin Content Editor
 ### Dashboard structure
@@ -246,7 +246,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 ### Performance/reliability
 - [x] Cached MongoDB connections.
 - [x] Core content indexes defined.
-- [ ] Appropriate indexes and pagination verified for all content queries.
+- [x] Content API pagination implemented.
+- [ ] Appropriate indexes and pagination verified for all content queries in production.
 - [ ] No large image binaries in MongoDB.
 - [ ] Performant public pages.
 - [ ] Graceful API failure.
@@ -263,9 +264,9 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [x] Related service field.
 - [x] Per-content SEO fields.
 - [ ] Migrate six existing tips.
-- [ ] DB-driven public content pages.
+- [x] DB-driven public API foundation.
 - [x] Slug normalization/uniqueness foundation.
-- [ ] Drafts hidden from public API.
+- [x] Public API filters drafts out.
 - [x] Public site preserved.
 - [ ] Production build/deployment independently verified.
 - [ ] Owner can publish without code.
@@ -319,3 +320,9 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added create/read/update/delete, type/status/category/search filters, pagination and duplicate-to-draft behavior.
 - Added publish/unpublish support through the content status field and duplicate slug generation.
 - Stage 3 remains in progress pending the public published-only API and production verification.
+
+### 2026-09-14 — Add published-only public content API
+- Added `/api/content` for public content retrieval.
+- Public queries are restricted to `status=published` and publish dates that are due; drafts are excluded by construction.
+- Added public type/category/slug filters and pagination.
+- Stage 3 remains in progress pending production verification and the admin content editor.
