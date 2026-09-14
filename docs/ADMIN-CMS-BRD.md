@@ -37,7 +37,9 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - Public Blog/News listing pages now use API pagination and a Load more flow; Beauty Tips now use stable slug detail links and the same pagination pattern.
 - Public content detail pages now set per-content title, description, canonical URL, Open Graph/Twitter metadata and JSON-LD, and expose related-service context when present.
 - Content-body sanitization was tightened to remove additional executable/embed/form elements and dangerous URL schemes.
-- Final live public acceptance, six-tip migration, production Blob storage configuration and end-to-end nontechnical publishing acceptance remain pending.
+- The new Vercel staging admin service is now healthy after correcting the MongoDB connection secret; `/api/admin/auth` returns a successful setup/session response and `/admin` loads the authenticated dashboard/content manager.
+- The current staging/production content collection is empty in the new CMS environment; the unique content index and application-level slug collision guard remain enabled.
+- Stage 3 API-level safety checks are now verified; live draft/CRUD/public acceptance remains tied to creating test content and the subsequent Stage 5 acceptance pass.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -45,7 +47,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
-| 3 — CMS Foundation | 🟡 In progress | Core model/API/date handling/sanitization completed; final live acceptance remains |
+| 3 — CMS Foundation | 🟡 In progress | API safety/slug checks verified; live draft/CRUD/public acceptance remains |
 | 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions/date handling completed; Blob store configuration, mobile polish and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven routes, pagination, stable detail links and content SEO foundation completed; migration and live acceptance remain |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
@@ -120,9 +122,9 @@ Salon: News, Offers, Announcements.
 - [x] Admin local/UTC publish-date conversion corrected.
 - [x] Corrected JSX closing-tag regression introduced while applying the publish-date editor fix.
 - [x] Public API responses explicitly disable caching for immediate CMS publishing visibility.
-- [ ] Verify unique slugs against production data.
-- [ ] Verify draft privacy publicly.
-- [ ] Verify safe API errors/no secrets in production.
+- [x] Verify unique slugs against production data: current content collection is empty; unique index and application guard are active.
+- [ ] Verify draft privacy publicly: live draft record test remains pending.
+- [x] Verify safe API errors/no secrets in production: public failures return generic messages and authenticated diagnostics expose metadata only.
 
 ### Production acceptance
 - [ ] Authenticated APIs safely create/edit/delete/publish in production.
@@ -310,3 +312,10 @@ Salon: News, Offers, Announcements.
 - Added per-content canonical, description, Open Graph/Twitter metadata and JSON-LD, plus related-service context on detail pages.
 - This BRD is updated in the same change as the code changes above.
 - Remaining blockers are live acceptance, six-tip migration and Vercel Blob store setup/authentication verification.
+
+### 2026-09-14 — Stage 3 acceptance checks
+- Corrected the new Vercel project's MongoDB connection secret; `/api/admin/auth` now returns HTTP 200 and the admin dashboard/content manager load successfully.
+- Verified the current content collection is empty in the active CMS environment, so there are no duplicate production slugs; the unique `{type,slug}` index and application-level collision guard remain active.
+- Verified public API error handling remains generic and does not expose backend secrets; authenticated health diagnostics remain metadata-only.
+- Draft privacy still requires one live draft record to be created and checked publicly; this is deliberately left open rather than marked complete without evidence.
+- Stage 3 remains in progress only for live content acceptance: draft privacy, authenticated CRUD/publish acceptance and public Blog detail acceptance.
