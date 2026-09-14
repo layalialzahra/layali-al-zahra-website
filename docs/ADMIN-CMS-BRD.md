@@ -24,8 +24,12 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - A real Blog Post was created and published from the CMS and appears in the admin list.
 - Public Blog detail lookup was hardened to locate the published record first and then validate publication date, including legacy string-form dates.
 - The public API fix deployed successfully, but the owner initially still received `Content not found`.
-- Authenticated content-health metadata then showed the actual stored record had a future publish date: `2026-09-15T13:31:00Z`. This correctly excluded it from the public API.
-- The owner has now corrected the Blog Post publish date in the CMS so it is no longer future-dated. Final public API/detail-route acceptance is pending live retest.
+- Authenticated content-health metadata showed the stored record had a future publish date: `2026-09-15T13:31:00Z`. This correctly excluded it from the public API.
+- The owner corrected the Blog Post publish date in the CMS, but the retest still returned `Content not found`.
+- Investigation identified that the admin editor treated `datetime-local` values as UTC when saving, creating a local-time/UTC mismatch.
+- The admin editor now converts stored dates to browser-local time for editing and converts local input back to ISO UTC before saving.
+- Latest code change: `c56ba94f4eeb641d54e57d098727c0d7b5c433d8`.
+- Final live public API/detail-route acceptance is pending deployment and one save of the Blog Post through the corrected editor.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -33,8 +37,8 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
-| 3 — CMS Foundation | 🟡 In progress | CMS create/publish works; future publish-date mismatch corrected; final public acceptance pending |
-| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; production image storage and final acceptance remain |
+| 3 — CMS Foundation | 🟡 In progress | Date handling corrected; final public acceptance pending |
+| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; publish-date timezone handling corrected; production image storage and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven foundations implemented; live detail/public acceptance remains |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
@@ -105,6 +109,7 @@ Salon: News, Offers, Announcements.
 - [x] Public detail publication-date compatibility hardened for BSON Date/string values.
 - [x] Health diagnostic exposes safe content metadata for slug/type/status/date troubleshooting.
 - [x] Future publish-date mismatch identified and corrected in production content.
+- [x] Admin local/UTC publish-date conversion corrected.
 - [ ] Verify unique slugs against production data.
 - [ ] Verify draft privacy publicly.
 - [ ] Verify safe API errors/no secrets in production.
@@ -130,6 +135,7 @@ Salon: News, Offers, Announcements.
 - [x] Beauty Tip description + `tip1`–`tip5` + relationships/SEO/status.
 - [x] News shared content fields.
 - [ ] Richer News-specific UX.
+- [x] Publish-date datetime-local values correctly convert between browser-local time and stored ISO UTC.
 
 ### Images
 - [x] Vercel Blob selected.
@@ -265,4 +271,9 @@ Salon: News, Offers, Announcements.
 ### 2026-09-14 — Stage 3 publish-date correction
 - Diagnostic showed the published Blog Post was scheduled for `2026-09-15T13:31:00Z`, which was in the future and therefore correctly excluded by the public API.
 - Owner corrected the Blog Post publish date in the CMS so it is no longer future-dated.
-- Final public Blog API/detail-route acceptance remains pending live retest.
+- Final public Blog API/detail-route acceptance remained pending live retest.
+
+### 2026-09-14 — Stage 3 admin publish-date timezone correction
+- Fixed the CMS editor's `datetime-local` handling so publish dates are displayed in the browser's local timezone and saved as explicit ISO UTC timestamps.
+- This prevents a UAE local publish time from being incorrectly interpreted as UTC and remaining future-dated.
+- Final public Blog API/detail-route acceptance remains pending deployment and retest.
