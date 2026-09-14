@@ -1,4 +1,5 @@
-import { adminExists, findAdmin, getSession, setSession, clearSession, sameOrigin, verifyPassword, hashPassword } from "../_lib/auth.js";
+import { adminExists, findAdmin, getSession, clearSession, sameOrigin, verifyPassword, hashPassword } from "../_lib/auth.js";
+import { getDb } from "../_lib/mongodb.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
     const admin = await findAdmin(session.username);
     if (!admin || !verifyPassword(currentPassword, admin.passwordHash)) return res.status(401).json({ success: false, message: "Current password is incorrect" });
 
-    const db = admin && await import("../_lib/mongodb.js").then(({ getDb }) => getDb());
+    const db = await getDb();
     await db.collection("admins").updateOne({ _id: admin._id }, { $set: { passwordHash: hashPassword(newPassword), updatedAt: new Date() } });
     clearSession(res);
     return res.status(200).json({ success: true, authenticated: false, message: "Password changed. Please sign in again." });
