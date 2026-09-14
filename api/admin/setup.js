@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { getDb } from "../../_lib/mongodb.js";
+import { getDb } from "../_lib/mongodb.js";
 import { adminExists, hashPassword, setSession, sameOrigin } from "../_lib/auth.js";
 
 function timingSafeToken(value, expected) {
