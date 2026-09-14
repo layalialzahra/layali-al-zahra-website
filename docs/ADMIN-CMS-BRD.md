@@ -30,6 +30,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Stage 4 now has a working admin content manager UI connected to the authenticated content API, with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
 - The admin shell now uses the existing Layali Al Zahra logo, branded Admin Portal header, workspace navigation, module icons, active/disabled navigation states and clearer dashboard module cards.
 - The content editor now has clearer section hierarchy, content-type/status badges, a basic formatting toolbar, image URL preview, improved field guidance, and a sticky publishing panel on larger screens.
+- Vercel Blob is now selected as the object-storage layer for admin media uploads; the project manifest includes the Blob SDK and an authenticated `/api/admin/upload` endpoint accepts only supported image formats up to 4 MB and returns a public immutable Blob URL.
 - A protected migration endpoint now exists to migrate the six existing hard-coded Beauty Tips into the unified `tip` content collection as drafts, preserving their titles, descriptions, five tip steps, image references and SEO-friendly alt text. It is idempotent by type/slug and skips already migrated records.
 - Production authentication/content acceptance testing remains open.
 
@@ -40,7 +41,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
-| 4 — Admin Content Editor | 🟡 In progress | Branded dashboard and richer content editor UX implemented; image uploads, richer News UX and final acceptance remain |
+| 4 — Admin Content Editor | 🟡 In progress | Branded dashboard, richer editor UX and authenticated object-storage upload backend implemented; upload UI/storage connection and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | Six-tip migration tooling added; public DB-driven pages and migration execution remain |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
@@ -198,11 +199,15 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [ ] Add richer news-specific UX where required.
 
 ### Image handling
-- [ ] Upload/select image.
-- [ ] Use object storage rather than MongoDB binary storage.
+- [x] Vercel Blob selected as object-storage layer for uploaded media.
+- [x] Authenticated server upload endpoint added at `/api/admin/upload`.
+- [x] Upload endpoint restricts files to JPG, PNG, WebP and GIF and caps server-uploaded files at 4 MB.
+- [x] Upload endpoint stores files outside MongoDB and returns the resulting Blob URL/reference.
 - [x] Persist image URL/reference and alt text fields.
 - [x] Image URL preview is available in the editor.
-- [ ] Handle upload failures clearly.
+- [ ] Connect the editor file picker to the upload endpoint.
+- [ ] Connect/create the Vercel Blob store in the production Vercel project and verify the required Blob authentication is available.
+- [ ] Handle upload failures clearly in the editor UI.
 
 ### Acceptance
 - [ ] Nontechnical admin can create/edit/delete content without code in production.
@@ -296,7 +301,6 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Replaced the mock client-only admin login with server-backed session authentication.
 - Added first-time admin setup using the one-time setup token.
 - Added login, session-check, logout, loading and generic error states to `/admin`.
-- Kept the dashboard as a shell until CMS stages were implemented.
 
 ### 2026-09-14 — Fix authentication module import path
 - Corrected the MongoDB helper import in `api/_lib/auth.js` from an invalid relative path to `./mongodb.js`.
@@ -366,6 +370,12 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added migration data for all six existing hard-coded Beauty Tips, including descriptions, five structured tip steps, image references, category/tags and alt text.
 - Migration is idempotent by `type + slug`; existing records are skipped and new records are created as drafts.
 - Stage 5 is now started, but production execution and the public DB-driven pages remain open.
+
+### 2026-09-14 — Add Vercel Blob media foundation
+- Added the Vercel Blob SDK dependency to the application manifest.
+- Added authenticated `/api/admin/upload` media upload handling using object storage rather than MongoDB binary storage.
+- Restricted uploads to JPG, PNG, WebP and GIF and capped the server-upload path at 4 MB to remain within serverless request limits.
+- The editor file picker still needs to be connected to this endpoint and the production Blob store needs to be connected/verified.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
