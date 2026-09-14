@@ -10,98 +10,40 @@ const CATEGORIES = ['Hair Care','Hair Treatments','Hair Colour','Hair Extensions
 
 type ContentType = 'blog' | 'tip' | 'news';
 type Item = Record<string, any>;
-
 const emptyForm = (): Item => ({ type: 'blog', title: '', slug: '', category: 'Hair Care', excerpt: '', body: '', featuredImage: '', altText: '', tags: '', author: '', relatedService: '', seoTitle: '', metaDescription: '', socialImage: '', status: 'draft', publishDate: '', tip1: '', tip2: '', tip3: '', tip4: '', tip5: '' });
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div><label className="mb-1 block text-sm font-medium">{label}</label>{children}</div>;
-}
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div><label className="mb-1 block text-sm font-medium">{label}</label>{children}</div>; }
 
 export default function AdminContentManager({ onBack }: { onBack: () => void }) {
-  const [items, setItems] = useState<Item[]>([]);
-  const [selected, setSelected] = useState<Item | null>(null);
-  const [form, setForm] = useState<Item>(emptyForm());
-  const [typeFilter, setTypeFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
+  const [items, setItems] = useState<Item[]>([]); const [selected, setSelected] = useState<Item | null>(null); const [form, setForm] = useState<Item>(emptyForm());
+  const [editing, setEditing] = useState(false); const [typeFilter, setTypeFilter] = useState(''); const [statusFilter, setStatusFilter] = useState(''); const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [error, setError] = useState(''); const [notice, setNotice] = useState('');
 
-  const load = async () => {
-    setLoading(true); setError('');
-    try {
-      const params = new URLSearchParams({ limit: '50' });
-      if (typeFilter) params.set('type', typeFilter);
-      if (statusFilter) params.set('status', statusFilter);
-      if (search.trim()) params.set('search', search.trim());
-      const response = await fetch(`${API}?${params}`, { credentials: 'include' });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) throw new Error(data.message || 'Unable to load content');
-      setItems(data.items || []);
-    } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load content'); } finally { setLoading(false); }
-  };
-
+  const load = async () => { setLoading(true); setError(''); try { const params = new URLSearchParams({ limit: '50' }); if (typeFilter) params.set('type', typeFilter); if (statusFilter) params.set('status', statusFilter); if (search.trim()) params.set('search', search.trim()); const response = await fetch(`${API}?${params}`, { credentials: 'include' }); const data = await response.json().catch(() => ({})); if (!response.ok || !data.success) throw new Error(data.message || 'Unable to load content'); setItems(data.items || []); } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load content'); } finally { setLoading(false); } };
   useEffect(() => { load(); }, [typeFilter, statusFilter]);
-
   const filteredItems = useMemo(() => items, [items]);
-  const openNew = (type: ContentType = 'blog') => { setSelected(null); setForm({ ...emptyForm(), type }); setNotice(''); setError(''); };
-  const openEdit = (item: Item) => { setSelected(item); setForm({ ...emptyForm(), ...item, tags: Array.isArray(item.tags) ? item.tags.join(', ') : item.tags || '', publishDate: item.publishDate ? new Date(item.publishDate).toISOString().slice(0, 16) : '' }); setNotice(''); setError(''); };
+  const openNew = (type: ContentType = 'blog') => { setSelected(null); setForm({ ...emptyForm(), type }); setEditing(true); setNotice(''); setError(''); };
+  const openEdit = (item: Item) => { setSelected(item); setForm({ ...emptyForm(), ...item, tags: Array.isArray(item.tags) ? item.tags.join(', ') : item.tags || '', publishDate: item.publishDate ? new Date(item.publishDate).toISOString().slice(0, 16) : '' }); setEditing(true); setNotice(''); setError(''); };
+  const backToList = () => { setSelected(null); setForm(emptyForm()); setEditing(false); setNotice(''); setError(''); };
   const update = (key: string, value: any) => setForm((prev) => ({ ...prev, [key]: value }));
 
-  const save = async (event: React.FormEvent) => {
-    event.preventDefault(); setSaving(true); setError(''); setNotice('');
-    try {
-      const payload = { ...form, tags: String(form.tags || '').split(',').map((x: string) => x.trim()).filter(Boolean), publishDate: form.publishDate || null };
-      const response = await fetch(selected?._id ? `${API}?id=${selected._id}` : API, { method: selected?._id ? 'PUT' : 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) throw new Error(data.message || 'Unable to save content');
-      setNotice(selected ? 'Content updated.' : 'Content created.');
-      setSelected(data.item); setForm({ ...emptyForm(), ...data.item, tags: Array.isArray(data.item.tags) ? data.item.tags.join(', ') : '', publishDate: data.item.publishDate ? new Date(data.item.publishDate).toISOString().slice(0, 16) : '' });
-      await load();
-    } catch (err) { setError(err instanceof Error ? err.message : 'Unable to save content'); } finally { setSaving(false); }
-  };
+  const save = async (event: React.FormEvent) => { event.preventDefault(); setSaving(true); setError(''); setNotice(''); try { const payload = { ...form, tags: String(form.tags || '').split(',').map((x: string) => x.trim()).filter(Boolean), publishDate: form.publishDate || null }; const response = await fetch(selected?._id ? `${API}?id=${selected._id}` : API, { method: selected?._id ? 'PUT' : 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await response.json().catch(() => ({})); if (!response.ok || !data.success) throw new Error(data.message || 'Unable to save content'); setNotice(selected ? 'Content updated.' : 'Content created.'); setSelected(data.item); setForm({ ...emptyForm(), ...data.item, tags: Array.isArray(data.item.tags) ? data.item.tags.join(', ') : '', publishDate: data.item.publishDate ? new Date(data.item.publishDate).toISOString().slice(0, 16) : '' }); await load(); } catch (err) { setError(err instanceof Error ? err.message : 'Unable to save content'); } finally { setSaving(false); } };
+  const action = async (id: string, method: string, body?: any) => { setError(''); setNotice(''); const response = await fetch(`${API}?id=${id}`, { method, credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }); const data = await response.json().catch(() => ({})); if (!response.ok || !data.success) throw new Error(data.message || 'Action failed'); return data; };
+  const remove = async (item: Item) => { if (!window.confirm(`Delete “${item.title}”? This cannot be undone.`)) return; try { await action(item._id, 'DELETE'); setNotice('Content deleted.'); if (selected?._id === item._id) backToList(); await load(); } catch (err) { setError(err instanceof Error ? err.message : 'Delete failed'); } };
+  const duplicate = async (item: Item) => { try { const data = await action(item._id, 'PUT', { duplicate: true }); setNotice('Draft copy created.'); openEdit(data.item); await load(); } catch (err) { setError(err instanceof Error ? err.message : 'Duplicate failed'); } };
+  const togglePublish = async (item: Item) => { try { const data = await action(item._id, 'PUT', { status: item.status === 'published' ? 'draft' : 'published', publishDate: item.publishDate || new Date().toISOString() }); setNotice(data.item.status === 'published' ? 'Content published.' : 'Content moved to draft.'); if (selected?._id === item._id) openEdit(data.item); await load(); } catch (err) { setError(err instanceof Error ? err.message : 'Publish action failed'); } };
 
-  const action = async (id: string, method: string, body?: any) => {
-    setError(''); setNotice('');
-    const response = await fetch(`${API}?id=${id}`, { method, credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.success) throw new Error(data.message || 'Action failed');
-    return data;
-  };
-
-  const remove = async (item: Item) => {
-    if (!window.confirm(`Delete “${item.title}”? This cannot be undone.`)) return;
-    try { await action(item._id, 'DELETE'); setNotice('Content deleted.'); if (selected?._id === item._id) { setSelected(null); setForm(emptyForm()); } await load(); } catch (err) { setError(err instanceof Error ? err.message : 'Delete failed'); }
-  };
-  const duplicate = async (item: Item) => {
-    try { const data = await action(item._id, 'PUT', { duplicate: true }); setNotice('Draft copy created.'); openEdit(data.item); await load(); } catch (err) { setError(err instanceof Error ? err.message : 'Duplicate failed'); }
-  };
-  const togglePublish = async (item: Item) => {
-    try { const data = await action(item._id, 'PUT', { status: item.status === 'published' ? 'draft' : 'published', publishDate: item.publishDate || new Date().toISOString() }); setNotice(data.item.status === 'published' ? 'Content published.' : 'Content moved to draft.'); if (selected?._id === item._id) openEdit(data.item); await load(); } catch (err) { setError(err instanceof Error ? err.message : 'Publish action failed'); }
-  };
-
-  if (selected || form.title || form.type) {
-    return <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4"><div><Button variant="ghost" onClick={() => { setSelected(null); setForm(emptyForm()); }}><ArrowLeft className="mr-2 h-4 w-4" />Back to Content</Button><h1 className="mt-4 text-3xl font-semibold">{selected ? 'Edit Content' : 'New Content'}</h1><p className="mt-1 text-sm text-stone-500">Manage a single content item without touching code.</p></div></div>
-      {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>}{notice && <p className="rounded-md bg-green-50 p-3 text-sm text-green-700" role="status">{notice}</p>}
-      <form onSubmit={save} className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-6">
-          <Card><CardHeader><CardTitle>Content</CardTitle></CardHeader><CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Content Type"><select className="w-full rounded-md border px-3 py-2 text-sm" value={form.type} onChange={e => update('type', e.target.value)}><option value="blog">Blog Post</option><option value="tip">Beauty Tip</option><option value="news">Salon News</option></select></Field><Field label="Category"><select className="w-full rounded-md border px-3 py-2 text-sm" value={form.category} onChange={e => update('category', e.target.value)}>{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select></Field></div>
-            <Field label="Title"><Input value={form.title} onChange={e => update('title', e.target.value)} maxLength={180} required /></Field>
-            <Field label="Slug"><Input value={form.slug} onChange={e => update('slug', e.target.value)} placeholder="auto-generated-from-title" /></Field>
-            <Field label={form.type === 'tip' ? 'Description' : 'Excerpt'}><Textarea value={form.excerpt} onChange={e => update('excerpt', e.target.value)} rows={3} /></Field>
-            {form.type === 'tip' ? <div className="space-y-4">{[1,2,3,4,5].map(n => <Field key={n} label={`Tip ${n}`}><Textarea value={form[`tip${n}`]} onChange={e => update(`tip${n}`, e.target.value)} rows={3} /></Field>)}</div> : <Field label="Body"><Textarea value={form.body} onChange={e => update('body', e.target.value)} rows={14} placeholder="Write the main content here. Basic HTML is supported and unsafe script/event attributes are stripped server-side." /></Field>}
-          </CardContent></Card>
-          <Card><CardHeader><CardTitle>Media & Relationships</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Featured Image URL"><Input value={form.featuredImage} onChange={e => update('featuredImage', e.target.value)} placeholder="https://..." /></Field><Field label="Image Alt Text"><Input value={form.altText} onChange={e => update('altText', e.target.value)} /></Field><Field label="Tags"><Input value={form.tags} onChange={e => update('tags', e.target.value)} placeholder="hair care, summer, tips" /></Field><Field label="Related Service"><Input value={form.relatedService} onChange={e => update('relatedService', e.target.value)} /></Field></CardContent></Card>
-          <Card><CardHeader><CardTitle>SEO</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="SEO Title"><Input value={form.seoTitle} onChange={e => update('seoTitle', e.target.value)} /></Field><Field label="Meta Description"><Textarea value={form.metaDescription} onChange={e => update('metaDescription', e.target.value)} rows={3} maxLength={320} /></Field><Field label="Social Image URL"><Input value={form.socialImage} onChange={e => update('socialImage', e.target.value)} /></Field></CardContent></Card>
-        </div>
-        <div className="space-y-6"><Card><CardHeader><CardTitle>Publishing</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Status"><select className="w-full rounded-md border px-3 py-2 text-sm" value={form.status} onChange={e => update('status', e.target.value)}><option value="draft">Draft</option><option value="published">Published</option></select></Field><Field label="Publish Date"><Input type="datetime-local" value={form.publishDate} onChange={e => update('publishDate', e.target.value)} /></Field><Field label="Author"><Input value={form.author} onChange={e => update('author', e.target.value)} /></Field><Button type="submit" className="w-full" disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{selected ? 'Save Changes' : 'Create Content'}</Button></CardContent></Card></div>
-      </form>
-    </div>;
-  }
+  if (editing) return <div className="space-y-6">
+    <div><Button variant="ghost" onClick={backToList}><ArrowLeft className="mr-2 h-4 w-4" />Back to Content</Button><h1 className="mt-4 text-3xl font-semibold">{selected ? 'Edit Content' : 'New Content'}</h1><p className="mt-1 text-sm text-stone-500">Manage a single content item without touching code.</p></div>
+    {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>}{notice && <p className="rounded-md bg-green-50 p-3 text-sm text-green-700" role="status">{notice}</p>}
+    <form onSubmit={save} className="grid gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="space-y-6"><Card><CardHeader><CardTitle>Content</CardTitle></CardHeader><CardContent className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2"><Field label="Content Type"><select className="w-full rounded-md border px-3 py-2 text-sm" value={form.type} onChange={e => update('type', e.target.value)}><option value="blog">Blog Post</option><option value="tip">Beauty Tip</option><option value="news">Salon News</option></select></Field><Field label="Category"><select className="w-full rounded-md border px-3 py-2 text-sm" value={form.category} onChange={e => update('category', e.target.value)}>{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select></Field></div>
+        <Field label="Title"><Input value={form.title} onChange={e => update('title', e.target.value)} maxLength={180} required /></Field><Field label="Slug"><Input value={form.slug} onChange={e => update('slug', e.target.value)} placeholder="auto-generated-from-title" /></Field><Field label={form.type === 'tip' ? 'Description' : 'Excerpt'}><Textarea value={form.excerpt} onChange={e => update('excerpt', e.target.value)} rows={3} /></Field>
+        {form.type === 'tip' ? <div className="space-y-4">{[1,2,3,4,5].map(n => <Field key={n} label={`Tip ${n}`}><Textarea value={form[`tip${n}`]} onChange={e => update(`tip${n}`, e.target.value)} rows={3} /></Field>)}</div> : <Field label="Body"><Textarea value={form.body} onChange={e => update('body', e.target.value)} rows={14} placeholder="Write the main content here. Basic HTML is supported and unsafe script/event attributes are stripped server-side." /></Field>}
+      </CardContent></Card><Card><CardHeader><CardTitle>Media & Relationships</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Featured Image URL"><Input value={form.featuredImage} onChange={e => update('featuredImage', e.target.value)} placeholder="https://..." /></Field><Field label="Image Alt Text"><Input value={form.altText} onChange={e => update('altText', e.target.value)} /></Field><Field label="Tags"><Input value={form.tags} onChange={e => update('tags', e.target.value)} placeholder="hair care, summer, tips" /></Field><Field label="Related Service"><Input value={form.relatedService} onChange={e => update('relatedService', e.target.value)} /></Field></CardContent></Card><Card><CardHeader><CardTitle>SEO</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="SEO Title"><Input value={form.seoTitle} onChange={e => update('seoTitle', e.target.value)} /></Field><Field label="Meta Description"><Textarea value={form.metaDescription} onChange={e => update('metaDescription', e.target.value)} rows={3} maxLength={320} /></Field><Field label="Social Image URL"><Input value={form.socialImage} onChange={e => update('socialImage', e.target.value)} /></Field></CardContent></Card></div>
+      <div><Card><CardHeader><CardTitle>Publishing</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Status"><select className="w-full rounded-md border px-3 py-2 text-sm" value={form.status} onChange={e => update('status', e.target.value)}><option value="draft">Draft</option><option value="published">Published</option></select></Field><Field label="Publish Date"><Input type="datetime-local" value={form.publishDate} onChange={e => update('publishDate', e.target.value)} /></Field><Field label="Author"><Input value={form.author} onChange={e => update('author', e.target.value)} /></Field><Button type="submit" className="w-full" disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{selected ? 'Save Changes' : 'Create Content'}</Button></CardContent></Card></div>
+    </form>
+  </div>;
 
   return <div className="space-y-6">
     <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between"><div><Button variant="ghost" onClick={onBack}><ArrowLeft className="mr-2 h-4 w-4" />Dashboard</Button><h1 className="mt-4 text-3xl font-semibold">Content</h1><p className="mt-1 text-sm text-stone-500">Blog Posts, Beauty Tips and Salon News</p></div><div className="flex flex-wrap gap-2"><Button onClick={() => openNew('blog')}><Plus className="mr-2 h-4 w-4" />New Blog</Button><Button variant="outline" onClick={() => openNew('tip')}><FilePlus2 className="mr-2 h-4 w-4" />New Tip</Button><Button variant="outline" onClick={() => openNew('news')}>New News</Button></div></div>
