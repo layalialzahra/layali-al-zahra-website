@@ -18,7 +18,8 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - Secure authentication is complete: salted `scrypt`, signed 8-hour HttpOnly sessions, same-origin checks, login/logout, password change, setup and login-abuse protection.
 - Stage 3 unified content model/API is implemented for `blog | tip | news`, including validation, normalization, sanitization, indexes, CRUD, search/filter/pagination, duplicate, publish/unpublish and public published-only reads.
 - Stage 4 branded admin content editor is complete with responsive create/edit/delete/duplicate/publish controls and production image upload through Vercel Blob.
-- Stage 5 public Blog/News/Beauty Tips route foundations are implemented.
+- Stage 4.1 is now the mandatory presentation/experience gate before Stage 5 execution: public Tips/Blog/News discovery, homepage content presentation, navigation and complete admin UI/UX are being aligned to the existing Layali Al Zahra visual language.
+- Stage 5 public Blog/News/Beauty Tips route foundations are implemented, but Stage 5 execution and final acceptance are blocked until Stage 4.1 is accepted.
 - Production Content API previously failed because of a shared content-module `SyntaxError`; diagnostic isolation identified it and the sanitizer syntax was corrected.
 - Production content health confirmed MongoDB, content module, database, collection, query, serialization and four indexes.
 - A real Blog Post was created and published from the CMS and appears in the admin list.
@@ -44,6 +45,8 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The temporary image-test content was deleted after public verification; no test content remains in the CMS.
 - Stage 4 mobile polish is complete: admin controls, filters, editor cards, action buttons and spacing now adapt cleanly to narrow screens.
 - Stage 4 News UX is complete: News creation defaults to the News category, exposes News-specific summary/headline guidance and restricts News category choices to the relevant salon/news categories.
+- Stage 4.1 implementation adds clean public navigation for Tips, Blog and News, branded animated public listing experiences, DB-driven homepage content showcases and a substantially restructured branded admin login/dashboard/navigation shell.
+- Stage 4.1 also adds a protected, idempotent demo-content seed action so management can review realistic Blog, Tip and News records in both the CMS and public website, then delete them normally.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -53,7 +56,8 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
 | 3 — CMS Foundation | 🟢 Complete | API safety, CRUD, draft privacy, publish/unpublish, public API and Blog detail acceptance completed |
 | 4 — Admin Content Editor | 🟢 Complete | Responsive editor/list, News UX, Blob storage, image upload and live acceptance completed |
-| 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven routes, pagination, stable detail links and content SEO foundation completed; migration and live acceptance remain |
+| 4.1 — Public Content Presentation & Admin UX | 🟡 In progress | Implementation committed; live visual/functional acceptance remains before Stage 5 can start |
+| 5 — Public Tips/Blog/News | 🔒 Blocked | Route/API foundations exist, but Stage 5 execution is deliberately held until Stage 4.1 acceptance is complete |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
@@ -167,7 +171,89 @@ Salon: News, Offers, Announcements.
 - [x] Production image upload/select works: live upload, CMS preview and public Blog image rendering verified.
 - [x] Draft/publish controls exist and were live-tested.
 
-## 10. Stage 5 — Public Tips/Blog/News
+## 9.1. Stage 4.1 — Public Content Presentation & Admin UX — IMPLEMENTATION IN PROGRESS / ACCEPTANCE PENDING
+
+**Hard gate:** Stage 5 must not start until every applicable Stage 4.1 implementation and live acceptance item below is complete.
+
+### A. Public content information architecture
+- [x] Add `Tips`, `Blog` and `News` as first-class public navigation options.
+- [x] Keep stable public routes: `/beauty-tips`, `/blog`, `/news` and their slug detail routes.
+- [x] Make navigation to Tips/Blog/News use clean public paths rather than hash-only navigation.
+- [x] Preserve existing Home, Services, Packages, Offers and Contact navigation.
+- [ ] Live-verify every new navigation item from desktop and mobile header states.
+
+### B. Public listing-page visual language
+The listing pages must intentionally follow the existing Offers page visual system rather than introducing a separate editorial design:
+- [x] Rose/pink gradient page background consistent with Offers.
+- [x] Tangerine display heading and supporting introductory copy.
+- [x] Responsive card grid with 3 columns on large screens and fewer columns on smaller screens.
+- [x] Large featured image area with rounded card container and hover image scale.
+- [x] Branded category/content badge.
+- [x] Title, excerpt, date and clear read-through CTA.
+- [x] Loading, error and empty states styled as part of the same visual system.
+- [x] Load more pagination retained for larger content libraries.
+- [x] Scroll-in card animation added without making content difficult to scan.
+- [ ] Live visual verification against `/offers` at desktop and mobile widths.
+
+### C. Homepage content presentation
+- [x] Add DB-driven homepage content showcases for Beauty Tips, Beauty Journal and Salon News.
+- [x] Reuse the homepage's established animated carousel language: 3 cards on desktop, 1 on mobile, automatic advancement, directional controls and motion transitions.
+- [x] Each homepage showcase links directly to the corresponding stable content detail route.
+- [x] Each showcase has a clear View All CTA to the dedicated listing page.
+- [x] Homepage content is fetched from the public published-only API so publishing from the CMS can update the content without a frontend code edit.
+- [ ] Live verify all three homepage showcases render correctly with demo content and retain acceptable performance.
+- [ ] Live verify desktop/mobile carousel controls, automatic transitions and stable links.
+
+### D. Admin login UX
+- [x] Replace the plain white/dialog presentation with a branded split login/setup experience.
+- [x] Use the website's logo, rose/pink gradient family, Tangerine display typography and Montserrat body typography.
+- [x] Maintain all existing authentication/security behavior; this is a presentation-layer redesign only.
+- [x] Keep clear setup, login, error, success and loading states.
+- [x] Preserve minimum 12-character password requirements and secure credential autocomplete behavior.
+- [ ] Live verify login/setup on desktop and mobile without changing authentication semantics.
+
+### E. Admin workspace UX
+- [x] Restructure `/admin` into a clear dashboard/workspace shell with branded header, sidebar navigation and mobile drawer.
+- [x] Provide clear primary sections: Dashboard, Content, Website (future), Media (future), Settings.
+- [x] Add branded dashboard statistics for Blog, Beauty Tips and News.
+- [x] Add prominent Create Content action.
+- [x] Add View Website action without exposing the admin publicly in the website navigation.
+- [x] Keep future modules visibly separated as later modules instead of presenting disabled functionality as active.
+- [x] Keep the existing Content Manager CRUD/editor functionality available inside the new shell.
+- [x] Keep Settings focused on the existing secure password-change function.
+- [x] Provide clear success/error messaging and mobile navigation behavior.
+- [ ] Live verify nontechnical usability: a first-time admin should be able to identify where to create, edit, publish, unpublish, duplicate and delete content without developer assistance.
+
+### F. Demo content for management review
+- [x] Add a protected idempotent demo-content seed endpoint.
+- [x] Seed at least two Blog items, two Beauty Tips and two Salon News items.
+- [x] Seed realistic titles, excerpts, body/Tip fields, categories, tags, authors, related services where useful, dates and featured images.
+- [x] Base educational content on reputable research: American Academy of Dermatology guidance for hair/sun care and current 2026 beauty trend reporting for editorial examples.
+- [x] Make demo content normal CMS records so management can edit, publish/unpublish, duplicate and delete them using existing functionality.
+- [x] Add a visible admin action to load the demo content safely and repeatedly without creating duplicate slugs.
+- [ ] Live seed and verify the demo content in the admin list.
+- [ ] Live verify the seeded content on Tips, Blog, News and homepage showcases.
+- [ ] Delete the demo records after management review when requested and verify the public pages update accordingly.
+
+### G. Deployment/change-control constraint
+- [x] Stage 4.1 implementation is bundled into a single Git tree/commit so the code, seed endpoint, navigation, public presentation and BRD update deploy together.
+- [x] Avoid manual duplicate Vercel deployments during this implementation pass; the Git-connected staging project should receive the single code commit automatically.
+- [ ] After live acceptance, make only the required BRD acceptance-status update before Stage 5 begins.
+
+### Stage 4.1 acceptance gate
+- [ ] Public Tips page matches the Offers visual language and works on desktop/mobile.
+- [ ] Public Blog page matches the Offers visual language and works on desktop/mobile.
+- [ ] Public News page matches the Offers visual language and works on desktop/mobile.
+- [ ] Homepage Tips/Blog/News showcases display seeded published records with the intended animation and controls.
+- [ ] Header navigation exposes Home, Services, Packages, Offers, Tips, Blog, News and Contact with correct active states and clean content URLs.
+- [ ] Admin login/setup presentation is branded and clear on desktop/mobile.
+- [ ] Admin dashboard/sidebar/mobile drawer are clear and usable.
+- [ ] Existing CMS CRUD, publish/unpublish, duplicate, delete, image upload and password-change functionality remain intact after the UI restructuring.
+- [ ] Demo seed is idempotent and produces the planned sample records without duplicate content.
+- [ ] Demo records can be removed through the existing CMS and disappear from public pages without a frontend code change.
+- [ ] No production-domain cutover occurs until Stage 5 is accepted.
+
+## 10. Stage 5 — Public Tips/Blog/News — BLOCKED UNTIL STAGE 4.1 ACCEPTANCE
 - [x] Beauty Tips DB-driven published-only API.
 - [x] Protected idempotent six-tip migration tooling.
 - [x] Blog/News listing/detail foundations.
@@ -218,6 +304,7 @@ Salon: News, Offers, Announcements.
 - [x] Mobile admin polish.
 - [x] Public design preserved.
 - [x] Branded admin shell.
+- [ ] Stage 4.1 final public/admin visual acceptance.
 
 ### Performance/reliability
 - [x] Cached MongoDB connections.
@@ -341,4 +428,15 @@ Salon: News, Offers, Announcements.
 - Deleted the temporary image-test content after verification; the CMS has no retained test record.
 - Applied mobile admin polish to the content list, filters, editor layout, buttons, headings and image controls so the workspace remains usable on narrow screens.
 - Added richer News-specific editor guidance and category behavior without changing the public design or the shared content model.
-- Stage 4 acceptance is now complete; Stage 5 remains the next active workstream for six-tip migration and final public-content acceptance.
+- Stage 4 acceptance is now complete; Stage 5 is held behind the new Stage 4.1 experience gate.
+
+### 2026-09-14 — Stage 4.1 public presentation/admin UX implementation pass
+- Reviewed the existing Offers page, homepage carousel system, Tips page, Blog/News listing foundations and public navigation structure to establish the visual baseline for Tips/Blog/News.
+- Added first-class Tips, Blog and News navigation with clean public paths while preserving the existing website navigation and booking CTA.
+- Restructured public Blog/News and Beauty Tips listing cards to follow the Offers visual language: rose/pink gradients, Tangerine headings, branded badges, image hover motion, responsive cards and clear read-through actions.
+- Added animated DB-driven Tips, Blog and News homepage showcases using the same three-card desktop / one-card mobile carousel language already used elsewhere on the homepage.
+- Replaced the plain admin presentation with a branded login/setup screen, responsive workspace shell, dashboard statistics, clear navigation, mobile drawer, settings view and demo-content action while preserving existing authentication and CMS behavior.
+- Added protected idempotent demo-content seeding with two Blogs, two Beauty Tips and two News items so management can review the complete flow without hand-entering sample data.
+- Research basis for sample/editorial content includes American Academy of Dermatology guidance on hair and sun care, FDA cosmetic/nail safety guidance and current 2026 beauty-trend reporting from established beauty publications.
+- Bundled the Stage 4.1 code and BRD update into one Git tree/commit to minimize Vercel deployment usage.
+- Stage 4.1 remains `🟡 In progress` until the live staging acceptance checklist is verified; Stage 5 is explicitly blocked until then.

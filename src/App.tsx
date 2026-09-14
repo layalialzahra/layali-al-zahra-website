@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './components/HomePage';
+import HomeContentShowcase from './components/HomeContentShowcase';
 import ServicesPage from './components/ServicesPage';
 import PackagesPage from './components/PackagesPage';
 import OffersPage from './components/OffersPage';
@@ -29,12 +30,14 @@ const pageTitles: Record<string, string> = {
   admin: 'Admin | Layali Al Zahra Beauty Lounge',
 };
 
+const cleanPath = (path: string) => path.replace(/\/+$/, '') || '/';
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
 
   useEffect(() => {
     const handleLocationChange = () => {
-      const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+      const pathname = cleanPath(window.location.pathname);
       const hash = window.location.hash.slice(1);
       let page = hash || 'home';
       if (pathname === '/admin') page = 'admin';
@@ -44,6 +47,7 @@ export default function App() {
       else if (pathname.startsWith('/blog/')) page = `blog:${decodeURIComponent(pathname.slice('/blog/'.length))}`;
       else if (pathname === '/news') page = 'news';
       else if (pathname.startsWith('/news/')) page = `news:${decodeURIComponent(pathname.slice('/news/'.length))}`;
+      else if (pathname === '/' || pathname === '/home') page = 'home';
       setCurrentPage(page);
       const staticTitle = pageTitles[page] || pageTitles[page.split(':')[0]];
       if (staticTitle) document.title = staticTitle;
@@ -52,17 +56,39 @@ export default function App() {
     window.addEventListener('hashchange', handleLocationChange);
     window.addEventListener('popstate', handleLocationChange);
     handleLocationChange();
-    return () => { window.removeEventListener('hashchange', handleLocationChange); window.removeEventListener('popstate', handleLocationChange); };
+    return () => {
+      window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('popstate', handleLocationChange);
+    };
   }, []);
 
-  const handleNavigate = (page: string) => { window.location.hash = page; window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const handleNavigate = (page: string) => {
+    const pathMap: Record<string, string> = {
+      home: '/home',
+      tips: '/beauty-tips',
+      blog: '/blog',
+      news: '/news',
+    };
+    const path = pathMap[page];
+    if (path) {
+      window.history.pushState({}, '', path);
+      setCurrentPage(page);
+      const staticTitle = pageTitles[page];
+      if (staticTitle) document.title = staticTitle;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    window.location.hash = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const renderPage = () => {
     if (currentPage.startsWith('tip:')) return <ContentDetailPage type="tip" slug={currentPage.slice(4)} />;
     if (currentPage.startsWith('blog:')) return <ContentDetailPage type="blog" slug={currentPage.slice(5)} />;
     if (currentPage.startsWith('news:')) return <ContentDetailPage type="news" slug={currentPage.slice(5)} />;
     switch (currentPage) {
-      case 'home': return <HomePage onNavigate={handleNavigate} />;
+      case 'home':
+        return <><HomePage onNavigate={handleNavigate} /><HomeContentShowcase onNavigate={handleNavigate} /></>;
       case 'services': return <ServicesPage />;
       case 'packages': return <PackagesPage />;
       case 'offers': return <OffersPage />;
