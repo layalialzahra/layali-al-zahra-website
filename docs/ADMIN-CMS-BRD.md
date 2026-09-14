@@ -20,13 +20,12 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - Stage 4 branded admin content editor is implemented with create/edit/delete/duplicate/publish controls and image-upload foundation.
 - Stage 5 public Blog/News/Beauty Tips route foundations are implemented.
 - Production Content API previously failed because of a shared content-module `SyntaxError`; diagnostic isolation identified it and the sanitizer syntax was corrected.
-- Production content health then confirmed MongoDB, content module, database, collection, query, serialization and four indexes.
+- Production content health confirmed MongoDB, content module, database, collection, query, serialization and four indexes.
 - A real Blog Post was created and published from the CMS and appears in the admin list.
-- The public detail API initially returned `Content not found` for that published slug. `api/content.js` has now been hardened so detail requests first locate the published record and then apply publication-date validation in application code, including compatibility with legacy string-form dates.
-- Latest code commit before the current diagnostic-only change: `95d391869ac75de4bdb9c62a9b57ce5acf89b20c`.
-- The public API fix deployed successfully through Vercel, but the owner retest still returns `Content not found` for the published Blog slug.
-- A safe authenticated content-health enhancement now exposes only content metadata (ID, type, title, slug, status and publish date) so the stored record can be compared directly with the failing public slug without exposing article bodies or other content data.
-- Current next action is to inspect `/api/admin/content-health` while signed in, identify the exact stored slug/type/status/date, then fix the mismatch at the source rather than adding further blind public-route changes.
+- Public Blog detail lookup was hardened to locate the published record first and then validate publication date, including legacy string-form dates.
+- The public API fix deployed successfully, but the owner initially still received `Content not found`.
+- Authenticated content-health metadata then showed the actual stored record had a future publish date: `2026-09-15T13:31:00Z`. This correctly excluded it from the public API.
+- The owner has now corrected the Blog Post publish date in the CMS so it is no longer future-dated. Final public API/detail-route acceptance is pending live retest.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -34,7 +33,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
-| 3 — CMS Foundation | 🟡 In progress | CMS create/publish works; stored-vs-public slug lookup mismatch remains under diagnosis |
+| 3 — CMS Foundation | 🟡 In progress | CMS create/publish works; future publish-date mismatch corrected; final public acceptance pending |
 | 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; production image storage and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven foundations implemented; live detail/public acceptance remains |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
@@ -74,7 +73,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 
 ## 8. Stage 3 — CMS Foundation
 ### Content model
-One model with `type: blog | tip | news`. Required content metadata includes title, slug, excerpt/body, featured image/alt text, category/tags, author, related service, SEO title/meta/social image, status, publish date, timestamps and stable ID. Beauty Tips additionally support `tip1`–`tip5`.
+One model with `type: blog | tip | news`. Metadata includes title, slug, excerpt/body, featured image/alt text, category/tags, author, related service, SEO title/meta/social image, status, publish date, timestamps and stable ID. Beauty Tips additionally support `tip1`–`tip5`.
 
 ### Categories
 Hair: Hair Care, Hair Treatments, Hair Colour, Hair Extensions.  
@@ -104,7 +103,8 @@ Salon: News, Offers, Announcements.
 - [x] Production Blog create/publish proven.
 - [x] Public API index setup made non-blocking.
 - [x] Public detail publication-date compatibility hardened for BSON Date/string values.
-- [x] Authenticated health diagnostic now exposes safe content metadata for slug/type/status/date troubleshooting.
+- [x] Health diagnostic exposes safe content metadata for slug/type/status/date troubleshooting.
+- [x] Future publish-date mismatch identified and corrected in production content.
 - [ ] Verify unique slugs against production data.
 - [ ] Verify draft privacy publicly.
 - [ ] Verify safe API errors/no secrets in production.
@@ -254,7 +254,6 @@ Salon: News, Offers, Announcements.
 ### 2026-09-14 — Stage 3 public Blog detail troubleshooting
 - Owner confirmed the published Blog appears in the CMS but its public API returned `Content not found`.
 - Hardened `api/content.js` detail lookup to fetch the published record first and perform publication-date validation in application code, including legacy string-form dates.
-- Updated this BRD immediately with the code change.
 - Vercel deployment for the public API fix completed successfully, but the owner retest still returned `Content not found`.
 
 ### 2026-09-14 — Stage 3 stored-content diagnostic
@@ -262,3 +261,8 @@ Salon: News, Offers, Announcements.
 - The diagnostic reports count plus recent content ID/type/title/slug/status/publish date, without returning body, image or SEO fields.
 - Purpose: identify whether the failing public URL differs from the actual stored `{type,slug,status,publishDate}` record before making another public API change.
 - This BRD was updated in the same change as the diagnostic code.
+
+### 2026-09-14 — Stage 3 publish-date correction
+- Diagnostic showed the published Blog Post was scheduled for `2026-09-15T13:31:00Z`, which was in the future and therefore correctly excluded by the public API.
+- Owner corrected the Blog Post publish date in the CMS so it is no longer future-dated.
+- Final public Blog API/detail-route acceptance remains pending live retest.
