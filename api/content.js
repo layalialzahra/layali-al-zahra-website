@@ -2,6 +2,7 @@ import { getDb } from "./_lib/mongodb.js";
 import { ensureContentIndexes, serializeContent } from "./_lib/content.js";
 
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
     return res.status(405).json({ success: false, message: "Method not allowed" });
@@ -17,9 +18,6 @@ export default async function handler(req, res) {
     const limit = Math.min(24, Math.max(1, Number.parseInt(String(req.query?.limit || "12"), 10) || 12));
 
     if (slug) {
-      // Detail reads deliberately fetch the published record first, then apply
-      // the publication-date rule in JavaScript. This remains correct if an
-      // older/migrated record contains publishDate as a string instead of a BSON Date.
       const detailFilter = { status: "published", slug };
       if (type) detailFilter.type = type;
       const item = await collection.findOne(detailFilter);

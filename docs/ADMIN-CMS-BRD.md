@@ -30,8 +30,14 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The admin editor now converts stored dates to browser-local time for editing and converts local input back to ISO UTC before saving.
 - The first deployment of that editor fix exposed a JSX closing-tag error in the publishing panel; the error was corrected by restoring the missing closing `</div>` before `</CardContent>`.
 - The corrected component preserves the local/UTC publish-date handling and the existing CMS functionality.
-- The markup correction is now committed on `main` as `974620b69f62d6ee15531d82478cec39a86c6b9e`.
-- Final live public API/detail-route acceptance is pending a successful deployment and one save of the Blog Post through the corrected editor.
+- The markup correction is committed on `main` as `974620b69f62d6ee15531d82478cec39a86c6b9e`.
+- The new Vercel project is now the active Git-connected staging environment; the old Vercel project is disconnected from GitHub and remains the stable production-domain deployment until final cutover.
+- The new Vercel project has the four required MongoDB/admin environment variables in Production and Preview.
+- Public content responses are now explicitly `no-store`, so CMS publishing does not depend on a new frontend deployment to become visible.
+- Public Blog/News listing pages now use API pagination and a Load more flow; Beauty Tips now use stable slug detail links and the same pagination pattern.
+- Public content detail pages now set per-content title, description, canonical URL, Open Graph/Twitter metadata and JSON-LD, and expose related-service context when present.
+- Content-body sanitization was tightened to remove additional executable/embed/form elements and dangerous URL schemes.
+- Final live public acceptance, six-tip migration, production Blob storage configuration and end-to-end nontechnical publishing acceptance remain pending.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -39,13 +45,13 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
-| 3 — CMS Foundation | 🟡 In progress | Date handling and build markup corrected; final public acceptance pending |
-| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; publish-date timezone handling and JSX markup corrected; production image storage and final acceptance remain |
-| 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven foundations implemented; live detail/public acceptance remains |
+| 3 — CMS Foundation | 🟡 In progress | Core model/API/date handling/sanitization completed; final live acceptance remains |
+| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions/date handling completed; Blob store configuration, mobile polish and final acceptance remain |
+| 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven routes, pagination, stable detail links and content SEO foundation completed; migration and live acceptance remain |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
-| 9 — SEO & Analytics | ⬜ Not started | Deferred until content system is stable |
+| 9 — SEO & Analytics | ⬜ Not started | Deferred until content system is stable; per-content SEO foundation is already part of Stage 5 |
 
 ## 5. Stage 0 — Baseline & Safety — COMPLETE
 - [x] Inspect existing routes/code.
@@ -92,7 +98,7 @@ Salon: News, Offers, Announcements.
 - [x] Slug normalization.
 - [x] Tag normalization/deduplication.
 - [x] Server validation/normalization.
-- [x] Basic body sanitization.
+- [x] Body sanitization, including executable embeds, event handlers and dangerous URL schemes.
 - [x] Unique `{type,slug}` and feed/update indexes.
 - [x] Index initialization retry and non-blocking warning handling.
 - [x] Application-level slug collision guard.
@@ -113,6 +119,7 @@ Salon: News, Offers, Announcements.
 - [x] Future publish-date mismatch identified and corrected in production content.
 - [x] Admin local/UTC publish-date conversion corrected.
 - [x] Corrected JSX closing-tag regression introduced while applying the publish-date editor fix.
+- [x] Public API responses explicitly disable caching for immediate CMS publishing visibility.
 - [ ] Verify unique slugs against production data.
 - [ ] Verify draft privacy publicly.
 - [ ] Verify safe API errors/no secrets in production.
@@ -147,7 +154,7 @@ Salon: News, Offers, Announcements.
 - [x] JPG/PNG/WebP/GIF, max 4 MB.
 - [x] File picker/upload state/preview.
 - [ ] Production Blob store configuration and authentication verification.
-- [ ] Upload failure handling verification.
+- [x] Upload endpoint has explicit validation and user-safe failure handling; live failure-path verification remains pending.
 
 ### Acceptance
 - [ ] Nontechnical admin can create/edit/delete production content end-to-end.
@@ -160,13 +167,16 @@ Salon: News, Offers, Announcements.
 - [x] Blog/News listing/detail foundations.
 - [x] SPA route recognition and Vercel rewrites for listing/detail routes.
 - [x] Listing cards use stable slug URLs.
+- [x] Blog/News listing pagination and Load more UI.
+- [x] Beauty Tips stable slug detail links and pagination/Load more UI.
+- [x] Detail pages expose H1, alt text, publication date, category, tags and related-service context when available.
+- [x] Per-content title/description/canonical/Open Graph/Twitter metadata and JSON-LD foundation.
 - [ ] Execute and verify six-tip migration.
 - [ ] Verify drafts remain private.
 - [ ] Final public design verification.
-- [ ] Beauty Journal listing UX/pagination/load-more acceptance.
 - [ ] Final live route verification.
-- [ ] Stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance.
-- [ ] Per-content SEO/canonical/OG/structured content/internal links.
+- [ ] Live stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance.
+- [ ] Live SEO/canonical/OG/structured content/internal-link acceptance.
 - [ ] Publishing without code deployment acceptance.
 
 ## 11. Stages 6–9 — Deferred
@@ -211,6 +221,7 @@ Salon: News, Offers, Announcements.
 - [ ] No large binaries in MongoDB.
 - [ ] Final public performance verification.
 - [x] Content API remains available when individual index initialization emits warnings.
+- [x] Public content reads are not cached by the API layer, enabling publishing without a frontend deployment.
 
 ## 13. Core MVP Checklist
 - [x] Real authentication.
@@ -280,11 +291,22 @@ Salon: News, Offers, Announcements.
 ### 2026-09-14 — Stage 3 admin publish-date timezone correction
 - Fixed the CMS editor's `datetime-local` handling so publish dates are displayed in the browser's local timezone and saved as explicit ISO UTC timestamps.
 - This prevents a UAE local publish time from being incorrectly interpreted as UTC and remaining future-dated.
-- Final public Blog API/detail-route acceptance remains pending deployment and retest.
+- Final public Blog API/detail-route acceptance remained pending deployment and retest.
 
 ### 2026-09-14 — Stage 3 CMS build markup correction
 - Vercel production build failed after the publish-date editor change because the Publishing panel had a missing closing `</div>` before `</CardContent>`.
 - Corrected the JSX nesting without changing the publish-date timezone logic or CMS behavior.
 - The corrected component was then committed to `main` as `974620b69f62d6ee15531d82478cec39a86c6b9e`.
 - The BRD was updated in the same change to maintain the mandatory change-control record.
-- Final live public API/detail-route acceptance remains pending a successful production deployment.
+- Final live public API/detail-route acceptance remained pending a successful production deployment.
+
+### 2026-09-14 — Stage 3/4/5 public-content readiness pass
+- Switched active development to the new Git-connected Vercel project while preserving the old production deployment as a disconnected rollback/stability copy.
+- Kept MongoDB/admin environment variables aligned on the new project.
+- Added explicit `no-store` handling to public content API responses so publishing is not dependent on a frontend deployment.
+- Tightened content-body sanitization against additional executable/embed/form elements and dangerous URL schemes.
+- Added paginated Load more flows to Blog/News and Beauty Tips listings.
+- Added stable Beauty Tip slug links to detail routes.
+- Added per-content canonical, description, Open Graph/Twitter metadata and JSON-LD, plus related-service context on detail pages.
+- This BRD is updated in the same change as the code changes above.
+- Remaining blockers are live acceptance, six-tip migration and Vercel Blob store setup/authentication verification.

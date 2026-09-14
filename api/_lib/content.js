@@ -19,9 +19,10 @@ export function normalizeTags(value) {
 }
 export function sanitizeBody(value) {
   return String(value || "")
-    .replace(/<\s*(script|style|iframe|object|embed)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, "")
+    .replace(/<\s*(script|style|iframe|object|embed|form|textarea|select|button)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, "")
+    .replace(/<\s*\/??\s*(form|textarea|select|button)\b[^>]*>/gi, "")
     .replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-    .replace(/\s(href|src)\s*=\s*(["'])\s*javascript:[\s\S]*?\2/gi, " $1=$2#");
+    .replace(/\s(href|src)\s*=\s*(["'])\s*(?:(?:javascript|vbscript|data|file):)[\s\S]*?\2/gi, " $1=$2#");
 }
 export async function ensureContentIndexes() {
   if (!indexesPromise) {
@@ -38,8 +39,6 @@ export async function ensureContentIndexes() {
         try {
           await collection.createIndex(keys, options);
         } catch (error) {
-          // Index creation must not take the CMS offline. CRUD also performs
-          // an application-level type/slug collision check below.
           console.error("Content index initialization warning", { name: options.name, code: error?.code, message: error?.message });
         }
       }
