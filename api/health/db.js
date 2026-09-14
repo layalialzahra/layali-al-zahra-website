@@ -1,4 +1,4 @@
-import { getDb } from "./_lib/mongodb.js";
+import { getDb } from "../_lib/mongodb.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -7,10 +7,10 @@ export default async function handler(req, res) {
   }
   try {
     const db = await getDb();
-    const collections = await db.listCollections({}, { nameOnly: true }).toArray();
-    return res.status(200).json({ success: true, message: "MongoDB connected successfully", collections: collections.map(({ name }) => name) });
+    await db.command({ ping: 1 });
+    return res.status(200).json({ success: true, database: db.databaseName, message: "MongoDB connection is healthy" });
   } catch (error) {
-    console.error("MongoDB test endpoint failed", error);
+    console.error("MongoDB health check failed", error);
     return res.status(503).json({ success: false, message: "Database connection unavailable" });
   }
 }
