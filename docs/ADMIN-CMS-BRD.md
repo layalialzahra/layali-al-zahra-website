@@ -15,166 +15,242 @@ Convert the hard-coded salon website into a professional, manageable CMS while p
 ## 2. Target Architecture
 Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → secure login/session → authenticated admin APIs → MongoDB Atlas.
 
-## 3. Audit Findings
-- Vite + React 18 + TypeScript; hash-based navigation.
-- The original `AdminPage.tsx` used fake client-only authentication; this is being replaced.
-- `TipsPage.tsx` contains six hard-coded tips.
-- MongoDB dependency and reusable connection helper exist.
-- `.gitignore` excludes environment secrets and `.env.example` documents required variables.
-- Production build/deployment verification remains an independent Stage 0 check.
+## 3. Current State
+- MongoDB Atlas production connection is complete and the live database health endpoint previously confirmed database `layalialzahra`.
+- Secure authentication backend is implemented: password hashing, signed 8-hour HttpOnly session cookie, session verification, same-origin checks, login/logout, and one-time initial admin setup.
+- `/admin` now uses the real authentication API rather than client-only fake credentials. It checks the existing session on load, supports first-time setup, login, logout, loading states and generic errors.
+- CMS modules are intentionally not implemented yet; the authenticated dashboard currently acts as the Stage 2 shell.
+- Production acceptance testing, basic login abuse protection and admin password-change flow remain open before Stage 2 can be marked complete.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Auth backend restored and `/admin` UI wired to unified session API; live acceptance, rate limiting and password change remain |
+| 2 — Secure Admin Authentication | 🟡 In progress | Backend and `/admin` session integration implemented; live acceptance, rate limiting and password change remain |
 | 3 — CMS Foundation | ⬜ Not started | Depends on Stage 2 |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
-| 6 — Offers | ⬜ Not started | Deferred |
+| 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
-| 9 — SEO & Analytics | ⬜ Not started | Deferred |
+| 9 — SEO & Analytics | ⬜ Not started | Deferred until content system is stable |
 
 ## 5. Stage 0 — Baseline & Safety
-- [x] Inspect current production code/routes and API/database experiments.
-- [x] Record admin/CMS limitations and preserve public design.
-- [x] Establish BRD as project source of truth.
-- [ ] Independently confirm current Vercel production build.
-- [ ] Establish/verify a known-good rollback checkpoint.
+### Completed
+- [x] Inspect existing routes and code.
+- [x] Identify database/API experiments and limitations.
+- [x] Preserve public design.
+- [x] Establish and maintain this BRD.
+### Open
+- [ ] Confirm current Vercel production build/deployment works independently.
+- [ ] Establish/verify rollback checkpoint.
 
-## 6. Stage 1 — MongoDB Production Connection
-- [x] Cached reusable MongoDB connection helper.
-- [x] Server-side-only URI usage and production-safe DB health endpoint.
-- [x] `.gitignore` / `.env.example` without secrets.
-- [x] Atlas project/cluster/database user configured and exposed password rotated.
-- [x] Vercel access/network/env configuration completed and redeployed.
-- [x] Live `/api/health/db` confirmed database `layalialzahra` on 14 September 2026.
-- [ ] CMS collections/models/indexes/authenticated CRUD intentionally deferred to Stage 3.
+## 6. Stage 1 — MongoDB Production Connection — COMPLETE
+- [x] Production MongoDB Atlas cluster configured.
+- [x] Vercel `MONGODB_URI` configured as a Production secret.
+- [x] `MONGODB_DB_NAME=layalialzahra` configured.
+- [x] Reusable cached MongoDB connection helper implemented.
+- [x] Generic production health/error handling implemented.
+- [x] Live health check confirmed the production API reaches `layalialzahra`.
+- [x] CMS collections intentionally deferred to later stages.
 
 ## 7. Stage 2 — Secure Admin Authentication
-### Admin access / UX
-- [x] `/admin` remains a direct private URL; no public Admin nav link.
-- [x] Public navigation/design unchanged.
-- [x] Branded email/password login with loading/error states.
-- [x] Fake client-only login removed from the admin UI.
-- [x] UI checks server session before dashboard access.
-- [x] One-time setup form appears only when server reports no admin account.
-- [x] Setup/login requests include credentials so the HttpOnly session cookie is used.
+### 7.1 Admin access model
+- [x] `/admin` is the direct private admin URL.
+- [x] No public navigation link is required.
+- [x] Public website design/navigation remains unchanged.
 
-### Authentication architecture
-- [x] Credentials validated server-side.
-- [x] Password never stored in frontend/source; scrypt hash only in MongoDB.
-- [x] Signed session with HttpOnly, SameSite=Lax, Secure in production and 8-hour expiry.
-- [x] Reusable `requireAdmin` helper for protected APIs.
-- [x] Generic authentication errors and server-side logging.
-- [x] Same-origin check for state-changing auth requests.
-- [x] Unified `/api/admin/auth`: GET session/setup state; POST login or logout.
-- [x] `/api/admin/setup`: one-time setup-token-protected initial admin creation.
-- [x] Required `ADMIN_SESSION_SECRET` and `ADMIN_SETUP_TOKEN` documented in `.env.example` and configured in production Vercel.
-- [ ] Basic login abuse protection/rate limiting appropriate to serverless architecture.
+### 7.2 Login and first-time setup
+- [x] Admin login form uses admin email + password.
+- [x] First-time setup is available only when no admin account exists and requires `ADMIN_SETUP_TOKEN`.
+- [x] Password confirmation is required during setup.
+- [x] Loading states and generic user-facing errors are implemented.
+- [x] Password values are not persisted in frontend state after successful authentication.
 
-### Admin account management
-- [x] Secure initial admin provisioning without GitHub password storage.
-- [ ] Settings → Admin Account credential change.
-- [ ] Password change requires current authenticated session and current-password verification.
+### 7.3 Server-side security
+- [x] Credentials are validated server-side.
+- [x] Passwords are hashed with salted `scrypt` before storage.
+- [x] Password hashes are never returned to the frontend.
+- [x] Sessions use a signed token with an 8-hour expiry.
+- [x] Session cookie is HttpOnly, SameSite=Lax and Secure in production.
+- [x] Protected API helper validates the session server-side.
+- [x] Same-origin protection is applied to authentication writes.
+- [x] Generic authentication errors avoid exposing sensitive backend details.
+- [ ] Add basic login abuse/rate limiting.
+- [ ] Add authenticated admin password-change flow under Settings → Admin Account.
 
-### Verification
-- [ ] Verify latest deployment serves `/api/admin/auth` and `/api/admin/setup` correctly.
-- [ ] Complete first-admin setup on production.
-- [ ] Verify successful login, cookie-backed refresh persistence, logout and unauthorized protected API behavior.
+### 7.4 `/admin` integration
+- [x] Removed fake client-only `isLoggedIn` authentication flow.
+- [x] Admin UI checks the server session on load.
+- [x] Valid session opens the authenticated dashboard shell.
+- [x] Login creates the server session.
+- [x] Logout clears the session cookie and returns to login.
+- [x] Unauthenticated users cannot access the authenticated dashboard through the UI.
+- [ ] Verify protected API access independently in production.
+- [ ] Verify login/logout/setup end-to-end on the deployed site.
 
-**Stage 2 acceptance:** Unauthenticated visitors cannot access the dashboard/protected APIs; correct credentials create a secure session; refresh retains access during session lifetime; logout removes access; direct unauthenticated protected API calls fail.
+### Stage 2 acceptance
+- [ ] Unauthenticated user sees only login/setup as appropriate.
+- [ ] Protected dashboard/API rejects unauthenticated access.
+- [ ] Valid credentials create a valid session.
+- [ ] Logout removes authenticated access.
+- [ ] Session expiry is enforced.
+- [ ] Basic abuse protection is present.
+- [ ] Admin can change their password securely.
+- [ ] Production deployment passes end-to-end acceptance.
 
-## 8. Stage 3 — CMS / Database Foundation
-Build one reusable content model, not three unrelated systems. `type: blog | tip | news`.
+## 8. Stage 3 — CMS Foundation
+### Unified content model
+Use one content system with `type: blog | tip | news`.
 
-### Content fields
-- [ ] type, title, slug, excerpt, body.
-- [ ] featured image + alt text.
-- [ ] category, tags, author, related service.
-- [ ] SEO title, meta description, social image.
-- [ ] draft/published status and publish date/time.
-- [ ] created/updated timestamps and stable database ID.
+Required fields: type, title, slug, excerpt, body, featured image, alt text, category, tags, author, related service, SEO title, meta description, social image, draft/published, publish date, created/updated timestamps, stable ID.
 
-### Taxonomy
-Hair: Hair Care, Hair Treatments, Hair Colour, Hair Extensions. Beauty: Skincare, Nails, Brows & Lashes, Waxing. Lifestyle: Dubai Beauty, UAE Beauty, Seasonal, Events. Salon: News, Offers, Announcements. Categories must later be extendable without code changes.
+### Categories
+**Hair:** Hair Care, Hair Treatments, Hair Colour, Hair Extensions  
+**Beauty:** Skincare, Nails, Brows & Lashes, Waxing  
+**Lifestyle:** Dubai Beauty, UAE Beauty, Seasonal, Events  
+**Salon:** News, Offers, Announcements
 
-### Database/API rules
-- [ ] MongoDB Atlas production store; validated/normalized server input.
-- [ ] Unique slug constraint within relevant namespace/type.
-- [ ] Drafts never exposed through public APIs.
-- [ ] Indexes for type/status/slug/publish date/common filters.
-- [ ] Safe errors/no secrets in responses.
-- [ ] Authenticated create/read/update/delete/publish/unpublish/draft/search/filter/duplicate APIs.
-- [ ] Public published-content listing/filtering/slug APIs.
+Architecture must allow categories to be added without code changes.
 
-**Stage 3 acceptance:** Reusable content foundation safely supports authenticated CRUD/publishing and public APIs expose only intended published content.
+### Database/API requirements
+- [ ] Unique slugs within namespace/type.
+- [ ] Server validation and normalization.
+- [ ] Drafts private.
+- [ ] Appropriate indexes on type/status/slug/publish date/common filters.
+- [ ] Safe API errors; no secrets in responses.
+- [ ] Authenticated CRUD: create/read/update/delete, publish/unpublish, drafts, search/filter, duplicate.
+- [ ] Public APIs expose only published content.
 
-## 9. Stage 4 — Admin Content Editor & Dashboard
-Dashboard architecture: Dashboard; CONTENT → Blog Posts, Beauty Tips, Salon News, Offers, Announcements; WEBSITE → Services, Packages, Gallery, Testimonials; SETTINGS → SEO, Contact Details, Admin Account.
+### Acceptance
+- [ ] Authenticated APIs safely create/edit/delete/publish content.
+- [ ] Public APIs expose only intended published content.
 
-- [ ] Content lists with search, filters, title/category/status/date, edit, duplicate, publish/unpublish, confirmed delete, Add New and loading/error/empty states.
-- [ ] Blog editor: title, slug, category, featured image, excerpt, rich body, tags, related service, SEO/social fields, draft/publish and publish date/time.
-- [ ] Beauty Tip editor: title, description, featured image, Tip 1–Tip 5, related service, category/tags, SEO, draft/published state; tips editable without code.
-- [ ] Salon News editor: image/title/content/category/status/date for service/staff/equipment/holiday/Eid/Ramadan/renovation/event/product announcements.
-- [ ] Image/object storage (not MongoDB binaries), persisted URL/reference, alt text and upload failure handling.
+## 9. Stage 4 — Admin Content Editor
+### Dashboard structure
+ADMIN / Dashboard  
+CONTENT: Blog Posts, Beauty Tips, Salon News, Offers, Announcements  
+WEBSITE: Services, Packages, Gallery, Testimonials  
+SETTINGS: SEO, Contact Details, Admin Account
 
-**Stage 4 acceptance:** Non-technical admin can create/edit/delete, upload images, save drafts, publish/unpublish Blog/Tip/News without code.
+### Content lists
+- [ ] Show title/category/status/date.
+- [ ] Search and status/category/type filters.
+- [ ] Edit, duplicate, publish/unpublish, delete with confirmation.
+- [ ] Add new.
+- [ ] Loading/error/empty states.
 
-## 10. Stage 5 — Public Tips / Blog / News
-- [ ] Migrate six existing hard-coded Beauty Tips accurately.
-- [ ] DB-driven published listings; drafts private; loading/error/empty states.
-- [ ] Beauty Journal with featured/latest/category filters/article cards/mobile support.
-- [ ] Real routes: `/beauty-tips`, `/beauty-tips/:slug`, `/blog`, `/blog/:slug`, `/news`, `/news/:slug`.
-- [ ] Stable slugs, H1, full content, image alt, publication info, taxonomy, related services/internal links and 404 behavior.
-- [ ] Per-content title/meta/canonical/OG/H1/indexability.
+### Blog editor
+- [ ] Title, slug, category, featured image, alt text.
+- [ ] Excerpt and rich body editor.
+- [ ] Tags and related service.
+- [ ] SEO title/meta/keywords or tags/social image.
+- [ ] Draft/publish and publish date.
 
-**Stage 5 acceptance:** Six tips migrated, public pages DB-driven, publishing requires no deployment, each article has an indexable URL/metadata and drafts remain private.
+### Beauty Tip editor
+- [ ] Title, description, featured image.
+- [ ] Tip1–Tip5.
+- [ ] Related service, category/tags, SEO, draft/published.
+
+### News editor
+- [ ] Separate `news` type.
+- [ ] Support new service, staff, equipment, holiday hours, Eid, Ramadan, renovation, event, product line and similar announcements.
+- [ ] Image/title/text/date/status.
+
+### Image handling
+- [ ] Upload/select image.
+- [ ] Use object storage rather than MongoDB binary storage.
+- [ ] Persist URL/reference and alt text.
+- [ ] Handle upload failures clearly.
+
+### Acceptance
+- [ ] Nontechnical admin can create/edit/delete content without code.
+- [ ] Admin can upload/select images.
+- [ ] Admin can save drafts and publish/unpublish.
+
+## 10. Stage 5 — Public Tips/Blog/News
+- [ ] Replace hard-coded Tips content with DB-driven content.
+- [ ] Migrate six existing tips accurately.
+- [ ] Keep drafts private.
+- [ ] Preserve existing public design.
+- [ ] Build Beauty Journal listing with featured article, filters, latest cards and pagination/load-more if needed.
+- [ ] Implement `/beauty-tips`, `/beauty-tips/:slug`, `/blog`, `/blog/:slug`, `/news`, `/news/:slug`.
+- [ ] Stable slugs, full content, H1, image alt, publication info, category/tags, related service/internal links and 404 handling.
+- [ ] Per-content SEO: title, meta, canonical, OG image, structured content, alt text and internal links.
+- [ ] No code deployment required to publish content.
 
 ## 11. Stage 6 — Offers
-- [ ] CMS fields: title, descriptions, included services, price/original price, dates, image, category/tag, status, CTA/booking.
-- [ ] Dynamic public Offers page with active/expiry behavior and admin publish/unpublish.
+- [ ] title, short/full description, included services, price, original price, dates, image, category/tag, published state, CTA/booking.
+- [ ] Dynamic Offers page with active/current display and expiry behavior.
 
 ## 12. Stage 7 — Services & Packages
-- [ ] Services: name, description, category, image, price, duration, active/published, ordering, SEO, related content/CTA.
-- [ ] Packages: name, description, included services, price/reference price, image, validity, active/published, ordering.
-- [ ] Public Services/Packages DB-driven while preserving design.
+- [ ] Services: name, description, category, image, price/starting price, duration, active/published, ordering, SEO, related content/CTA.
+- [ ] Packages: name, description, included services, price, original/reference price, image, validity, active/published, ordering.
+- [ ] Public Services/Packages pages become DB-driven while preserving design.
 
 ## 13. Stage 8 — Gallery & Testimonials
-- [ ] Gallery: Hair/Nails/Makeup/Bridal/Salon, upload, caption, alt, category, ordering, visibility, delete/replace, public DB-driven display.
-- [ ] Testimonials: client name, review, rating, date, optional photo, status, ordering, public dynamic display.
+### Gallery
+- [ ] Categories: Hair, Nails, Makeup, Bridal, Salon.
+- [ ] Upload, title/caption, alt text, category, ordering, visible, delete/replace.
+- [ ] Public gallery becomes DB-driven.
+### Testimonials
+- [ ] Client name, review, rating, date, optional photo, published/unpublished, ordering.
 
-## 14. Stage 9 — Sitewide SEO, Analytics & Content Performance
-- [ ] Global/default SEO, canonical domain, robots/indexability, sitemap and structured data.
-- [ ] Analytics/Search Console readiness, useful content/dashboard statistics and performance insight.
+## 14. Stage 9 — SEO & Analytics
+- [ ] Sitewide title/default title, default meta, OG image, canonical domain, robots/indexability, sitemap, canonicals, structured data.
+- [ ] GA or equivalent and Search Console readiness.
+- [ ] Track performance, most-viewed articles, published count and dashboard statistics.
 
-## 15. Cross-Stage Non-Negotiables
-Security: no secrets in GitHub; server env only; server-side auth; frontend state is never authorization; protected writes require valid session; safe errors; confirmed destructive actions; validate/sanitize content.
+## 15. Cross-stage Non-negotiables
+### Security
+- [ ] No secrets in GitHub.
+- [ ] Server-side environment variables.
+- [x] Server-side authentication/session validation foundation.
+- [ ] Every write requires a valid session.
+- [ ] No sensitive errors in responses.
+- [ ] Destructive actions require confirmation.
+- [ ] Content sanitization.
 
-Usability: non-technical owner; no GitHub/Vercel for publishing; validation/loading/success/failure states; useful empty states; mobile admin usability.
+### Usability
+- [ ] Nontechnical workflow; no GitHub/code/Vercel for publishing.
+- [ ] Form validation and clear loading/success/failure states.
+- [ ] Useful empty states.
+- [ ] Mobile-friendly admin.
 
-Design: existing public website is baseline; preserve typography, spacing, colors, cards, navigation and responsiveness unless explicitly redesigned.
+### Design
+- [x] Public design preserved while backend/admin foundation is developed.
 
-Performance/reliability: cached DB connections, indexes/pagination, no large Mongo image binaries, performant public pages and graceful API failure.
+### Performance/reliability
+- [x] Cached MongoDB connections.
+- [ ] Appropriate indexes and pagination.
+- [ ] No large image binaries in MongoDB.
+- [ ] Performant public pages.
+- [ ] Graceful API failure.
 
-## 16. Definition of Done — Core MVP
-- [ ] Real private `/admin` authentication.
-- [x] Secure MongoDB Atlas production connection.
-- [ ] Authenticated CMS APIs and unified Blog/Tips/News model.
-- [ ] Blog/Tips/News CRUD + draft/publish/unpublish.
-- [ ] Image storage, categories/tags, related services and per-content SEO.
-- [ ] Six existing tips migrated and public Tips/Blog/News DB-driven.
-- [ ] Individual slug URLs; drafts hidden.
-- [ ] Existing public site intact and production build/deployment verified.
-- [ ] Owner can publish/update content without touching code.
+## 16. Core MVP Checklist
+- [x] Real authentication foundation.
+- [x] Secure MongoDB production connection.
+- [x] Authentication API foundation.
+- [ ] Unified content model/API.
+- [ ] CRUD.
+- [ ] Draft/publish.
+- [ ] Images.
+- [ ] Categories/tags.
+- [ ] Related services.
+- [ ] Per-content SEO.
+- [ ] Migrate six existing tips.
+- [ ] DB-driven public content pages.
+- [ ] Slug URLs.
+- [ ] Drafts hidden.
+- [x] Public site preserved.
+- [ ] Production build/deployment independently verified.
+- [ ] Owner can publish without code.
 
-## 17. Change-Control & Continuation Protocol
-Before every implementation step: read this BRD; inspect current GitHub state; identify first incomplete requirement; implement the full requirement; test/verify; update this BRD in the same repository change; record important decisions; then continue. BRD + current GitHub state are authoritative on resume.
-
-## 18. Implementation Notes / History
-- Stage 1 production MongoDB connectivity verified 14 September 2026.
-- Auth backend foundation originally introduced at `7373c0ff49924c146183d343f2770d52586b0b86`.
-- The subsequent UI tree accidentally omitted the auth backend files because it was created from an older base tree. This was detected before Stage 2 was marked complete. The corrective change restores the auth files, restores auth env documentation, keeps the server-wired admin UI, and records the correction here.
-- Admin UI integration commit lineage includes `f03a668020291eba7da8c2a17273d4226e559422`; Stage 2 remains in progress until production acceptance tests pass.
+## 17. Change Log
+### 2026-09-14 — Stage 2 authentication integration
+- Replaced the mock client-only admin login with server-backed session authentication.
+- Added first-time admin setup using the one-time setup token.
+- Added login, session-check, logout, loading and generic error states to `/admin`.
+- Kept the dashboard as a shell until CMS stages are implemented.
+- Kept Stage 2 open because production acceptance, rate limiting and password change are not yet complete.
