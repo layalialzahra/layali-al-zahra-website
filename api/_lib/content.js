@@ -25,18 +25,36 @@ export function sanitizeBody(value) {
 }
 export async function ensureContentIndexes() {
   if (!indexesPromise) {
-    const db = await getDb();
-    indexesPromise = Promise.all([
-      db.collection("content").createIndex({ type: 1, slug: 1 }, { unique: true, name: "type_slug_unique" }),
-      db.collection("content").createIndex({ type: 1, status: 1, publishDate: -1 }, { name: "published_feed" }),
-      db.collection("content").createIndex({ category: 1, status: 1, publishDate: -1 }, { name: "category_feed" }),
-      db.collection("content").createIndex({ updatedAt: -1 }, { name: "updated_at" }),
-    ]).catch((error) => {
+    indexesPromise = (async () => {
+      const db = await getDb();
+      const collection = db.collection("content");
+      const indexes = [
+        [{ type: 1, slug: 1 }, { unique: true, name: "type_slug_unique" }],
+        [{ type: 1, status: 1, publishDate: -1 }, { name: "published_feed" }],
+        [{ category: 1, status: 1, publishDate: -1 }, { name: "category_feed" }],
+        [{ updatedAt: -1 }, { name: "updated_at" }],
+      ];
+      for (const [keys, options] of indexes) {
+        try {
+          await collection.createIndex(keys, options);
+        } catch (error) {
+          // Index creation must not take the CMS offline. CRUD also performs
+          // an application-level type/slug collision check below.
+          console.error("Content index initialization warning", { name: options.name, code: error?.code, message: error?.message });
+        }
+      }
+    })().catch((error) => {
       indexesPromise = undefined;
       throw error;
     });
   }
   await indexesPromise;
+}
+export async function assertUniqueContentSlug(collection, type, slug, excludeId = null) {
+  const filter = { type, slug };
+  if (excludeId) filter._id = { $ne: excludeId };
+  const existing = await collection.findOne(filter, { projection: { _id: 1 } });
+  if (existing) throw Object.assign(new Error("A content item with this type and slug already exists"), { code: 11000 });
 }
 export function validateContentInput(input, partial = false) {
   const data = input || {};
