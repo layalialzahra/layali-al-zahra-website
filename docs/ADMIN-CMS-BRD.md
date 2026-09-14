@@ -36,9 +36,9 @@ ADMIN → /admin → Secure Login → Dashboard → Content / Website / Settings
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟢 Audit complete / verification open | Codebase audited; production build check still pending |
-| 1 — MongoDB Production Connection | 🟡 In progress | Code foundation complete; Atlas cluster/user/network configured; new Vercel production URI configured and redeployed; live health verification pending |
-| 2 — Secure Admin Authentication | ⬜ Not started | Pending Stage 1 verification |
-| 3 — CMS Foundation | ⬜ Not started | Pending |
+| 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live `/api/health/db` returned `success:true` for database `layalialzahra` |
+| 2 — Secure Admin Authentication | 🟡 Next | Ready to begin |
+| 3 — CMS Foundation | ⬜ Not started | Pending Stage 2 |
 | 4 — Admin Content Editor | ⬜ Not started | Pending |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Pending |
 | 6 — Offers | ⬜ Not started | Deferred |
@@ -74,10 +74,10 @@ ADMIN → /admin → Secure Login → Dashboard → Content / Website / Settings
 - [x] Add new production `MONGODB_URI` pointing to the new Atlas cluster.
 - [x] Add production `MONGODB_DB_NAME=layalialzahra`.
 - [x] Redeploy Vercel after environment-variable changes.
-- [ ] Verify `/api/health/db` successfully reaches the new Atlas cluster.
+- [x] Verify `/api/health/db` successfully reaches the new Atlas cluster.
 - [ ] Add CMS collections/models.
 
-**Stage 1 completion condition:** Production can securely read/write MongoDB data and the live health check confirms the new Atlas cluster is being used.
+**Stage 1 completion condition:** Production can securely connect to the new Atlas cluster; confirmed live on 14 September 2026 by successful health response. CMS collections/models are part of the next implementation stage.
 
 ## 7. Stage 2 — Secure Admin Authentication
 
