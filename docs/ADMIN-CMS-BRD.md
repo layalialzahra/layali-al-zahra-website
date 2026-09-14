@@ -30,7 +30,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The admin editor now converts stored dates to browser-local time for editing and converts local input back to ISO UTC before saving.
 - The first deployment of that editor fix exposed a JSX closing-tag error in the publishing panel; the error was corrected by restoring the missing closing `</div>` before `</CardContent>`.
 - The corrected component preserves the local/UTC publish-date handling and the existing CMS functionality.
-- Latest code repair: `fix: correct CMS publishing panel markup` on `main`.
+- The markup correction is now committed on `main` as `974620b69f62d6ee15531d82478cec39a86c6b9e`.
 - Final live public API/detail-route acceptance is pending a successful deployment and one save of the Blog Post through the corrected editor.
 
 ## 4. Master Status
@@ -285,5 +285,6 @@ Salon: News, Offers, Announcements.
 ### 2026-09-14 — Stage 3 CMS build markup correction
 - Vercel production build failed after the publish-date editor change because the Publishing panel had a missing closing `</div>` before `</CardContent>`.
 - Corrected the JSX nesting without changing the publish-date timezone logic or CMS behavior.
-- The failure was identified directly from Vercel's build output; no unrelated code changes were made.
+- The corrected component was then committed to `main` as `974620b69f62d6ee15531d82478cec39a86c6b9e`.
+- The BRD was updated in the same change to maintain the mandatory change-control record.
 - Final live public API/detail-route acceptance remains pending a successful production deployment.
