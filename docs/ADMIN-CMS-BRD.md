@@ -26,6 +26,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Login abuse protection is implemented using MongoDB-backed attempt records keyed by a hashed IP/username combination: five failures within a 15-minute window trigger a 30-minute lockout, with `Retry-After` returned on blocked attempts.
 - Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
 - Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
+- Beauty Tip records now support dedicated `tip1` through `tip5` fields for the planned editor.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -121,6 +122,8 @@ Use one content system with `type: blog | tip | news`.
 
 Required fields: type, title, slug, excerpt, body, featured image, alt text, category, tags, author, related service, SEO title, meta description, social image, draft/published, publish date, created/updated timestamps, stable ID.
 
+Beauty Tips additionally support structured `tip1` through `tip5` fields.
+
 ### Categories
 **Hair:** Hair Care, Hair Treatments, Hair Colour, Hair Extensions  
 **Beauty:** Skincare, Nails, Brows & Lashes, Waxing  
@@ -141,6 +144,7 @@ Architecture must allow categories to be added without code changes.
 - [x] Authenticated duplicate operation added; duplicates are forced to draft state with a unique copy slug.
 - [x] Publish/unpublish supported through the content status field.
 - [x] Public content API added; it exposes only published items whose publish date is due and supports type/category/slug filters and pagination.
+- [x] Beauty Tip structured fields `tip1`–`tip5` accepted and persisted.
 - [ ] Unique slugs within namespace/type verified against production data.
 - [ ] Draft privacy verified against the public API in production.
 - [ ] Safe API errors; no secrets in responses verified in production.
@@ -296,7 +300,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Add Vercel `/admin` SPA rewrite
 - Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
-- The browser pathname remains `/admin`, allowing the frontend route added above to render.
+- The browser pathname remains `/admin`, allowing the frontend route added above to render the admin page.
 - Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
 
 ### 2026-09-14 — Add durable login abuse protection
@@ -326,3 +330,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Public queries are restricted to `status=published` and publish dates that are due; drafts are excluded by construction.
 - Added public type/category/slug filters and pagination.
 - Stage 3 remains in progress pending production verification and the admin content editor.
+
+### 2026-09-14 — Add structured Beauty Tip fields
+- Extended the unified content model to persist `tip1` through `tip5` for Beauty Tip records.
+- This supports the BRD's dedicated Beauty Tip editor without creating a separate content system.
