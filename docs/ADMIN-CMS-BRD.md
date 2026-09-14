@@ -30,6 +30,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Stage 4 now has a working admin content manager UI connected to the authenticated content API, with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
 - The admin shell now uses the existing Layali Al Zahra logo, branded Admin Portal header, workspace navigation, module icons, active/disabled navigation states and clearer dashboard module cards.
 - The content editor now has clearer section hierarchy, content-type/status badges, a basic formatting toolbar, image URL preview, improved field guidance, and a sticky publishing panel on larger screens.
+- A protected migration endpoint now exists to migrate the six existing hard-coded Beauty Tips into the unified `tip` content collection as drafts, preserving their titles, descriptions, five tip steps, image references and SEO-friendly alt text. It is idempotent by type/slug and skips already migrated records.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -39,8 +40,8 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
-| 4 — Admin Content Editor | 🟡 In progress | Branded dashboard and richer content editor UX implemented; image uploads and final acceptance remain |
-| 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
+| 4 — Admin Content Editor | 🟡 In progress | Branded dashboard and richer content editor UX implemented; image uploads, richer News UX and final acceptance remain |
+| 5 — Public Tips/Blog/News | 🟡 In progress | Six-tip migration tooling added; public DB-driven pages and migration execution remain |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
@@ -210,7 +211,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ## 10. Stage 5 — Public Tips/Blog/News
 - [ ] Replace hard-coded Tips content with DB-driven content.
-- [ ] Migrate six existing tips accurately.
+- [x] Add protected, idempotent migration tooling for the six existing hard-coded Beauty Tips.
+- [ ] Execute the six-tip migration in production and verify all six records.
 - [ ] Keep drafts private.
 - [ ] Preserve existing public design.
 - [ ] Build Beauty Journal listing with featured article, filters, latest cards and pagination/load-more if needed.
@@ -294,84 +296,85 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Replaced the mock client-only admin login with server-backed session authentication.
 - Added first-time admin setup using the one-time setup token.
 - Added login, session-check, logout, loading and generic error states to `/admin`.
-- Kept the dashboard as a shell until CMS stages are implemented.
-- Kept Stage 2 open because production acceptance, rate limiting and password change were not yet complete.
+- Kept the dashboard as a shell until CMS stages were implemented.
 
 ### 2026-09-14 — Fix authentication module import path
 - Corrected the MongoDB helper import in `api/_lib/auth.js` from an invalid relative path to `./mongodb.js`.
-- This removes a serverless module-resolution failure that could prevent authentication endpoints from loading in production.
-- Stage 2 remains in progress pending direct `/admin` routing and production acceptance.
 
 ### 2026-09-14 — Fix admin setup module import path
 - Corrected the MongoDB helper import in `api/admin/setup.js` from an invalid relative path to `../_lib/mongodb.js`.
-- This removes the corresponding setup-endpoint module-resolution failure.
-- Stage 2 remains in progress pending direct `/admin` routing and production acceptance.
 
 ### 2026-09-14 — Add direct `/admin` frontend routing
-- Updated `src/App.tsx` to recognize the browser pathname `/admin` in addition to the existing hash-based public routing.
-- The admin route now renders `AdminPage` directly and excludes the public header, footer and cookie-consent UI.
-- Stage 2 remains in progress until Vercel's server-side request routing is corrected/verified and production acceptance passes.
+- Updated `src/App.tsx` to recognize the browser pathname `/admin` in addition to existing hash-based public routing.
+- The admin route renders `AdminPage` directly and excludes the public header, footer and cookie-consent UI.
 
 ### 2026-09-14 — Add Vercel `/admin` SPA rewrite
-- Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
-- The browser pathname remains `/admin`, allowing the frontend route added above to render.
-- Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
+- Added a Vercel rewrite from `/admin` to `/` so direct browser requests reach the Vite SPA entry point while retaining `/admin` as the browser pathname.
 
 ### 2026-09-14 — Add durable login abuse protection
 - Added MongoDB-backed login attempt tracking keyed by a SHA-256 hash of client IP and normalized username.
-- Five failures within a 15-minute window trigger a 30-minute lockout; blocked responses include `Retry-After`.
+- Five failures within 15 minutes trigger a 30-minute lockout; blocked responses include `Retry-After`.
 - Successful login clears the failure record.
-- Stage 2 remains in progress pending password change and production acceptance.
 
 ### 2026-09-14 — Add admin account password settings
 - Added authenticated `/api/admin/password` endpoint with current-password verification, 12-character minimum replacement password, confirmation, salted hashing and session clearing after a successful change.
 - Added Settings → Admin Account UI with a password-change form.
-- Stage 2 remains in progress pending production verification of the password-change/session flow.
 
 ### 2026-09-14 — Create unified content data foundation
 - Added shared content helpers for `blog | tip | news`, required-field validation, slug/tag normalization, basic server-side body sanitization and safe serialization.
 - Added MongoDB index definitions for unique type/slug, published feeds, category feeds and update ordering.
-- Stage 3 is now in progress; content API endpoints are the next implementation item.
 
 ### 2026-09-14 — Add authenticated content CRUD API
 - Added `/api/admin/content` with server-side session protection.
 - Added create/read/update/delete, type/status/category/search filters, pagination and duplicate-to-draft behavior.
 - Added publish/unpublish support through the content status field and duplicate slug generation.
-- Stage 3 remains in progress pending the public published-only API and production verification.
 
 ### 2026-09-14 — Add published-only public content API
 - Added `/api/content` for public content retrieval.
 - Public queries are restricted to `status=published` and publish dates that are due; drafts are excluded by construction.
 - Added public type/category/slug filters and pagination.
-- Stage 3 remains in progress pending production verification and the admin content editor.
 
 ### 2026-09-14 — Add structured Beauty Tip fields
 - Extended the unified content model to persist `tip1` through `tip5` for Beauty Tip records.
-- This supports the BRD's dedicated Beauty Tip editor without creating a separate content system.
+- This supports the dedicated Beauty Tip editor without creating a separate content system.
 
 ### 2026-09-14 — Build admin content editor foundation
 - Added `AdminContentManager` with content list, search, type/status filters, create/edit forms, draft/publish, duplicate and delete actions.
 - Added Blog, Beauty Tip and Salon News editing modes while keeping the unified content model.
-- Added SEO, media URL, alt text, tags, related service and publishing fields to the editor.
-- Stage 4 remains in progress pending image upload/object storage, final UX polish and production acceptance.
+- Added SEO, media URL, alt text, tags, related service and publishing fields.
 
 ### 2026-09-14 — Fix content editor view state
-- Corrected the content manager's list/editor state so the editor opens only after an explicit create/edit action rather than rendering on initial load.
+- Corrected the content manager list/editor state so the editor opens only after an explicit create/edit action rather than rendering on initial load.
 
 ### 2026-09-14 — Connect dashboard to content editor
-- Connected the authenticated `/admin` dashboard's Content card to `AdminContentManager`.
-- Content management is now reachable from the dashboard while Website and Media remain intentionally deferred to their planned stages.
-- Stage 4 remains in progress pending image upload/object storage, final UX polish and production acceptance.
+- Connected the authenticated `/admin` dashboard Content card to `AdminContentManager`.
+- Content management became reachable from the dashboard while Website and Media remained intentionally deferred.
 
-### 2026-09-14 — Brand the admin portal
-- Added the existing Layali Al Zahra logo to the admin login and authenticated workspace.
-- Replaced the plain dashboard shell with a branded Admin Portal header, workspace navigation, module icons and clearer dashboard cards.
-- Added explicit available/future module states so unfinished areas are distinguishable instead of appearing broken.
-- Stage 4 remains in progress pending richer editor UX, image upload/object storage and production acceptance.
+### 2026-09-14 — Brand admin console and improve dashboard UX
+- Added the existing Layali Al Zahra logo to the admin experience and introduced Admin Portal branding.
+- Added structured workspace navigation, module icons, active/disabled states, clearer dashboard cards and an admin-specific visual shell.
+- Kept the public website design unchanged.
 
 ### 2026-09-14 — Improve admin content editor UX
-- Added clearer content-type and publication-status badges and stronger section hierarchy.
-- Added a basic formatting toolbar for bold, italic, underline and links to the blog/news body editor.
-- Added featured-image URL preview and clearer accessibility/SEO guidance for alt text.
-- Improved publishing controls with a sticky panel on larger screens and clearer save guidance.
-- Stage 4 remains in progress pending actual image upload/object storage, richer news-specific UX and production acceptance.
+- Improved content/editor section hierarchy and content-type/status badges.
+- Added basic formatting controls for bold, italic, underline and links.
+- Added featured-image URL preview and clearer field guidance.
+- Added a sticky publishing panel on larger screens.
+
+### 2026-09-14 — Add protected existing tips migration
+- Added `api/admin/migrate-tips.js`, protected by the real admin session and same-origin validation.
+- Added migration data for all six existing hard-coded Beauty Tips, including descriptions, five structured tip steps, image references, category/tags and alt text.
+- Migration is idempotent by `type + slug`; existing records are skipped and new records are created as drafts.
+- Stage 5 is now started, but production execution and the public DB-driven pages remain open.
+
+## 18. Continuation Protocol
+Before each implementation pass:
+1. Read this BRD first.
+2. Inspect the current GitHub state before changing code.
+3. Identify the first incomplete applicable requirement.
+4. Implement the full requirement rather than a placeholder where practical.
+5. Verify the implementation as far as the available environment permits.
+6. Update this BRD immediately after every repository/code/configuration change.
+7. Record the change in the Change Log.
+8. Never expose secrets or credentials.
+9. On resume, this BRD and the current GitHub repository state are the authoritative project sources of truth.
