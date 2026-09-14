@@ -1,8 +1,9 @@
 import { getDb } from "../_lib/mongodb.js";
 import { requireAdmin, sameOrigin } from "../_lib/auth.js";
-import { ensureContentIndexes, validateContentInput, serializeContent, toObjectId } from "../_lib/content.js";
+import { CONTENT_TYPES, ensureContentIndexes, validateContentInput, serializeContent, toObjectId } from "../_lib/content.js";
 
 function sendError(res, status, message) { return res.status(status).json({ success: false, message }); }
+function escapeRegex(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) return;
@@ -26,15 +27,20 @@ export default async function handler(req, res) {
       }
       const type = req.query?.type ? String(req.query.type).trim().toLowerCase() : null;
       const status = req.query?.status ? String(req.query.status).trim().toLowerCase() : null;
-      const category = req.query?.category ? String(req.query.category).trim() : null;
+      const category = req.query?.category ? String(req.query.category).trim().slice(0, 100) : null;
       const search = req.query?.search ? String(req.query.search).trim().slice(0, 100) : null;
+      if (type && !CONTENT_TYPES.has(type)) return sendError(res, 400, "Invalid content type");
+      if (status && !["draft", "published"].includes(status)) return sendError(res, 400, "Invalid content status");
       const page = Math.max(1, Number.parseInt(String(req.query?.page || "1"), 10) || 1);
       const limit = Math.min(50, Math.max(1, Number.parseInt(String(req.query?.limit || "20"), 10) || 20));
       const filter = {};
       if (type) filter.type = type;
       if (status) filter.status = status;
       if (category) filter.category = category;
-      if (search) filter.$or = [{ title: { $regex: search, $options: "i" } }, { excerpt: { $regex: search, $options: "i" } }];
+      if (search) {
+        const safeSearch = escapeRegex(search);
+        filter.$or = [{ title: { $regex: safeSearch, $options: "i" } }, { excerpt: { $regex: safeSearch, $options: "i" } }];
+      }
       const [items, total] = await Promise.all([
         collection.find(filter).sort({ updatedAt: -1 }).skip((page - 1) * limit).limit(limit).toArray(),
         collection.countDocuments(filter),
@@ -61,16 +67,15 @@ export default async function handler(req, res) {
     }
 
     if (req.body?.duplicate === true) {
-      const copyInput = { ...existing, ...req.body };
-      delete copyInput._id; delete copyInput.duplicate; delete copyInput.createdAt; delete copyInput.updatedAt;
-      copyInput.title = `${existing.title} (Copy)`;
-      copyInput.slug = `${existing.slug}-copy-${Date.now().toString(36)}`;
+      const copyInput = validateContentInput({ ...existing, ...req.body, type: existing.type }, false);
+      copyInput.title = `${existing.title} (Copy)`.slice(0, 180);
+      copyInput.slug = `${existing.slug}-copy-${Date.now().toString(36)}`.slice(0, 160);
       copyInput.status = "draft";
       copyInput.publishDate = null;
       const now = new Date();
-      copyInput.createdAt = now; copyInput.updatedAt = now;
-      const result = await collection.insertOne(copyInput);
-      return res.status(201).json({ success: true, item: serializeContent({ ...copyInput, _id: result.insertedId }) });
+      const copyDocument = { ...copyInput, createdAt: now, updatedAt: now };
+      const result = await collection.insertOne(copyDocument);
+      return res.status(201).json({ success: true, item: serializeContent({ ...copyDocument, _id: result.insertedId }) });
     }
 
     const data = validateContentInput(req.body, true);
