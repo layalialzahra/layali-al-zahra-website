@@ -39,12 +39,13 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Stage 2 authentication storage is now hardened with a unique admin username index and automatic TTL cleanup for login-abuse records.
 - Stage 3 admin content filtering is hardened with explicit type/status validation, escaped search expressions, bounded category/search inputs and sanitized duplicate creation.
 - A rollback checkpoint branch `checkpoint/pre-stage-0-2-3-close` has been created from the current mainline before the Stage 0/2/3 closeout pass.
+- A GitHub Actions build-verification workflow now installs dependencies and runs the production build on pushes and pull requests to `main`.
 - Production authentication/content acceptance testing remains open where live verification cannot be independently performed from the current environment.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
-| 0 — Baseline & Safety | 🟡 In progress | Audit complete; rollback checkpoint established; independent production build verification remains |
+| 0 — Baseline & Safety | 🟡 In progress | Audit complete; rollback checkpoint established; CI build verification added; successful production build still needs confirmation |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting, password change and auth-storage hardening implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
@@ -62,8 +63,9 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Preserve public design.
 - [x] Establish and maintain this BRD.
 - [x] Establish a rollback checkpoint before Stage 0/2/3 closeout.
+- [x] Add a repeatable GitHub Actions production-build verification workflow.
 ### Open
-- [ ] Confirm current Vercel production build/deployment works independently.
+- [ ] Confirm the latest main deployment/build passes successfully in the production environment.
 
 ## 6. Stage 1 — MongoDB Production Connection — COMPLETE
 - [x] Production MongoDB Atlas cluster configured.
@@ -425,6 +427,10 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Bounded category and search filter inputs.
 - Escaped admin search terms before MongoDB regex matching.
 - Rebuilt duplicate content through the shared content validator to prevent arbitrary request fields from being copied into content records.
+
+### 2026-09-14 — Add Stage 0 build verification workflow
+- Added `.github/workflows/build.yml` to run dependency installation and `npm run build` for pushes and pull requests targeting `main`.
+- Production build success remains pending until the workflow result and latest Vercel deployment can be independently confirmed.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
