@@ -42,14 +42,14 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - A rollback checkpoint branch `checkpoint/pre-stage-0-2-3-close` has been created from the current mainline before the Stage 0/2/3 closeout pass.
 - A GitHub Actions build-verification workflow now installs dependencies and runs the production build on pushes and pull requests to `main`.
 - The build-verification workflow for the current mainline completed successfully: dependency installation and `npm run build` both passed.
-- The protected admin content endpoint was live-tested after logout and returned a Vercel `500: INTERNAL_SERVER_ERROR` / `FUNCTION_INVOCATION_FAILED` instead of the expected unauthenticated `401` response. This is now an active Stage 2/3 defect to fix and retest.
+- The protected admin content endpoint was initially live-tested after logout and returned a Vercel `500: INTERNAL_SERVER_ERROR` / `FUNCTION_INVOCATION_FAILED`; the handler was hardened to authenticate before dynamically loading MongoDB/content modules, and the follow-up live test now correctly returns the expected unauthenticated `401` JSON response.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and repeatable production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Login/logout/password-change acceptance passed; protected API direct acceptance failed with a live 500 and is being hardened |
+| 2 — Secure Admin Authentication | 🟡 In progress | Login/logout/password-change and protected API rejection acceptance passed; session-expiry remains unchecked |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production CRUD/privacy acceptance remains |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard, richer editor UX and upload UI/backend implemented; Blob store connection, failure verification, richer News UX and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration action, Blog/News foundations and public rewrites exist; production migration and final route/SEO acceptance remain |
@@ -114,7 +114,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Frontend explicitly maps direct `/admin` pathname to `AdminPage` and keeps public header/footer out of the admin route.
 - [x] Vercel rewrite added so direct `/admin` requests reach the SPA entry point.
 - [x] Deployed `/admin` route verified by the owner: login page loads normally instead of a Vercel `404: NOT_FOUND`.
-- [ ] Verify protected API access independently in production — direct GET after logout currently returns Vercel `500: INTERNAL_SERVER_ERROR`; hardening change deployed/pending retest.
+- [x] Verify protected API access independently in production — after the hardening deployment, direct GET while logged out returned `{"success":false,"message":"Authentication required"}` as expected.
 - [x] Login/logout/password-change end-to-end verified by the owner on the deployed site.
 
 ### 7.5 Admin Account settings
@@ -125,13 +125,13 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 
 ### Stage 2 acceptance
 - [x] Unauthenticated user sees only login/setup as appropriate.
-- [ ] Protected dashboard/API rejects unauthenticated access — dashboard rejection was verified by owner; direct protected API request currently fails with a 500 and must be retested after hardening.
+- [x] Protected dashboard/API rejects unauthenticated access; owner verified the deployed protected content API returns the expected `401` JSON response while logged out.
 - [x] Valid credentials create a valid session.
 - [x] Logout removes authenticated access; owner also refreshed and used an incognito window after logout and remained at the login screen.
 - [ ] Session expiry is enforced.
 - [x] Basic abuse protection is present.
 - [x] Admin can change their password securely in the implemented flow and owner verified the deployed flow.
-- [ ] Production deployment passes end-to-end acceptance pending protected API and session-expiry checks.
+- [ ] Production deployment passes end-to-end acceptance pending session-expiry check.
 
 ## 8. Stage 3 — CMS Foundation
 ### Unified content model
@@ -450,6 +450,11 @@ SETTINGS: SEO, Contact Details, Admin Account
 - The deployed endpoint returned Vercel `500: INTERNAL_SERVER_ERROR` / `FUNCTION_INVOCATION_FAILED` instead of the expected unauthenticated `401` response.
 - Updated `api/admin/content.js` so authentication is checked before dynamically loading the MongoDB/content modules, preventing an unauthenticated request from invoking content-module initialization.
 - Protected API acceptance remains open and must be retested after the new deployment.
+
+### 2026-09-14 — Verify protected admin content API rejection
+- Owner retested `GET /api/admin/content` while logged out after the hardening deployment.
+- The deployed endpoint returned `{"success":false,"message":"Authentication required"}` with the expected unauthenticated `401` behavior.
+- Closed the protected-API acceptance item; Stage 2 remains open only for session-expiry verification.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
