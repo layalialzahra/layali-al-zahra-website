@@ -14,40 +14,58 @@ export default async function handler(req, res) {
 
   const checks = {};
   try {
-    const { getDb } = await import("../_lib/mongodb.js");
-    const { serializeContent } = await import("../_lib/content.js");
-
-    const db = await getDb();
-    checks.database = result(true, { name: db.databaseName });
-
-    const collections = await db.listCollections({ name: "content" }, { nameOnly: true }).toArray();
-    checks.collection = result(collections.length > 0, { exists: collections.length > 0 });
-    if (!checks.collection.ok) {
-      return res.status(503).json({ success: false, message: "Content collection is unavailable", checks });
+    let getDb;
+    try {
+      ({ getDb } = await import("../_lib/mongodb.js"));
+      checks.mongodbModule = result(true);
+    } catch (error) {
+      console.error("Content health MongoDB module import failed", error);
+      checks.mongodbModule = result(false, { error: error?.name || "ModuleImportError" });
+      return res.status(503).json({ success: false, message: "Content service health check failed", checks });
     }
 
-    const collection = db.collection("content");
-    const sample = await collection.findOne({}, { projection: { _id: 1, type: 1, title: 1, slug: 1, status: 1, publishDate: 1, createdAt: 1, updatedAt: 1 } });
-    checks.query = result(true, { hasDocument: Boolean(sample) });
-
-    if (sample) {
-      const serialized = serializeContent(sample);
-      checks.serialization = result(Boolean(serialized?._id), { idType: typeof serialized._id });
-    } else {
-      checks.serialization = result(true, { skipped: "content collection is empty" });
+    let serializeContent;
+    try {
+      ({ serializeContent } = await import("../_lib/content.js"));
+      checks.contentModule = result(true);
+    } catch (error) {
+      console.error("Content health content module import failed", error);
+      checks.contentModule = result(false, { error: error?.name || "ModuleImportError" });
+      return res.status(503).json({ success: false, message: "Content service health check failed", checks });
     }
 
-    const indexes = await collection.listIndexes().toArray();
-    checks.indexes = result(true, { count: indexes.length, names: indexes.map((index) => index.name).filter(Boolean) });
+    try {
+      const db = await getDb();
+      checks.database = result(true, { name: db.databaseName });
+
+      const collections = await db.listCollections({ name: "content" }, { nameOnly: true }).toArray();
+      checks.collection = result(collections.length > 0, { exists: collections.length > 0 });
+      if (!checks.collection.ok) {
+        return res.status(503).json({ success: false, message: "Content collection is unavailable", checks });
+      }
+
+      const collection = db.collection("content");
+      const sample = await collection.findOne({}, { projection: { _id: 1, type: 1, title: 1, slug: 1, status: 1, publishDate: 1, createdAt: 1, updatedAt: 1 } });
+      checks.query = result(true, { hasDocument: Boolean(sample) });
+
+      if (sample) {
+        const serialized = serializeContent(sample);
+        checks.serialization = result(Boolean(serialized?._id), { idType: typeof serialized._id });
+      } else {
+        checks.serialization = result(true, { skipped: "content collection is empty" });
+      }
+
+      const indexes = await collection.listIndexes().toArray();
+      checks.indexes = result(true, { count: indexes.length, names: indexes.map((index) => index.name).filter(Boolean) });
+    } catch (error) {
+      console.error("Admin content health database checks failed", error);
+      checks.databaseOperation = result(false, { error: error?.name || "DatabaseError" });
+    }
 
     const healthy = Object.values(checks).every((check) => check.ok);
     return res.status(healthy ? 200 : 503).json({ success: healthy, checks });
   } catch (error) {
     console.error("Admin content health check failed", error);
-    return res.status(503).json({
-      success: false,
-      message: "Content service health check failed",
-      checks,
-    });
+    return res.status(503).json({ success: false, message: "Content service health check failed", checks });
   }
 }
