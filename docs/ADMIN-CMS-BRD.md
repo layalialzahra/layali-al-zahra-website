@@ -36,7 +36,7 @@ ADMIN → /admin → Secure Login → Dashboard → Content / Website / Settings
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟢 Audit complete / verification open | Codebase audited; production build check still pending |
-| 1 — MongoDB Production Connection | 🟡 In progress | Shared DB helper, health endpoint, safer test endpoint, env template and gitignore added |
+| 1 — MongoDB Production Connection | 🟡 In progress | Code foundation complete; Atlas cluster/user/network access configured; Vercel connection and production verification pending |
 | 2 — Secure Admin Authentication | ⬜ Not started | Pending Stage 1 verification |
 | 3 — CMS Foundation | ⬜ Not started | Pending |
 | 4 — Admin Content Editor | ⬜ Not started | Pending |
@@ -63,7 +63,10 @@ ADMIN → /admin → Secure Login → Dashboard → Content / Website / Settings
 - [x] Production-safe DB health endpoint.
 - [x] Shared helper and safe errors in test endpoint.
 - [x] `.gitignore` and `.env.example` added without secrets.
-- [ ] Configure MongoDB Atlas database/user/network access.
+- [x] Create MongoDB Atlas project and Free cluster.
+- [x] Create database user.
+- [x] Rotate database-user password after accidental screenshot exposure.
+- [x] Configure Atlas IP Access List for Vercel using `0.0.0.0/0`; entry is Active.
 - [ ] Add `MONGODB_URI` to Vercel environment variables.
 - [ ] Deploy and verify `/api/health/db`.
 - [ ] Add CMS collections/models.
