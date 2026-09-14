@@ -9,7 +9,12 @@
     { "source": "/blog", "destination": "/" },
     { "source": "/blog/:slug", "destination": "/" },
     { "source": "/news", "destination": "/" },
-    { "source": "/news/:slug", "destination": "/" }
+    { "source": "/news/:slug", "destination": "/" },
+    { "source": "/services", "destination": "/" },
+    { "source": "/packages", "destination": "/" },
+    { "source": "/offers", "destination": "/" },
+    { "source": "/contact", "destination": "/" },
+    { "source": "/home", "destination": "/" }
   ],
   "headers": [
     {
