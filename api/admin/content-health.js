@@ -15,22 +15,15 @@ export default async function handler(req, res) {
   const checks = {};
   try {
     let getDb;
+    let serializeContent;
     try {
       ({ getDb } = await import("../_lib/mongodb.js"));
       checks.mongodbModule = result(true);
-    } catch (error) {
-      console.error("Content health MongoDB module import failed", error);
-      checks.mongodbModule = result(false, { error: error?.name || "ModuleImportError" });
-      return res.status(503).json({ success: false, message: "Content service health check failed", checks });
-    }
-
-    let serializeContent;
-    try {
       ({ serializeContent } = await import("../_lib/content.js"));
       checks.contentModule = result(true);
     } catch (error) {
-      console.error("Content health content module import failed", error);
-      checks.contentModule = result(false, { error: error?.name || "ModuleImportError" });
+      console.error("Content health module import failed", error);
+      checks.moduleImport = result(false, { error: error?.name || "ModuleImportError" });
       return res.status(503).json({ success: false, message: "Content service health check failed", checks });
     }
 
@@ -39,10 +32,8 @@ export default async function handler(req, res) {
       checks.database = result(true, { name: db.databaseName });
 
       const collections = await db.listCollections({ name: "content" }, { nameOnly: true }).toArray();
-      checks.collection = result(collections.length > 0, { exists: collections.length > 0 });
-      if (!checks.collection.ok) {
-        return res.status(503).json({ success: false, message: "Content collection is unavailable", checks });
-      }
+      const collectionExists = collections.length > 0;
+      checks.collection = result(true, { exists: collectionExists, emptyIsHealthy: true });
 
       const collection = db.collection("content");
       const sample = await collection.findOne({}, { projection: { _id: 1, type: 1, title: 1, slug: 1, status: 1, publishDate: 1, createdAt: 1, updatedAt: 1 } });
@@ -52,11 +43,15 @@ export default async function handler(req, res) {
         const serialized = serializeContent(sample);
         checks.serialization = result(Boolean(serialized?._id), { idType: typeof serialized._id });
       } else {
-        checks.serialization = result(true, { skipped: "content collection is empty" });
+        checks.serialization = result(true, { skipped: "content collection is empty or not created yet" });
       }
 
-      const indexes = await collection.listIndexes().toArray();
-      checks.indexes = result(true, { count: indexes.length, names: indexes.map((index) => index.name).filter(Boolean) });
+      if (collectionExists) {
+        const indexes = await collection.listIndexes().toArray();
+        checks.indexes = result(true, { count: indexes.length, names: indexes.map((index) => index.name).filter(Boolean) });
+      } else {
+        checks.indexes = result(true, { skipped: "content collection has not been created yet" });
+      }
     } catch (error) {
       console.error("Admin content health database checks failed", error);
       checks.databaseOperation = result(false, { error: error?.name || "DatabaseError" });
