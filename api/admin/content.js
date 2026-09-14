@@ -14,9 +14,12 @@ export default async function handler(req, res) {
   try {
     const { getDb } = await import("../_lib/mongodb.js");
     const { CONTENT_TYPES, ensureContentIndexes, assertUniqueContentSlug, validateContentInput, serializeContent, toObjectId } = await import("../_lib/content.js");
-    await ensureContentIndexes();
     const db = await getDb();
     const collection = db.collection("content");
+
+    // Index creation is a background reliability task. Reads/writes must not
+    // become unavailable merely because an index is still initializing.
+    ensureContentIndexes().catch((error) => console.error("Content index initialization failed", error));
 
     if (req.method === "GET") {
       const id = req.query?.id;
@@ -82,9 +85,7 @@ export default async function handler(req, res) {
     }
 
     const data = validateContentInput(req.body, true);
-    const effectiveType = data.type || existing.type;
-    const effectiveSlug = data.slug || existing.slug;
-    await assertUniqueContentSlug(collection, effectiveType, effectiveSlug, id);
+    if (data.slug || data.type) await assertUniqueContentSlug(collection, data.type || existing.type, data.slug || existing.slug, id);
     if (data.status === "published" && !data.publishDate && !existing.publishDate) data.publishDate = new Date();
     if (data.status === "draft") data.publishDate = null;
     data.updatedAt = new Date();
@@ -92,6 +93,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true, item: serializeContent(updated) });
   } catch (error) {
     if (error?.code === 11000) return sendError(res, 409, "A content item with this type and slug already exists");
+    if (["Invalid content type", "Invalid content status", "Invalid publish date", "A valid slug is required"].includes(error?.message) || error?.message?.startsWith("Title is required")) return sendError(res, 400, error.message);
     console.error("Admin content API failed", error);
     return sendError(res, 503, "Content service unavailable");
   }
