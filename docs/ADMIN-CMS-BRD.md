@@ -36,14 +36,16 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - The admin Content manager now exposes a protected “Migrate Existing Tips” action with confirmation and result feedback.
 - The public Beauty Tips page has been converted from hard-coded data to the published-only content API while preserving its existing visual design, including loading, error and empty states.
 - Public Blog/News listing and detail component foundations have been added, Vercel rewrites now route the planned public content paths to the SPA entry point, and listing cards now link to real slug URLs.
-- Production authentication/content acceptance testing remains open.
+- Stage 2 authentication storage is now hardened with a unique admin username index and automatic TTL cleanup for login-abuse records.
+- A rollback checkpoint branch `checkpoint/pre-stage-0-2-3-close` has been created from the current mainline before the Stage 0/2/3 closeout pass.
+- Production authentication/content acceptance testing remains open where live verification cannot be independently performed from the current environment.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
-| 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
+| 0 — Baseline & Safety | 🟡 In progress | Audit complete; rollback checkpoint established; independent production build verification remains |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
+| 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting, password change and auth-storage hardening implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard, richer editor UX and upload UI/backend implemented; Blob store connection, failure verification, richer News UX and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips is DB-driven; migration action, Blog/News foundations and public rewrites exist; production migration and final route/SEO acceptance remain |
@@ -58,9 +60,9 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Identify database/API experiments and limitations.
 - [x] Preserve public design.
 - [x] Establish and maintain this BRD.
+- [x] Establish a rollback checkpoint before Stage 0/2/3 closeout.
 ### Open
 - [ ] Confirm current Vercel production build/deployment works independently.
-- [ ] Establish/verify rollback checkpoint.
 
 ## 6. Stage 1 — MongoDB Production Connection — COMPLETE
 - [x] Production MongoDB Atlas cluster configured.
@@ -95,6 +97,8 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Generic authentication errors avoid exposing sensitive backend details.
 - [x] Basic login abuse/rate limiting is implemented with MongoDB-backed attempt tracking.
 - [x] Authenticated admin password-change endpoint verifies the current password, hashes the replacement password and clears the active session.
+- [x] Admin username uniqueness is enforced by a MongoDB unique index.
+- [x] Login-abuse records have automatic TTL cleanup so the rate-limit collection does not grow indefinitely.
 
 ### 7.4 `/admin` integration
 - [x] Removed fake client-only `isLoggedIn` authentication flow.
@@ -403,6 +407,14 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Fix public content detail navigation
 - Changed Blog/News listing cards from hash-style detail links to real `/blog/:slug` and `/news/:slug` URLs so the public content route integration matches the planned stable slug architecture.
+
+### 2026-09-14 — Harden Stage 2 authentication storage
+- Added a unique MongoDB index for the admin username to prevent duplicate admin identities.
+- Added TTL cleanup for MongoDB login-abuse records so temporary security state is automatically removed.
+- Kept the existing five-failures/15-minute window and 30-minute lockout behavior unchanged.
+
+### 2026-09-14 — Establish Stage 0 rollback checkpoint
+- Created `checkpoint/pre-stage-0-2-3-close` from main commit `1e6aced4d65fe4975729151e3736dbc1c1598de1` before the Stage 0/2/3 closeout pass.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
