@@ -27,7 +27,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
 - Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
 - Beauty Tip records now support dedicated `tip1` through `tip5` fields for the planned editor.
-- Stage 4 now has a working admin content manager UI foundation with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
+- Stage 4 now has a working admin content manager UI connected to the authenticated content API, with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -37,7 +37,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
-| 4 — Admin Content Editor | 🟡 In progress | Content list/editor foundation implemented; image uploads, richer editor UX and final acceptance remain |
+| 4 — Admin Content Editor | 🟡 In progress | Content manager UI connected to API; image uploads, richer editor UX and final acceptance remain |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
@@ -302,7 +302,7 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Add Vercel `/admin` SPA rewrite
 - Added a Vercel rewrite from `/admin` to `/` so a direct browser request is served by the Vite SPA instead of Vercel returning `404: NOT_FOUND`.
-- The browser pathname remains `/admin`, allowing the frontend route added above to render the admin page.
+- The browser pathname remains `/admin`, allowing the frontend route added above to render.
 - Stage 2 remains in progress until the new deployment is live and end-to-end authentication acceptance is verified.
 
 ### 2026-09-14 — Add durable login abuse protection
@@ -345,3 +345,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 
 ### 2026-09-14 — Fix content editor view state
 - Corrected the content manager's list/editor state so the editor opens only after an explicit create/edit action rather than rendering on initial load.
+
+### 2026-09-14 — Connect dashboard to content editor
+- Connected the authenticated `/admin` dashboard's Content card to `AdminContentManager`.
+- Content management is now reachable from the dashboard while Website and Media remain intentionally deferred to their planned stages.
+- Stage 4 remains in progress pending image upload/object storage, final UX polish and production acceptance.
