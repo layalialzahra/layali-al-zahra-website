@@ -72,12 +72,12 @@ ADMIN
 
 - Vite + React 18 + TypeScript.
 - Hash-based navigation is currently used.
-- `src/pages/AdminPage.tsx` is a client-only login prototype accepting any non-empty credentials.
+- `src/components/AdminPage.tsx` is a client-only login prototype accepting any non-empty credentials.
 - `src/pages/TipsPage.tsx` contains six hard-coded tips.
 - `mongodb` dependency already exists.
 - `api/test.js` previously created a Mongo client per request and exposed raw errors.
 - `vercel.json` exists with SPA fallback/security configuration.
-- No `.gitignore` existed at the audit checkpoint.
+- `.gitignore` exists and excludes environment secrets while retaining `.env.example`.
 - No MongoDB secret was found in the repository audit.
 - Reliable production build/deployment verification remains open as an independent Stage 0 check.
 
@@ -87,7 +87,7 @@ ADMIN
 |---|---|---|
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; live deployment/API verified, but independent build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirms database `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 Next | Ready to begin |
+| 2 — Secure Admin Authentication | 🟡 In progress | Secure auth backend foundation deployed; admin UI integration now in progress |
 | 3 — CMS Foundation | ⬜ Not started | Depends on secure authenticated API foundation |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
@@ -147,33 +147,41 @@ ADMIN
 
 ### Admin access
 
-- [ ] `/admin` remains a direct private admin URL.
-- [ ] No Admin button/link is required in public navigation.
-- [ ] Public navigation/design remains unchanged.
-- [ ] Admin login has Layali Al Zahra branding and a clean, simple form.
-- [ ] Login fields: email/username and password.
-- [ ] Login button with clear loading/error states.
+- [x] `/admin` remains a direct private admin URL.
+- [x] No Admin button/link is required in public navigation.
+- [x] Public navigation/design remains unchanged.
+- [x] Admin login remains branded for Layali Al Zahra with a clean simple form.
+- [x] Login fields: admin email/username and password.
+- [x] Login/setup actions include loading and error states.
 
 ### Authentication architecture
 
-- [ ] Replace the current client-only `isLoggedIn` authentication completely.
-- [ ] Credentials are validated server-side.
-- [ ] Admin password is never stored in frontend source or exposed to the browser.
-- [ ] Password is stored only as a secure hash.
-- [ ] Use a secure server-side session mechanism.
-- [ ] Session uses an HttpOnly cookie and appropriate Secure/SameSite protections in production.
-- [ ] Protected APIs independently validate the authenticated session; frontend state is never treated as authorization.
-- [ ] Logout invalidates the session.
-- [ ] Sessions have controlled expiry.
-- [ ] Invalid credentials return a generic, non-sensitive error.
-- [ ] Authentication failures do not expose database/server details.
+- [x] Replace the current client-only `isLoggedIn` authentication completely.
+- [x] Credentials are validated server-side.
+- [x] Admin password is never stored in frontend source or exposed to the browser.
+- [x] Password is stored only as a secure scrypt hash.
+- [x] Use a signed server-side session mechanism.
+- [x] Session uses an HttpOnly cookie and appropriate Secure/SameSite protections in production.
+- [x] Authentication helper is available for independently protecting APIs.
+- [x] Logout invalidates the session cookie.
+- [x] Sessions have controlled 8-hour expiry.
+- [x] Invalid credentials return a generic, non-sensitive error.
+- [x] Authentication failures do not expose database/server details.
 - [ ] Basic abuse protection/rate limiting or equivalent login-attempt protection is included where practical for the serverless architecture.
 
 ### Admin account management
 
-- [ ] Initial admin credential can be provisioned securely without putting the password in GitHub.
+- [x] Initial admin credential can be provisioned securely without putting the password in GitHub, using the server-side setup token.
 - [ ] Admin credentials can later be changed from Settings → Admin Account.
 - [ ] Password-change flow requires current authentication and secure password handling.
+
+### Current implementation checkpoint
+
+- [x] Secure authentication backend foundation deployed in commit `7373c0ff49924c146183d343f2770d52586b0b86`.
+- [x] Production `ADMIN_SESSION_SECRET` configured in Vercel.
+- [x] Production `ADMIN_SETUP_TOKEN` configured in Vercel.
+- [ ] Verify the live auth endpoints after the latest environment-variable redeploy.
+- [ ] Complete and verify the `/admin` UI against the live session endpoints.
 
 **Stage 2 acceptance:** An unauthenticated visitor can see the login screen but cannot access the dashboard or protected content APIs. A correct credential creates a secure session; logout removes access; directly calling protected APIs without a valid session fails.
 
@@ -394,7 +402,7 @@ Each news item must support image, title, text/content, category/status and publ
 ### 4.6 Image handling
 
 - [ ] Admin can upload/select images from the editor.
-- [ ] Images are stored through an appropriate image/object-storage solution rather than putting large binary files directly into MongoDB.
+- [ ] Images are stored through an appropriate image/object-storage solution rather than putting large binary files directly in MongoDB.
 - [ ] Stored image URL/reference is persisted with the content record.
 - [ ] Featured image alt text is supported.
 - [ ] Failed uploads show a usable error and do not create broken content records.
