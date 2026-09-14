@@ -35,7 +35,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - A protected migration endpoint now exists to migrate the six existing hard-coded Beauty Tips into the unified `tip` content collection as drafts, preserving their titles, descriptions, five tip steps, image references and SEO-friendly alt text. It is idempotent by type/slug and skips already migrated records.
 - The admin Content manager now exposes a protected “Migrate Existing Tips” action with confirmation and result feedback.
 - The public Beauty Tips page has been converted from hard-coded data to the published-only content API while preserving its existing visual design, including loading, error and empty states.
-- Public Blog/News listing and detail component foundations have been added, and Vercel rewrites now route the planned public content paths to the SPA entry point.
+- Public Blog/News listing and detail component foundations have been added, Vercel rewrites now route the planned public content paths to the SPA entry point, and listing cards now link to real slug URLs.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -224,11 +224,12 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [x] Add public Blog/News listing component foundation.
 - [x] Add public content detail component foundation with published-only API retrieval and draft-safe 404 behavior.
 - [x] Add Vercel rewrites for `/beauty-tips`, `/blog`, `/news` and their slug routes.
+- [x] Listing cards link to real public slug URLs.
 - [ ] Execute the six-tip migration in production and verify all six records.
 - [ ] Keep drafts private and verify publicly.
 - [ ] Preserve existing public design for all new Blog/News routes.
 - [ ] Build Beauty Journal listing with featured article, filters, latest cards and pagination/load-more if needed.
-- [ ] Final application routing integration and live verification for all six public route forms.
+- [ ] Final live verification for all six public route forms.
 - [ ] Stable slugs, full content, H1, image alt, publication info, category/tags, related service/internal links and 404 handling verified end-to-end.
 - [ ] Per-content SEO: title, meta, canonical, OG image, structured content, alt text and internal links.
 - [ ] No code deployment required to publish content.
@@ -399,6 +400,9 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added a reusable public detail component for published Blog, News and Beauty Tip records, including metadata, body/tip rendering, tags and draft-safe not-found handling.
 - Added SPA route recognition and Vercel rewrites for the planned public content paths.
 - Final production routing, migrated content and SEO acceptance remain open.
+
+### 2026-09-14 — Fix public content detail navigation
+- Changed Blog/News listing cards from hash-style detail links to real `/blog/:slug` and `/news/:slug` URLs so the public content route integration matches the planned stable slug architecture.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
