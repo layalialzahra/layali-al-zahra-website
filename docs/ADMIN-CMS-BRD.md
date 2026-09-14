@@ -28,8 +28,10 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The owner corrected the Blog Post publish date in the CMS, but the retest still returned `Content not found`.
 - Investigation identified that the admin editor treated `datetime-local` values as UTC when saving, creating a local-time/UTC mismatch.
 - The admin editor now converts stored dates to browser-local time for editing and converts local input back to ISO UTC before saving.
-- Latest code change: `c56ba94f4eeb641d54e57d098727c0d7b5c433d8`.
-- Final live public API/detail-route acceptance is pending deployment and one save of the Blog Post through the corrected editor.
+- The first deployment of that editor fix exposed a JSX closing-tag error in the publishing panel; the error was corrected by restoring the missing closing `</div>` before `</CardContent>`.
+- The corrected component preserves the local/UTC publish-date handling and the existing CMS functionality.
+- Latest code repair: `fix: correct CMS publishing panel markup` on `main`.
+- Final live public API/detail-route acceptance is pending a successful deployment and one save of the Blog Post through the corrected editor.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -37,8 +39,8 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
-| 3 — CMS Foundation | 🟡 In progress | Date handling corrected; final public acceptance pending |
-| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; publish-date timezone handling corrected; production image storage and final acceptance remain |
+| 3 — CMS Foundation | 🟡 In progress | Date handling and build markup corrected; final public acceptance pending |
+| 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; publish-date timezone handling and JSX markup corrected; production image storage and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven foundations implemented; live detail/public acceptance remains |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
@@ -110,6 +112,7 @@ Salon: News, Offers, Announcements.
 - [x] Health diagnostic exposes safe content metadata for slug/type/status/date troubleshooting.
 - [x] Future publish-date mismatch identified and corrected in production content.
 - [x] Admin local/UTC publish-date conversion corrected.
+- [x] Corrected JSX closing-tag regression introduced while applying the publish-date editor fix.
 - [ ] Verify unique slugs against production data.
 - [ ] Verify draft privacy publicly.
 - [ ] Verify safe API errors/no secrets in production.
@@ -136,6 +139,7 @@ Salon: News, Offers, Announcements.
 - [x] News shared content fields.
 - [ ] Richer News-specific UX.
 - [x] Publish-date datetime-local values correctly convert between browser-local time and stored ISO UTC.
+- [x] Publishing panel JSX markup corrected and production build restored.
 
 ### Images
 - [x] Vercel Blob selected.
@@ -277,3 +281,9 @@ Salon: News, Offers, Announcements.
 - Fixed the CMS editor's `datetime-local` handling so publish dates are displayed in the browser's local timezone and saved as explicit ISO UTC timestamps.
 - This prevents a UAE local publish time from being incorrectly interpreted as UTC and remaining future-dated.
 - Final public Blog API/detail-route acceptance remains pending deployment and retest.
+
+### 2026-09-14 — Stage 3 CMS build markup correction
+- Vercel production build failed after the publish-date editor change because the Publishing panel had a missing closing `</div>` before `</CardContent>`.
+- Corrected the JSX nesting without changing the publish-date timezone logic or CMS behavior.
+- The failure was identified directly from Vercel's build output; no unrelated code changes were made.
+- Final live public API/detail-route acceptance remains pending a successful production deployment.
