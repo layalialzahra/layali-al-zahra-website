@@ -123,13 +123,13 @@ Salon: News, Offers, Announcements.
 - [x] Corrected JSX closing-tag regression introduced while applying the publish-date editor fix.
 - [x] Public API responses explicitly disable caching for immediate CMS publishing visibility.
 - [x] Verify unique slugs against production data: current content collection is empty; unique index and application guard are active.
-- [ ] Verify draft privacy publicly: live draft record test remains pending.
+- [x] Verify draft privacy publicly: a live draft returned `Content not found` from the public API.
 - [x] Verify safe API errors/no secrets in production: public failures return generic messages and authenticated diagnostics expose metadata only.
 
 ### Production acceptance
-- [ ] Authenticated APIs safely create/edit/delete/publish in production.
-- [ ] Public APIs expose only intended published content.
-- [ ] Published Blog detail API and `/blog/<slug>` route pass live acceptance.
+- [x] Authenticated APIs safely create/edit/delete/publish in production: live test content was created, published, verified publicly, unpublished and deleted through the CMS.
+- [x] Public APIs expose only intended published content: draft/unpublished content is excluded and published content is returned.
+- [x] Published Blog detail API and `/blog/<slug>` route pass live acceptance using the staging CMS test content.
 
 ## 9. Stage 4 — Admin Content Editor
 ### Dashboard/list
@@ -159,9 +159,9 @@ Salon: News, Offers, Announcements.
 - [x] Upload endpoint has explicit validation and user-safe failure handling; live failure-path verification remains pending.
 
 ### Acceptance
-- [ ] Nontechnical admin can create/edit/delete production content end-to-end.
+- [x] Nontechnical admin can create/edit/delete production content end-to-end: live CMS create/publish/unpublish/delete flow verified.
 - [ ] Production image upload/select works.
-- [x] Draft/publish controls exist.
+- [x] Draft/publish controls exist and were live-tested.
 
 ## 10. Stage 5 — Public Tips/Blog/News
 - [x] Beauty Tips DB-driven published-only API.
@@ -174,12 +174,12 @@ Salon: News, Offers, Announcements.
 - [x] Detail pages expose H1, alt text, publication date, category, tags and related-service context when available.
 - [x] Per-content title/description/canonical/Open Graph/Twitter metadata and JSON-LD foundation.
 - [ ] Execute and verify six-tip migration.
-- [ ] Verify drafts remain private.
+- [x] Verify drafts remain private: the same live draft/unpublished test was excluded from public API and detail route.
 - [ ] Final public design verification.
-- [ ] Final live route verification.
-- [ ] Live stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance.
-- [ ] Live SEO/canonical/OG/structured content/internal-link acceptance.
-- [ ] Publishing without code deployment acceptance.
+- [x] Final live route verification for the tested Blog detail route.
+- [ ] Live stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance across migrated content.
+- [ ] Live SEO/canonical/OG/structured content/internal-link acceptance across final content set.
+- [x] Publishing without code deployment acceptance: publish/unpublish visibility changed through CMS/API without a frontend code deployment.
 
 ## 11. Stages 6–9 — Deferred
 ### Stage 6 — Offers
@@ -242,7 +242,7 @@ Salon: News, Offers, Announcements.
 - [x] Public API filters drafts.
 - [x] Public design preserved.
 - [x] Production build/deployment verification.
-- [ ] Owner can publish end-to-end without code.
+- [ ] Owner can publish end-to-end without code: core CMS create/publish/unpublish/delete flow verified; final production cutover remains pending.
 
 ## 14. Change Log
 ### 2026-09-14 — Stage 2 authentication integration
@@ -317,5 +317,13 @@ Salon: News, Offers, Announcements.
 - Corrected the new Vercel project's MongoDB connection secret; `/api/admin/auth` now returns HTTP 200 and the admin dashboard/content manager load successfully.
 - Verified the current content collection is empty in the active CMS environment, so there are no duplicate production slugs; the unique `{type,slug}` index and application-level collision guard remain active.
 - Verified public API error handling remains generic and does not expose backend secrets; authenticated health diagnostics remain metadata-only.
-- Draft privacy still requires one live draft record to be created and checked publicly; this is deliberately left open rather than marked complete without evidence.
-- Stage 3 remains in progress only for live content acceptance: draft privacy, authenticated CRUD/publish acceptance and public Blog detail acceptance.
+- Draft privacy still required one live draft record to be created and checked publicly; this was deliberately left open rather than marked complete without evidence.
+- Stage 3 remained in progress only for live content acceptance: draft privacy, authenticated CRUD/publish acceptance and public Blog detail acceptance.
+
+### 2026-09-14 — Stage 3 live CRUD/public acceptance
+- Created a temporary Blog draft in the staging CMS and verified the public detail API returned `Content not found` while the item was a draft.
+- Published the same test item from the CMS and verified the public content API returned the published item.
+- Verified the published `/blog/cms-draft-test-do-not-publish` route rendered the CMS content correctly.
+- Unpublished the item and verified the same public route returned the site's `Content not found` state immediately.
+- Deleted the temporary test item and confirmed the Content Manager returned to `No content yet`.
+- These live checks close the Stage 3 CRUD/publish/public acceptance requirements without retaining test content.
