@@ -73,6 +73,10 @@ export function validateContentInput(input, partial = false) {
       result.publishDate = date;
     }
   }
+  for (let i = 1; i <= 5; i += 1) {
+    const field = `tip${i}`;
+    if (data[field] !== undefined) result[field] = String(data[field] || "").trim().slice(0, 1000);
+  }
   return result;
 }
 export function serializeContent(doc) {
