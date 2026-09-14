@@ -1,0 +1,87 @@
+import { getDb } from "../_lib/mongodb.js";
+import { requireAdmin, sameOrigin } from "../_lib/auth.js";
+import { ensureContentIndexes, validateContentInput, serializeContent, toObjectId } from "../_lib/content.js";
+
+function sendError(res, status, message) { return res.status(status).json({ success: false, message }); }
+
+export default async function handler(req, res) {
+  if (!requireAdmin(req, res)) return;
+  if (!["GET", "POST", "PUT", "DELETE"].includes(req.method)) {
+    res.setHeader("Allow", "GET, POST, PUT, DELETE");
+    return sendError(res, 405, "Method not allowed");
+  }
+  if (req.method !== "GET" && !sameOrigin(req)) return sendError(res, 403, "Forbidden");
+  try {
+    await ensureContentIndexes();
+    const db = await getDb();
+    const collection = db.collection("content");
+
+    if (req.method === "GET") {
+      const id = req.query?.id;
+      if (id) {
+        const objectId = toObjectId(id);
+        if (!objectId) return sendError(res, 400, "Invalid content id");
+        const item = await collection.findOne({ _id: objectId });
+        return item ? res.status(200).json({ success: true, item: serializeContent(item) }) : sendError(res, 404, "Content not found");
+      }
+      const type = req.query?.type ? String(req.query.type).trim().toLowerCase() : null;
+      const status = req.query?.status ? String(req.query.status).trim().toLowerCase() : null;
+      const category = req.query?.category ? String(req.query.category).trim() : null;
+      const search = req.query?.search ? String(req.query.search).trim().slice(0, 100) : null;
+      const page = Math.max(1, Number.parseInt(String(req.query?.page || "1"), 10) || 1);
+      const limit = Math.min(50, Math.max(1, Number.parseInt(String(req.query?.limit || "20"), 10) || 20));
+      const filter = {};
+      if (type) filter.type = type;
+      if (status) filter.status = status;
+      if (category) filter.category = category;
+      if (search) filter.$or = [{ title: { $regex: search, $options: "i" } }, { excerpt: { $regex: search, $options: "i" } }];
+      const [items, total] = await Promise.all([
+        collection.find(filter).sort({ updatedAt: -1 }).skip((page - 1) * limit).limit(limit).toArray(),
+        collection.countDocuments(filter),
+      ]);
+      return res.status(200).json({ success: true, items: items.map(serializeContent), page, limit, total, pages: Math.ceil(total / limit) });
+    }
+
+    if (req.method === "POST") {
+      const data = validateContentInput(req.body, false);
+      const now = new Date();
+      const document = { ...data, status: data.status || "draft", publishDate: data.status === "published" ? (data.publishDate || now) : (data.publishDate || null), createdAt: now, updatedAt: now };
+      const result = await collection.insertOne(document);
+      return res.status(201).json({ success: true, item: serializeContent({ ...document, _id: result.insertedId }) });
+    }
+
+    const id = toObjectId(req.query?.id);
+    if (!id) return sendError(res, 400, "A valid content id is required");
+    const existing = await collection.findOne({ _id: id });
+    if (!existing) return sendError(res, 404, "Content not found");
+
+    if (req.method === "DELETE") {
+      await collection.deleteOne({ _id: id });
+      return res.status(200).json({ success: true });
+    }
+
+    if (req.body?.duplicate === true) {
+      const copyInput = { ...existing, ...req.body };
+      delete copyInput._id; delete copyInput.duplicate; delete copyInput.createdAt; delete copyInput.updatedAt;
+      copyInput.title = `${existing.title} (Copy)`;
+      copyInput.slug = `${existing.slug}-copy-${Date.now().toString(36)}`;
+      copyInput.status = "draft";
+      copyInput.publishDate = null;
+      const now = new Date();
+      copyInput.createdAt = now; copyInput.updatedAt = now;
+      const result = await collection.insertOne(copyInput);
+      return res.status(201).json({ success: true, item: serializeContent({ ...copyInput, _id: result.insertedId }) });
+    }
+
+    const data = validateContentInput(req.body, true);
+    if (data.status === "published" && !data.publishDate && !existing.publishDate) data.publishDate = new Date();
+    if (data.status === "draft") data.publishDate = null;
+    data.updatedAt = new Date();
+    const updated = await collection.findOneAndUpdate({ _id: id }, { $set: data }, { returnDocument: "after" });
+    return res.status(200).json({ success: true, item: serializeContent(updated) });
+  } catch (error) {
+    if (error?.code === 11000) return sendError(res, 409, "A content item with this type and slug already exists");
+    console.error("Admin content API failed", error);
+    return sendError(res, 503, "Content service unavailable");
+  }
+}
