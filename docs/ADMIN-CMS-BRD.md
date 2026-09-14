@@ -31,8 +31,10 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - The admin shell now uses the existing Layali Al Zahra logo, branded Admin Portal header, workspace navigation, module icons, active/disabled navigation states and clearer dashboard module cards.
 - The content editor now has clearer section hierarchy, content-type/status badges, a basic formatting toolbar, image URL preview, improved field guidance, and a sticky publishing panel on larger screens.
 - Vercel Blob is now selected as the object-storage layer for admin media uploads; the project manifest includes the Blob SDK and an authenticated `/api/admin/upload` endpoint accepts only supported image formats up to 4 MB and returns a public Blob URL.
-- The content editor now includes an authenticated file picker/upload action wired to `/api/admin/upload`, with client-side type/size validation, upload progress state and uploaded-image preview.
+- The content editor now includes an authenticated file picker/upload action wired to `/api/admin/upload`, with client-side type/size validation, upload state and uploaded-image preview.
 - A protected migration endpoint now exists to migrate the six existing hard-coded Beauty Tips into the unified `tip` content collection as drafts, preserving their titles, descriptions, five tip steps, image references and SEO-friendly alt text. It is idempotent by type/slug and skips already migrated records.
+- The admin Content manager now exposes a protected “Migrate Existing Tips” action with confirmation and result feedback.
+- The public Beauty Tips page has been converted from hard-coded data to the published-only content API while preserving its existing visual design, including loading, error and empty states.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -43,7 +45,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
 | 4 — Admin Content Editor | 🟡 In progress | Branded dashboard, richer editor UX and upload UI/backend implemented; Blob store connection, failure verification, richer News UX and final acceptance remain |
-| 5 — Public Tips/Blog/News | 🟡 In progress | Six-tip migration tooling added; public DB-driven pages and migration execution remain |
+| 5 — Public Tips/Blog/News | 🟡 In progress | Beauty Tips public page is DB-driven and six-tip migration action exists; production migration plus Blog/News routes remain |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
@@ -216,11 +218,11 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [x] Admin can save drafts and publish/unpublish through the editor foundation.
 
 ## 10. Stage 5 — Public Tips/Blog/News
-- [ ] Replace hard-coded Tips content with DB-driven content.
+- [x] Replace hard-coded Tips content with the published-only DB-driven content API while preserving the existing public design.
 - [x] Add protected, idempotent migration tooling for the six existing hard-coded Beauty Tips.
 - [ ] Execute the six-tip migration in production and verify all six records.
 - [ ] Keep drafts private.
-- [ ] Preserve existing public design.
+- [ ] Preserve existing public design for all new Blog/News routes.
 - [ ] Build Beauty Journal listing with featured article, filters, latest cards and pagination/load-more if needed.
 - [ ] Implement `/beauty-tips`, `/beauty-tips/:slug`, `/blog`, `/blog/:slug`, `/news`, `/news/:slug`.
 - [ ] Stable slugs, full content, H1, image alt, publication info, category/tags, related service/internal links and 404 handling.
@@ -376,7 +378,17 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added the Vercel Blob SDK dependency to the application manifest.
 - Added authenticated `/api/admin/upload` media upload handling using object storage rather than MongoDB binary storage.
 - Restricted uploads to JPG, PNG, WebP and GIF and capped the server-upload path at 4 MB to remain within serverless request limits.
-- The editor file picker was then connected to the upload endpoint with client-side validation, upload state and preview.
+- Connected the editor file picker to the upload endpoint with client-side validation, upload state and preview.
+
+### 2026-09-14 — Add admin action to migrate existing tips
+- Added a protected Content-manager action with confirmation to run the six-tip migration.
+- Added migration result feedback and automatic content-list refresh.
+
+### 2026-09-14 — Make Beauty Tips page database-driven
+- Replaced the six hard-coded public Beauty Tips with published-only `/api/content?type=tip` retrieval.
+- Preserved the existing Beauty Tips visual design and card layout.
+- Added loading, temporary-error and no-published-content states.
+- The public page remains draft-safe because it consumes the published-only API.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
