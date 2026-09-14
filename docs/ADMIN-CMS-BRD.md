@@ -19,7 +19,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - MongoDB Atlas production connection is complete and the live database health endpoint previously confirmed database `layalialzahra`.
 - Secure authentication backend is implemented: password hashing, signed 8-hour HttpOnly session cookie, session verification, same-origin checks, login/logout, and one-time initial admin setup.
 - `/admin` now uses the real authentication API rather than client-only fake credentials. It checks the existing session on load, supports first-time setup, login, logout, loading states and generic errors.
-- CMS modules are intentionally not implemented yet; the authenticated dashboard currently acts as the Stage 2 shell.
+- CMS modules are being built incrementally; the authenticated dashboard is now connected to the Stage 4 content editor foundation.
 - Deployment issues were identified in both authentication server modules: their MongoDB helper relative imports were incorrect. Both have now been corrected to the proper paths.
 - The frontend now explicitly recognizes direct pathname `/admin` and suppresses the public header/footer/cookie UI on the admin route.
 - Vercel configuration now rewrites direct `/admin` requests to the SPA entry point while preserving the browser pathname, allowing the frontend `/admin` route to render.
@@ -27,6 +27,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Admin Account settings now expose a secure password-change form backed by `/api/admin/password`; successful password changes invalidate the current browser session and require sign-in again.
 - Stage 3 content foundation now has shared server-side validation, normalization, sanitization, serialization and MongoDB indexes, plus authenticated CRUD/search/filter/duplicate and published-only public content APIs.
 - Beauty Tip records now support dedicated `tip1` through `tip5` fields for the planned editor.
+- Stage 4 now has a working admin content manager UI foundation with content listing, filters, create/edit forms, publish/unpublish, duplicate and delete actions.
 - Production authentication/content acceptance testing remains open.
 
 ## 4. Master Status
@@ -36,7 +37,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
 | 2 — Secure Admin Authentication | 🟡 In progress | Core auth, routing, rate limiting and password change implemented; production acceptance remains |
 | 3 — CMS Foundation | 🟡 In progress | Content model, indexes, authenticated CRUD and published-only public API implemented; production verification remains |
-| 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
+| 4 — Admin Content Editor | 🟡 In progress | Content list/editor foundation implemented; image uploads, richer editor UX and final acceptance remain |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
 | 6 — Offers | ⬜ Not started | Deferred until core content CMS works |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
@@ -161,39 +162,40 @@ WEBSITE: Services, Packages, Gallery, Testimonials
 SETTINGS: SEO, Contact Details, Admin Account
 
 ### Content lists
-- [ ] Show title/category/status/date.
-- [ ] Search and status/category/type filters.
-- [ ] Edit, duplicate, publish/unpublish, delete with confirmation.
-- [ ] Add new.
-- [ ] Loading/error/empty states.
+- [x] Show title/category/status/date.
+- [x] Search and status/category/type filters.
+- [x] Edit, duplicate, publish/unpublish, delete with confirmation.
+- [x] Add new.
+- [x] Loading/error/empty states.
 
 ### Blog editor
-- [ ] Title, slug, category, featured image, alt text.
-- [ ] Excerpt and rich body editor.
-- [ ] Tags and related service.
-- [ ] SEO title/meta/keywords or tags/social image.
-- [ ] Draft/publish and publish date.
+- [x] Title, slug, category, featured image URL, alt text.
+- [x] Excerpt and body editor foundation.
+- [x] Tags and related service.
+- [x] SEO title/meta/social image.
+- [x] Draft/publish and publish date.
 
 ### Beauty Tip editor
-- [ ] Title, description, featured image.
-- [ ] Tip1–Tip5.
-- [ ] Related service, category/tags, SEO, draft/published.
+- [x] Title, description, featured image URL.
+- [x] Tip1–Tip5.
+- [x] Related service, category/tags, SEO, draft/published.
 
 ### News editor
-- [ ] Separate `news` type.
-- [ ] Support new service, staff, equipment, holiday hours, Eid, Ramadan, renovation, event, product line and similar announcements.
-- [ ] Image/title/text/date/status.
+- [x] Separate `news` type.
+- [x] Image URL/title/text/date/status foundation.
+- [x] Category and related content fields available through the unified editor.
+- [ ] Add richer news-specific UX where required.
 
 ### Image handling
 - [ ] Upload/select image.
 - [ ] Use object storage rather than MongoDB binary storage.
-- [ ] Persist URL/reference and alt text.
+- [x] Persist image URL/reference and alt text fields.
 - [ ] Handle upload failures clearly.
 
 ### Acceptance
-- [ ] Nontechnical admin can create/edit/delete content without code.
+- [ ] Nontechnical admin can create/edit/delete content without code in production.
 - [ ] Admin can upload/select images.
-- [ ] Admin can save drafts and publish/unpublish.
+- [x] Admin can save drafts and publish/unpublish through the editor foundation.
 
 ## 10. Stage 5 — Public Tips/Blog/News
 - [ ] Replace hard-coded Tips content with DB-driven content.
@@ -233,16 +235,16 @@ SETTINGS: SEO, Contact Details, Admin Account
 - [ ] No secrets in GitHub.
 - [ ] Server-side environment variables.
 - [x] Server-side authentication/session validation foundation.
-- [ ] Every write requires a valid session.
-- [ ] No sensitive errors in responses.
-- [ ] Destructive actions require confirmation.
+- [x] Admin content writes require a valid server session.
+- [x] No sensitive backend details are returned by the content API.
+- [x] Destructive content deletion requires confirmation in the admin UI.
 - [x] Basic content sanitization foundation.
 
 ### Usability
 - [ ] Nontechnical workflow; no GitHub/code/Vercel for publishing.
-- [x] Form validation and clear loading/success/failure states in admin authentication/settings flows.
-- [ ] Useful empty states.
-- [ ] Mobile-friendly admin.
+- [x] Form validation and clear loading/success/failure states in admin authentication/settings/content flows.
+- [x] Useful empty state for content lists.
+- [ ] Mobile-friendly admin final polish.
 
 ### Design
 - [x] Public design preserved while backend/admin foundation is developed.
@@ -334,3 +336,12 @@ SETTINGS: SEO, Contact Details, Admin Account
 ### 2026-09-14 — Add structured Beauty Tip fields
 - Extended the unified content model to persist `tip1` through `tip5` for Beauty Tip records.
 - This supports the BRD's dedicated Beauty Tip editor without creating a separate content system.
+
+### 2026-09-14 — Build admin content editor foundation
+- Added `AdminContentManager` with content list, search, type/status filters, create/edit forms, draft/publish, duplicate and delete actions.
+- Added Blog, Beauty Tip and Salon News editing modes while keeping the unified content model.
+- Added SEO, media URL, alt text, tags, related service and publishing fields to the editor.
+- Stage 4 remains in progress pending image upload/object storage, final UX polish and production acceptance.
+
+### 2026-09-14 — Fix content editor view state
+- Corrected the content manager's list/editor state so the editor opens only after an explicit create/edit action rather than rendering on initial load.
