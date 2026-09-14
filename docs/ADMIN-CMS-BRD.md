@@ -24,7 +24,8 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Stage 5 has DB-driven Beauty Tips plus Blog/News public route foundations and protected migration tooling.
 - The production Content screen previously displayed `Content service unavailable` while MongoDB health remained healthy.
 - Content API index initialization is now non-blocking for CRUD reads/writes: individual index warnings are logged without making the Content API unavailable, and application-level type/slug collision checks are enforced before content writes.
-- Production acceptance remains open until the deployed Content screen is retested successfully.
+- An authenticated `/api/admin/content-health` diagnostic endpoint has now been added to isolate database connection, `content` collection, basic query, serialization and index visibility failures without exposing content data.
+- Production acceptance remains open until the deployed Content screen is retested successfully and the diagnostic identifies/resolves the underlying failure.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -111,6 +112,7 @@ Architecture must allow categories to be extended without changing the database 
 - [x] Admin filter validation, bounded category/search input and escaped search regex.
 - [x] Duplicate input rebuilt through the shared validator.
 - [x] Long featured-image values bounded server-side.
+- [x] Authenticated content health diagnostic covering DB connection, content collection, basic query, serialization and index visibility.
 - [ ] Verify unique slugs against actual production data.
 - [ ] Verify draft privacy against the public API in production.
 - [ ] Verify safe API errors/no secrets in production.
@@ -118,6 +120,7 @@ Architecture must allow categories to be extended without changing the database 
 ### Production acceptance
 - [ ] Authenticated APIs safely create/edit/delete/publish content in production.
 - [ ] Public APIs expose only intended published content in production.
+- [ ] Resolve the current production `Content service unavailable` failure using the diagnostic endpoint.
 
 ## 9. Stage 4 — Admin Content Editor
 ### Dashboard and lists
@@ -266,9 +269,14 @@ Architecture must allow categories to be extended without changing the database 
 
 ### 2026-09-14 — Recover Content API read path
 - Changed content index initialization from a blocking prerequisite to a background reliability task so CRUD reads/writes are not held behind index creation.
-- Added application-level `{type, slug}` collision checks to create/update/duplicate paths.
+- Added application-level `{type,slug}` collision checks to create/update/duplicate paths.
 - Added clearer client-safe 400 responses for common content validation failures.
 - Production Stage 3 acceptance remains open until the deployed Content screen is retested.
+
+### 2026-09-14 — Stage 3 diagnostic isolation
+- Added authenticated `/api/admin/content-health` diagnostic endpoint.
+- Diagnostic checks production MongoDB access, `content` collection existence, a basic read query, content serialization and visible indexes while returning no content payload.
+- Production Content API root cause remains unresolved pending deployed diagnostic results.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
