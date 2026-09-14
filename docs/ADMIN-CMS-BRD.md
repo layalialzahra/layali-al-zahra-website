@@ -20,14 +20,15 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - Secure authentication backend is implemented: password hashing, signed 8-hour HttpOnly session cookie, session verification, same-origin checks, login/logout, and one-time initial admin setup.
 - `/admin` now uses the real authentication API rather than client-only fake credentials. It checks the existing session on load, supports first-time setup, login, logout, loading states and generic errors.
 - CMS modules are intentionally not implemented yet; the authenticated dashboard currently acts as the Stage 2 shell.
-- Production acceptance testing, basic login abuse protection and admin password-change flow remain open before Stage 2 can be marked complete.
+- A deployment issue was identified: the auth helper imported the MongoDB helper using an invalid relative path. This has been corrected to the path appropriate for `api/_lib/auth.js`.
+- Production acceptance testing, direct `/admin` routing, basic login abuse protection and admin password-change flow remain open before Stage 2 can be marked complete.
 
 ## 4. Master Status
 | Stage | Status | Current state |
 |---|---|---|
 | 0 — Baseline & Safety | 🟡 In progress | Audit complete; build verification and rollback checkpoint remain |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured; live health check confirmed `layalialzahra` |
-| 2 — Secure Admin Authentication | 🟡 In progress | Backend and `/admin` session integration implemented; live acceptance, rate limiting and password change remain |
+| 2 — Secure Admin Authentication | 🟡 In progress | Backend and `/admin` session integration implemented; routing/deployment acceptance, rate limiting and password change remain |
 | 3 — CMS Foundation | ⬜ Not started | Depends on Stage 2 |
 | 4 — Admin Content Editor | ⬜ Not started | Depends on Stage 3 |
 | 5 — Public Tips/Blog/News | ⬜ Not started | Depends on Stages 3–4 |
@@ -89,6 +90,7 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - [x] Unauthenticated users cannot access the authenticated dashboard through the UI.
 - [ ] Verify protected API access independently in production.
 - [ ] Verify login/logout/setup end-to-end on the deployed site.
+- [ ] Verify direct browser navigation to `/admin` resolves to the SPA/admin page instead of Vercel `404: NOT_FOUND`.
 
 ### Stage 2 acceptance
 - [ ] Unauthenticated user sees only login/setup as appropriate.
@@ -254,3 +256,8 @@ SETTINGS: SEO, Contact Details, Admin Account
 - Added login, session-check, logout, loading and generic error states to `/admin`.
 - Kept the dashboard as a shell until CMS stages are implemented.
 - Kept Stage 2 open because production acceptance, rate limiting and password change are not yet complete.
+
+### 2026-09-14 — Fix authentication module import path
+- Corrected the MongoDB helper import in `api/_lib/auth.js` from an invalid relative path to `./mongodb.js`.
+- This removes a serverless module-resolution failure that could prevent authentication endpoints from loading in production.
+- Stage 2 remains in progress pending direct `/admin` routing and production acceptance.
