@@ -25,7 +25,8 @@ Public Tips/Blog/News → Backend API → MongoDB Atlas. Private `/admin` → se
 - The production Content screen previously displayed `Content service unavailable` while MongoDB health remained healthy.
 - Content API index initialization is now non-blocking for CRUD reads/writes: individual index warnings are logged without making the Content API unavailable, and application-level type/slug collision checks are enforced before content writes.
 - An authenticated `/api/admin/content-health` diagnostic endpoint has now been added to isolate database connection, `content` collection, basic query, serialization and index visibility failures without exposing content data.
-- Production acceptance remains open until the deployed Content screen is retested successfully and the diagnostic identifies/resolves the underlying failure.
+- The first deployed diagnostic returned an empty `checks` object because its combined module import failed before any individual check could be recorded. The diagnostic has now been hardened to isolate MongoDB-module import, content-module import and database-operation failures separately.
+- Production acceptance remains open until the deployed diagnostic identifies/resolves the underlying Content API failure and the Content screen is retested successfully.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -113,6 +114,7 @@ Architecture must allow categories to be extended without changing the database 
 - [x] Duplicate input rebuilt through the shared validator.
 - [x] Long featured-image values bounded server-side.
 - [x] Authenticated content health diagnostic covering DB connection, content collection, basic query, serialization and index visibility.
+- [x] Diagnostic module-import isolation so failed module loads are identified separately from database-operation failures.
 - [ ] Verify unique slugs against actual production data.
 - [ ] Verify draft privacy against the public API in production.
 - [ ] Verify safe API errors/no secrets in production.
@@ -276,7 +278,9 @@ Architecture must allow categories to be extended without changing the database 
 ### 2026-09-14 — Stage 3 diagnostic isolation
 - Added authenticated `/api/admin/content-health` diagnostic endpoint.
 - Diagnostic checks production MongoDB access, `content` collection existence, a basic read query, content serialization and visible indexes while returning no content payload.
-- Production Content API root cause remains unresolved pending deployed diagnostic results.
+- The first deployed diagnostic returned an empty check set because MongoDB and content helper imports were evaluated together.
+- Hardened the diagnostic to report MongoDB-module import, content-module import and database-operation failures independently.
+- Production Stage 3 acceptance remains open pending the isolated deployed result.
 
 ## 18. Continuation Protocol
 Before each implementation pass:
