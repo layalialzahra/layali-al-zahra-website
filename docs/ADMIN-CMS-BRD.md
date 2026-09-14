@@ -39,7 +39,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - Content-body sanitization was tightened to remove additional executable/embed/form elements and dangerous URL schemes.
 - The new Vercel staging admin service is now healthy after correcting the MongoDB connection secret; `/api/admin/auth` returns a successful setup/session response and `/admin` loads the authenticated dashboard/content manager.
 - The current staging/production content collection is empty in the new CMS environment; the unique content index and application-level slug collision guard remain enabled.
-- Stage 3 API-level safety checks are now verified; live draft/CRUD/public acceptance remains tied to creating test content and the subsequent Stage 5 acceptance pass.
+- Stage 3 live production acceptance is complete: temporary content was created, kept private as a draft, published and verified through the public API/detail route, unpublished and verified inaccessible, then deleted.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -47,7 +47,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
-| 3 — CMS Foundation | 🟡 In progress | API safety/slug checks verified; live draft/CRUD/public acceptance remains |
+| 3 — CMS Foundation | 🟢 Complete | API safety, CRUD, draft privacy, publish/unpublish, public API and Blog detail acceptance completed |
 | 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions/date handling completed; Blob store configuration, mobile polish and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven routes, pagination, stable detail links and content SEO foundation completed; migration and live acceptance remain |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
@@ -326,4 +326,7 @@ Salon: News, Offers, Announcements.
 - Verified the published `/blog/cms-draft-test-do-not-publish` route rendered the CMS content correctly.
 - Unpublished the item and verified the same public route returned the site's `Content not found` state immediately.
 - Deleted the temporary test item and confirmed the Content Manager returned to `No content yet`.
-- These live checks close the Stage 3 CRUD/publish/public acceptance requirements without retaining test content.
+
+### 2026-09-14 — Stage 3 closure bookkeeping correction
+- Reconciled the BRD master status and current-state summary with the completed Stage 3 production acceptance evidence.
+- Stage 3 is now explicitly marked `🟢 Complete`; Stages 4 and 5 remain the active workstreams.
