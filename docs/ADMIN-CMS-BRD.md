@@ -23,8 +23,10 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - Production content health then confirmed MongoDB, content module, database, collection, query, serialization and four indexes.
 - A real Blog Post was created and published from the CMS and appears in the admin list.
 - The public detail API initially returned `Content not found` for that published slug. `api/content.js` has now been hardened so detail requests first locate the published record and then apply publication-date validation in application code, including compatibility with legacy string-form dates.
-- Latest code commit: `95d391869ac75de4bdb9c62a9b57ce5acf89b20c`.
-- Latest public API fix is awaiting owner production retest.
+- Latest code commit before the current diagnostic-only change: `95d391869ac75de4bdb9c62a9b57ce5acf89b20c`.
+- The public API fix deployed successfully through Vercel, but the owner retest still returns `Content not found` for the published Blog slug.
+- A safe authenticated content-health enhancement now exposes only content metadata (ID, type, title, slug, status and publish date) so the stored record can be compared directly with the failing public slug without exposing article bodies or other content data.
+- Current next action is to inspect `/api/admin/content-health` while signed in, identify the exact stored slug/type/status/date, then fix the mismatch at the source rather than adding further blind public-route changes.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -32,7 +34,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 0 — Baseline & Safety | 🟢 Complete | Audit, rollback checkpoint and production-build verification completed |
 | 1 — MongoDB Production Connection | 🟢 Complete | Atlas + Vercel configured and live DB health confirmed |
 | 2 — Secure Admin Authentication | 🟢 Complete | Authentication and protected-access acceptance completed |
-| 3 — CMS Foundation | 🟡 In progress | CMS create/publish works; public detail read requires retest after publication-date compatibility fix |
+| 3 — CMS Foundation | 🟡 In progress | CMS create/publish works; stored-vs-public slug lookup mismatch remains under diagnosis |
 | 4 — Admin Content Editor | 🟡 In progress | Editor/list/actions implemented; production image storage and final acceptance remain |
 | 5 — Public Tips/Blog/News | 🟡 In progress | DB-driven foundations implemented; live detail/public acceptance remains |
 | 6 — Offers | ⬜ Not started | Deferred until core CMS is stable |
@@ -102,6 +104,7 @@ Salon: News, Offers, Announcements.
 - [x] Production Blog create/publish proven.
 - [x] Public API index setup made non-blocking.
 - [x] Public detail publication-date compatibility hardened for BSON Date/string values.
+- [x] Authenticated health diagnostic now exposes safe content metadata for slug/type/status/date troubleshooting.
 - [ ] Verify unique slugs against production data.
 - [ ] Verify draft privacy publicly.
 - [ ] Verify safe API errors/no secrets in production.
@@ -252,4 +255,10 @@ Salon: News, Offers, Announcements.
 - Owner confirmed the published Blog appears in the CMS but its public API returned `Content not found`.
 - Hardened `api/content.js` detail lookup to fetch the published record first and perform publication-date validation in application code, including legacy string-form dates.
 - Updated this BRD immediately with the code change.
-- **Next:** retest the same public API URL, then the public Blog detail route; do not close Stage 3 until both pass.
+- Vercel deployment for the public API fix completed successfully, but the owner retest still returned `Content not found`.
+
+### 2026-09-14 — Stage 3 stored-content diagnostic
+- Added authenticated metadata-only content summary to `/api/admin/content-health`.
+- The diagnostic reports count plus recent content ID/type/title/slug/status/publish date, without returning body, image or SEO fields.
+- Purpose: identify whether the failing public URL differs from the actual stored `{type,slug,status,publishDate}` record before making another public API change.
+- This BRD was updated in the same change as the diagnostic code.
