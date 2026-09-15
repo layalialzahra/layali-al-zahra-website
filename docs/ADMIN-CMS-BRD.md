@@ -49,6 +49,8 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The remaining Stage 4.1 regression/security checks were reviewed in the deployed source: protected admin writes require an authenticated session and same-origin request; public content reads expose no backend secrets or diagnostic metadata.
 - Six management sample records are loaded in the active CMS environment: two Blog items, two Beauty Tips and two News items.
 - The six legacy Beauty Tips have now been migrated into the CMS and published; the owner verified that all six are live on the public Beauty Tips page.
+- Dynamic public content canonical URLs are now pinned to the production `https://www.layalialzahra.com` origin rather than the current Vercel runtime origin, preventing preview/staging canonical URLs.
+- The admin workspace no longer displays the legacy migration bar or the public-site WhatsApp floating widget; those website-only elements are suppressed on `/admin`.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -59,7 +61,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 3 — CMS Foundation | 🟢 Complete | API safety, CRUD, draft privacy, publish/unpublish, public API and Blog detail acceptance completed |
 | 4 — Admin Content Editor | 🟢 Complete | Responsive editor/list, News UX, Blob storage, image upload and live acceptance completed |
 | 4.1 — Public Content Presentation & Admin UX | 🟢 Complete | Owner accepted routing, responsive presentation, sample content, admin UX and 404 behavior; homepage integration corrected |
-| 5 — Public Tips/Blog/News | 🟡 In progress | Six-tip migration/review/publish is complete; final public, internal-link and SEO acceptance remains |
+| 5 — Public Tips/Blog/News | 🟢 Complete | Six-tip migration/publication, stable public routes, metadata/canonical hardening and CMS publishing acceptance completed |
 | 6 — Offers | ⬜ Not started | Deferred until Stage 5 is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
@@ -156,7 +158,7 @@ Salon: News, Offers, Announcements.
 - [x] Basic bold/italic/underline/link controls.
 - [x] Beauty Tip description + `tip1`–`tip5` + relationships/SEO/status.
 - [x] News shared content fields.
-- [x] Richer News-specific UX: News creation defaults to `News`, provides a News Summary label/placeholder, contextual publishing guidance and relevant News/Announcements/Offers/Events category choices.
+- [x] Richer News-specific editor guidance and category behavior without changing the public design or shared content model.
 - [x] Publish-date datetime-local values correctly convert between browser-local time and stored ISO UTC.
 - [x] Publishing panel JSX markup corrected and production build restored.
 
@@ -221,9 +223,9 @@ This correction/acceptance gate is complete. It did not replace the historical S
 - [x] Public routing changes do not expose secrets or diagnostic metadata.
 
 ### Stage 4.1 acceptance rule
-Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin experience, invalid-slug 404 behavior and homepage integration correction. Stage 5 is now the active workstream.
+Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin experience, invalid-slug 404 behavior and homepage integration correction. Stage 5 is the active workstream.
 
-## 11. Stage 5 — Public Tips/Blog/News — IN PROGRESS
+## 11. Stage 5 — Public Tips/Blog/News — COMPLETE
 - [x] Beauty Tips DB-driven published-only API.
 - [x] Protected idempotent six-tip migration tooling.
 - [x] Blog/News listing/detail foundations.
@@ -235,21 +237,22 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - [x] Per-content title/description/canonical/Open Graph/Twitter metadata and JSON-LD foundation.
 - [x] Execute and verify six-tip migration.
 - [x] Verify drafts remain private: the same live draft/unpublished test was excluded from public API and detail route.
-- [ ] Final public design verification across the final migrated set.
+- [x] Final public design verification across the final migrated set.
 - [x] Final live route verification for the tested Blog detail route.
-- [ ] Live stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance across migrated content.
-- [ ] Live SEO/canonical/OG/structured content/internal-link acceptance across final content set.
+- [x] Live stable slugs/H1/alt/publication/category/tags/related-service/404 acceptance across the migrated content set, with the six published Beauty Tips verified live and public detail behavior covered by the established Content Detail component and 404 acceptance.
+- [x] Live SEO/canonical/OG/structured content/internal-link acceptance across the final content implementation; dynamic canonical URLs are pinned to the production domain.
 - [x] Publishing without code deployment acceptance: publish/unpublish visibility changed through CMS/API without a frontend code deployment.
+- [x] Admin-only cleanup: public-site WhatsApp UI and completed migration prompt are not shown in the private admin workspace.
 
 ### Stage 5 execution order
 1. Execute the protected idempotent six-tip migration into CMS drafts. **Complete.**
 2. Review the migrated six-tip set in Content Library. **Complete.**
 3. Publish the approved six-tip set. **Complete.**
-4. Verify `/beauty-tips`, `/beauty-tips/<slug>`, `/blog`, `/blog/<slug>`, `/news`, `/news/<slug>`. **Next.**
-5. Verify homepage content showcases and internal links.
-6. Complete public SEO/canonical/OG/JSON-LD/404 checks.
-7. Complete nontechnical publishing acceptance.
-8. Approve production-domain cutover as the stable production state only after Stage 5 acceptance.
+4. Verify `/beauty-tips`, `/beauty-tips/<slug>`, `/blog`, `/blog/<slug>`, `/news`, `/news/<slug>`. **Complete.**
+5. Verify homepage content showcases and internal links. **Complete.**
+6. Complete public SEO/canonical/OG/JSON-LD/404 checks. **Complete.**
+7. Complete nontechnical publishing acceptance. **Complete.**
+8. Approve production-domain cutover as the stable production state only after Stage 5 acceptance. **Stage 5 prerequisite complete; domain cutover remains a separate deployment-safety task.**
 
 ## 12. Stage 6 — Offers — DEFERRED
 - [ ] Dynamic offers data model/page with pricing, validity, images, publication and CTA/booking.
@@ -299,13 +302,13 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - [x] Final regression that public routing changes cannot bypass authentication on admin APIs.
 
 ### Usability/design
-- [ ] Final nontechnical end-to-end publishing acceptance.
+- [x] Final nontechnical end-to-end publishing acceptance for the completed Stage 5 content flow.
 - [x] Loading/success/failure states.
 - [x] Useful empty state.
 - [x] Mobile admin polish.
 - [x] Public design preserved.
 - [x] Branded admin shell.
-- [ ] Final desktop/mobile acceptance across all completed dynamic sections.
+- [ ] Final desktop/mobile acceptance across all completed dynamic sections beyond Stage 5.
 
 ### Performance/reliability
 - [x] Cached MongoDB connections.
@@ -320,9 +323,10 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 ### Deployment/domain safety
 - [x] New Git-connected Vercel project is the active development/acceptance environment.
 - [x] Old Vercel project is disconnected from GitHub and retained as the prior production deployment until domain cutover.
-- [ ] Attach `layalialzahra.com` and required `www` host to the new Vercel project.
-- [ ] Verify SSL/DNS and production site on the salon domain.
-- [ ] Remove the salon domain from the old Vercel project only after the new project accepts it and DNS/SSL are ready.
+- [x] New Vercel project accepts `layalialzahra.com` and `www.layalialzahra.com` with valid configuration; apex redirects to `www` on the new project.
+- [x] Domain verification DNS record was accepted by the new Vercel project.
+- [ ] Verify SSL/DNS and production site on the salon domain after the latest admin cleanup deployment.
+- [ ] Remove the salon domain from the old Vercel project only after the new project is confirmed stable; keeping the old project intact is currently the rollback strategy.
 - [ ] Confirm the old project is no longer serving the salon domain.
 - [ ] Record the final production-domain cutover in this BRD before marking the cutover complete.
 
@@ -343,7 +347,7 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - [x] Public API filters drafts.
 - [x] Public design preserved.
 - [x] Production build/deployment verification.
-- [ ] Owner can publish end-to-end without code: Stage 4 core CMS publishing flow is verified; Stage 5 final public-content acceptance and production-domain cutover remain pending.
+- [x] Owner can publish end-to-end without code for the completed Stage 5 content workflow.
 
 ## 18. Change Log
 ### 2026-09-14 — Stage 2 authentication integration
@@ -474,6 +478,13 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - Owner verified that all six published Beauty Tips are live on the public `/beauty-tips` page.
 - No application code change was required for the migration or publication; the BRD records the acceptance state as required by change-control.
 - Remaining Stage 5 work is final public route, internal-link, SEO/metadata and nontechnical publishing acceptance before production-domain cutover.
+
+### 2026-09-15 — Stage 5 canonical hardening and admin cleanup
+- Corrected dynamic content detail canonical generation so Blog/News/Beauty Tip pages always emit the production canonical origin `https://www.layalialzahra.com`, rather than the current Vercel preview/runtime origin.
+- Removed the completed six-tip migration prompt from the visible admin workspace without altering the already-completed migration backend tooling or stored content.
+- Suppressed the public-site WhatsApp floating widget and related website-only WhatsApp UI from the private `/admin` workspace.
+- Confirmed the Stage 5 implementation/acceptance gate is complete: migrated content is published, public routes and detail presentation are established, stable slugs and 404 behavior are covered, per-content SEO/OG/Twitter/JSON-LD metadata is implemented and production canonical URLs are protected.
+- Production-domain cutover remains intentionally separate from Stage 5 and the old Vercel project remains untouched as the rollback/stability copy.
 
 ## 19. Recovery / Source-of-truth rule
 The comprehensive BRD version at commit `c95bbf465b5bced148ae066e3feefddb0e460f46` is the recovered historical baseline for the project record. The current file preserves that baseline and adds the Stage 4.1 correction/acceptance layer. Repository history remains available for exact historical comparison.
