@@ -51,6 +51,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The six legacy Beauty Tips have now been migrated into the CMS and published; the owner verified that all six are live on the public Beauty Tips page.
 - Dynamic public content canonical URLs are now pinned to the production `https://www.layalialzahra.com` origin rather than the current Vercel runtime origin, preventing preview/staging canonical URLs.
 - The admin workspace no longer displays the legacy migration bar or the public-site WhatsApp floating widget; those website-only elements are suppressed on `/admin`.
+- The obsolete mobile number ending in `1231` was removed from the shared footer and Contact page so it no longer appears in those sitewide contact surfaces.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -485,6 +486,12 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - Suppressed the public-site WhatsApp floating widget and related website-only WhatsApp UI from the private `/admin` workspace.
 - Confirmed the Stage 5 implementation/acceptance gate is complete: migrated content is published, public routes and detail presentation are established, stable slugs and 404 behavior are covered, per-content SEO/OG/Twitter/JSON-LD metadata is implemented and production canonical URLs are protected.
 - Production-domain cutover remains intentionally separate from Stage 5 and the old Vercel project remains untouched as the rollback/stability copy.
+
+### 2026-09-15 — Obsolete phone number cleanup
+- Removed the obsolete mobile number ending in `1231` from the shared site footer and Contact page.
+- Removed both the visible phone-number entry and its `tel:` link from the Contact page's phone-number data, so the old number is no longer rendered or callable there.
+- Kept the current WhatsApp number and the two existing telephone numbers unchanged.
+- This is a sitewide contact-content cleanup; no CMS/database content or unrelated phone numbers were changed.
 
 ## 19. Recovery / Source-of-truth rule
 The comprehensive BRD version at commit `c95bbf465b5bced148ae066e3feefddb0e460f46` is the recovered historical baseline for the project record. The current file preserves that baseline and adds the Stage 4.1 correction/acceptance layer. Repository history remains available for exact historical comparison.
