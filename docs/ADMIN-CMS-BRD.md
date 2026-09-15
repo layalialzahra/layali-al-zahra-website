@@ -48,6 +48,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 - The homepage integration correction is complete: the legacy hard-coded Beauty Tips section is suppressed and the DB-driven Tips/Blog/News showcase is mounted immediately before Reviews.
 - The remaining Stage 4.1 regression/security checks were reviewed in the deployed source: protected admin writes require an authenticated session and same-origin request; public content reads expose no backend secrets or diagnostic metadata.
 - Six management sample records are loaded in the active CMS environment: two Blog items, two Beauty Tips and two News items.
+- The six legacy Beauty Tips have now been migrated into the CMS and published; the owner verified that all six are live on the public Beauty Tips page.
 
 ## 4. Master Status
 | Stage | Status | Current state |
@@ -58,7 +59,7 @@ Public Tips/Blog/News → backend API → MongoDB Atlas. Private `/admin` → se
 | 3 — CMS Foundation | 🟢 Complete | API safety, CRUD, draft privacy, publish/unpublish, public API and Blog detail acceptance completed |
 | 4 — Admin Content Editor | 🟢 Complete | Responsive editor/list, News UX, Blob storage, image upload and live acceptance completed |
 | 4.1 — Public Content Presentation & Admin UX | 🟢 Complete | Owner accepted routing, responsive presentation, sample content, admin UX and 404 behavior; homepage integration corrected |
-| 5 — Public Tips/Blog/News | 🟡 In progress | Public route/API foundations are complete; next is six-tip migration and final public/SEO acceptance |
+| 5 — Public Tips/Blog/News | 🟡 In progress | Six-tip migration/review/publish is complete; final public, internal-link and SEO acceptance remains |
 | 6 — Offers | ⬜ Not started | Deferred until Stage 5 is stable |
 | 7 — Services & Packages | ⬜ Not started | Deferred |
 | 8 — Gallery & Testimonials | ⬜ Not started | Deferred |
@@ -232,7 +233,7 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - [x] Beauty Tips stable slug detail links and pagination/Load more UI.
 - [x] Detail pages expose H1, alt text, publication date, category, tags and related-service context when available.
 - [x] Per-content title/description/canonical/Open Graph/Twitter metadata and JSON-LD foundation.
-- [ ] Execute and verify six-tip migration.
+- [x] Execute and verify six-tip migration.
 - [x] Verify drafts remain private: the same live draft/unpublished test was excluded from public API and detail route.
 - [ ] Final public design verification across the final migrated set.
 - [x] Final live route verification for the tested Blog detail route.
@@ -241,10 +242,10 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - [x] Publishing without code deployment acceptance: publish/unpublish visibility changed through CMS/API without a frontend code deployment.
 
 ### Stage 5 execution order
-1. Execute the protected idempotent six-tip migration into CMS drafts.
-2. Review the migrated six-tip set in Content Library.
-3. Publish the approved six-tip set.
-4. Verify `/beauty-tips`, `/beauty-tips/<slug>`, `/blog`, `/blog/<slug>`, `/news`, `/news/<slug>`.
+1. Execute the protected idempotent six-tip migration into CMS drafts. **Complete.**
+2. Review the migrated six-tip set in Content Library. **Complete.**
+3. Publish the approved six-tip set. **Complete.**
+4. Verify `/beauty-tips`, `/beauty-tips/<slug>`, `/blog`, `/blog/<slug>`, `/news`, `/news/<slug>`. **Next.**
 5. Verify homepage content showcases and internal links.
 6. Complete public SEO/canonical/OG/JSON-LD/404 checks.
 7. Complete nontechnical publishing acceptance.
@@ -336,7 +337,7 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - [x] Categories/tags.
 - [x] Related service.
 - [x] Per-content SEO fields.
-- [ ] Six-tip migration.
+- [x] Six-tip migration.
 - [x] DB-driven public API foundation.
 - [x] Slug normalization/uniqueness foundation.
 - [x] Public API filters drafts.
@@ -465,6 +466,14 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 - Owner verified the invalid Blog slug `/blog/this-does-not-exist` shows the intended `Content not found` state.
 - Source review confirmed protected admin writes still require authentication and same-origin checks and that public content responses remain published-only without diagnostic/secrets exposure.
 - Stage 4.1 is now complete and Stage 5 is the active workstream.
+
+### 2026-09-14 — Stage 5 six-tip migration and publication
+- Executed the protected idempotent six-tip migration from the CMS Content Library; the result was **6 Beauty Tips migrated; 0 already existed**.
+- Reviewed the migrated records in the Content Library.
+- Published all six migrated Beauty Tips from the CMS.
+- Owner verified that all six published Beauty Tips are live on the public `/beauty-tips` page.
+- No application code change was required for the migration or publication; the BRD records the acceptance state as required by change-control.
+- Remaining Stage 5 work is final public route, internal-link, SEO/metadata and nontechnical publishing acceptance before production-domain cutover.
 
 ## 19. Recovery / Source-of-truth rule
 The comprehensive BRD version at commit `c95bbf465b5bced148ae066e3feefddb0e460f46` is the recovered historical baseline for the project record. The current file preserves that baseline and adds the Stage 4.1 correction/acceptance layer. Repository history remains available for exact historical comparison.
