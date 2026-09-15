@@ -26,6 +26,20 @@ const routeToPage = (pathname: string, hash = '') => { const path = cleanPath(pa
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   useEffect(() => { const handleLocationChange = () => { const page = routeToPage(window.location.pathname, window.location.hash.slice(1)); setCurrentPage(page); const staticTitle = pageTitles[page] || pageTitles[page.split(':')[0]]; if (staticTitle) document.title = staticTitle; window.scrollTo({ top: 0, behavior: 'smooth' }); }; window.addEventListener('hashchange', handleLocationChange); window.addEventListener('popstate', handleLocationChange); handleLocationChange(); return () => { window.removeEventListener('hashchange', handleLocationChange); window.removeEventListener('popstate', handleLocationChange); }; }, []);
+  useEffect(() => {
+    if (currentPage !== 'admin') return;
+    const style = document.createElement('style');
+    style.setAttribute('data-admin-cleanup', 'true');
+    style.textContent = `
+      .cms-migration { display: none !important; }
+      a[href*="wa.me" i], a[href*="whatsapp" i], iframe[src*="whatsapp" i],
+      [id*="whatsapp" i], [class*="whatsapp" i], [aria-label*="whatsapp" i],
+      [title*="whatsapp" i], [class*="joinchat" i], [class*="eapps-whatsapp" i],
+      [class*="wa__btn" i] { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+    `;
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, [currentPage]);
   const handleNavigate = (page: string) => { const pathMap: Record<string, string> = { home: '/home', services: '/services', packages: '/packages', offers: '/offers', tips: '/beauty-tips', blog: '/blog', news: '/news', contact: '/contact' }; const path = pathMap[page]; if (path) { window.history.pushState({}, '', path); setCurrentPage(page); document.title = pageTitles[page] || document.title; window.scrollTo({ top: 0, behavior: 'smooth' }); return; } window.location.hash = page; };
   const renderPage = () => { if (currentPage.startsWith('tip:')) return <ContentDetailPage type="tip" slug={currentPage.slice(4)} />; if (currentPage.startsWith('blog:')) return <ContentDetailPage type="blog" slug={currentPage.slice(5)} />; if (currentPage.startsWith('news:')) return <ContentDetailPage type="news" slug={currentPage.slice(5)} />; switch (currentPage) { case 'home': return <><HomePage onNavigate={handleNavigate} /><HomeContentShowcase onNavigate={handleNavigate} /></>; case 'services': return <ServicesPage />; case 'packages': return <PackagesPage />; case 'offers': return <OffersPage />; case 'tips': return <TipsPage />; case 'blog': return <ContentListingPage type="blog" />; case 'news': return <ContentListingPage type="news" />; case 'contact': return <ContactPage onNavigate={handleNavigate} />; case 'terms': return <TermsPage />; case 'privacy': return <PrivacyPage />; case 'admin': return <AdminPage />; default: return <NotFoundPage onNavigate={handleNavigate} />; } };
   const showHeaderFooter = currentPage !== 'admin' && currentPage !== '404' && !currentPage.startsWith('error');
