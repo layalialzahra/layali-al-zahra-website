@@ -1,6 +1,4 @@
-import { getDb } from '../_lib/mongodb.js';
 import { requireAdmin, sameOrigin } from '../_lib/auth.js';
-import { assertUniqueContentSlug, ensureContentIndexes, serializeContent, validateContentInput } from '../_lib/content.js';
 
 const REQUESTED_CONTENT = [
   {
@@ -90,6 +88,8 @@ export default async function handler(req, res) {
   if (!sameOrigin(req)) return sendError(res, 403, 'Forbidden');
 
   try {
+    const { getDb } = await import('../_lib/mongodb.js');
+    const { assertUniqueContentSlug, ensureContentIndexes, serializeContent, validateContentInput } = await import('../_lib/content.js');
     await ensureContentIndexes();
     const db = await getDb();
     const collection = db.collection('content');
@@ -118,6 +118,11 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Requested content seed failed', error);
-    return sendError(res, 503, 'Requested content could not be added.');
+    const message = String(error?.message || '');
+    if (error?.code === 11000) return sendError(res, 409, 'A requested content item already exists with the same type and slug.');
+    if (message === 'Invalid content type' || message === 'Invalid content status' || message === 'Invalid publish date' || message === 'A valid slug is required' || message.startsWith('Title is required')) {
+      return sendError(res, 400, message);
+    }
+    return sendError(res, 503, 'Requested content could not be added. Check the deployment logs for the underlying error.');
   }
 }
