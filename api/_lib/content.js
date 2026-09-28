@@ -82,7 +82,7 @@ export function validateContentInput(input, partial = false) {
   if (data.tags !== undefined) result.tags = normalizeTags(data.tags);
   if (data.status !== undefined) {
     const status = String(data.status).trim().toLowerCase();
-    if (!["draft", "published"].includes(status)) throw new Error("Invalid content status");
+    if (!["draft", "scheduled", "published"].includes(status)) throw new Error("Invalid content status");
     result.status = status;
   }
   if (data.publishDate !== undefined) {
