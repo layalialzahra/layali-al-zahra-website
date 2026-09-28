@@ -16,9 +16,10 @@ export default async function handler(req, res) {
     const slug = req.query?.slug ? String(req.query.slug).trim().toLowerCase() : null;
     const page = Math.max(1, Number.parseInt(String(req.query?.page || "1"), 10) || 1);
     const limit = Math.min(24, Math.max(1, Number.parseInt(String(req.query?.limit || "12"), 10) || 12));
+    const now = new Date();
 
     if (slug) {
-      const detailFilter = { status: "published", slug };
+      const detailFilter = { $or: [{ status: "published" }, { status: "scheduled", publishDate: { $lte: now } }], slug };
       if (type) detailFilter.type = type;
       const item = await collection.findOne(detailFilter);
       if (!item) return res.status(404).json({ success: false, message: "Content not found" });
@@ -31,7 +32,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, item: serializeContent(item) });
     }
 
-    const filter = { status: "published", $or: [{ publishDate: null }, { publishDate: { $lte: new Date() } }] };
+    const filter = { $or: [{ status: "published", $or: [{ publishDate: null }, { publishDate: { $lte: now } }] }, { status: "scheduled", publishDate: { $lte: now } }] };
     if (type) filter.type = type;
     if (category) filter.category = category;
     const [items, total] = await Promise.all([
