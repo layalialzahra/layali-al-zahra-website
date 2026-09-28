@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       const category = req.query?.category ? String(req.query.category).trim().slice(0, 100) : null;
       const search = req.query?.search ? String(req.query.search).trim().slice(0, 100) : null;
       if (type && !CONTENT_TYPES.has(type)) return sendError(res, 400, "Invalid content type");
-      if (status && !["draft", "published"].includes(status)) return sendError(res, 400, "Invalid content status");
+      if (status && !["draft", "scheduled", "published"].includes(status)) return sendError(res, 400, "Invalid content status");
       const page = Math.max(1, Number.parseInt(String(req.query?.page || "1"), 10) || 1);
       const limit = Math.min(50, Math.max(1, Number.parseInt(String(req.query?.limit || "20"), 10) || 20));
       const filter = {};
@@ -66,6 +66,7 @@ export default async function handler(req, res) {
       if (!requestedSlug) data.slug = await ensureUniqueSlug(collection, data.type, data.slug);
       else await assertUniqueContentSlug(collection, data.type, data.slug);
       const now = new Date();
+      if (data.status === "scheduled" && (!data.publishDate || data.publishDate <= now)) return sendError(res, 400, "A future publish date is required for scheduled content");
       const document = { ...data, status: data.status || "draft", publishDate: data.status === "published" ? (data.publishDate || now) : (data.publishDate || null), createdAt: now, updatedAt: now };
       const result = await collection.insertOne(document);
       return res.status(201).json({ success: true, item: serializeContent({ ...document, _id: result.insertedId }) });
@@ -96,7 +97,9 @@ export default async function handler(req, res) {
 
     const data = validateContentInput(req.body, true);
     if (data.slug || data.type) await assertUniqueContentSlug(collection, data.type || existing.type, data.slug || existing.slug, id);
-    if (data.status === "published" && !data.publishDate && !existing.publishDate) data.publishDate = new Date();
+    const now = new Date();
+    if (data.status === "scheduled" && (!data.publishDate || data.publishDate <= now)) return sendError(res, 400, "A future publish date is required for scheduled content");
+    if (data.status === "published" && !data.publishDate && !existing.publishDate) data.publishDate = now;
     if (data.status === "draft") data.publishDate = null;
     data.updatedAt = new Date();
     const updated = await collection.findOneAndUpdate({ _id: id }, { $set: data }, { returnDocument: "after" });
