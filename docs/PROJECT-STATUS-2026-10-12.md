@@ -242,3 +242,17 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - Build verification [run 38270400681](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400681) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build`.
 - Historical secret scan [run 38270400613](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400613) passed the redacted Gitleaks reachable-history scan and binary-blob scan.
 - These checks verify the feature-branch source only. Task 02 still blocks live/staging runtime acceptance; no database writes, uploads, migrations, deployment or public content-source changes were performed. Vercel remains disconnected.
+
+
+## Short Task List Task 04 — Offers admin automated acceptance (2026-10-12)
+
+**Outcome:** Automated acceptance PASS on code/test commit `526047628878e300791450700d6e3f43e7d1c2e0`; staging/runtime acceptance remains blocked by Short Task List Task 02. This entry does not close Core CMS Task 6 Steps 2–5 or authorise a database migration or public-source cutover.
+
+- Added `tests/api/managed-content-offers-acceptance.test.js` for offer CRUD, publication/unpublication, deletion, published-only public reads, display-price preservation and date/validity behavior.
+- Added `tests/admin/OffersManager.test.tsx` for explicit publishing of a date-range offer and saving a recurring offer as a draft while preserving labels and omitting date fields.
+- Verified display strings remain unchanged (for example, `AED 178.50`, `AED 99.75` and `From AED 99`). Existing `Every Monday` and `Midday Special` remain text labels; no dates are inferred from those labels.
+- Date tests cover an inclusive same-day range, leap-day acceptance (`2028-02-29`), reversed ranges, impossible calendar dates, non-ISO input and missing required date boundaries.
+- Fixed a verified defect: switching an existing date-range offer to `recurring` or `label` could leave old `validFrom`/`validUntil` values stored. The validator now normalizes these irrelevant dates to `null` for non-date validity types, including partial updates.
+- Build verification [38271554877](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38271554877) passed on the code/test commit: dependency installation, `npm audit --audit-level=high` (0 vulnerabilities), `npm test` (80 Node tests and 22 Vitest tests across 5 files) and `npm run build` (client build, SSR build and homepage SSR smoke test).
+- The TDD test-only run [38271243996](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38271243996) failed at the new assertion because non-date validity returned an undefined date field instead of the normalized null value; the fix and regression tests then passed in run 38271554877.
+- No staging/live database access, uploads, migration, deployment or public content-source change occurred. Vercel remains disconnected. The environment blocker documented in `docs/ENVIRONMENT-VERIFICATION-2026-10-12.md` remains in force.

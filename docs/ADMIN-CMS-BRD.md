@@ -659,3 +659,8 @@ No CMS runtime tests, migration, upload, deployment or production writes were pe
 - Build verification [run 38270400681](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400681) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build`.
 - Historical secret scan [run 38270400613](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400613) passed the redacted Gitleaks reachable-history scan and binary-blob scan.
 - These checks verify the feature-branch source only. Task 02 still blocks live/staging runtime acceptance; no database writes, uploads, migrations, deployment or public content-source changes were performed. Vercel remains disconnected.
+
+
+## CMS expansion checkpoint — Short Task List Task 04 (2026-10-12)
+
+Automated Offers management checks pass on code/test commit `526047628878e300791450700d6e3f43e7d1c2e0`; Build verification [38271554877](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38271554877) passed dependency install, `npm audit --audit-level=high` (0 vulnerabilities), 80 Node tests, 22 Vitest tests across 5 files, client/SSR build and homepage SSR smoke test. Added API/route and admin UI tests for CRUD, publication, display-price strings, recurring/descriptive validity labels and date-boundary validation. Fixed stale `validFrom`/`validUntil` values persisting when an offer changes to a non-date validity type. This is not staging/runtime acceptance: Task 02's safe non-production environment/database blocker remains open. No live database write, migration, deployment or public content-source cutover occurred; Vercel remains disconnected.

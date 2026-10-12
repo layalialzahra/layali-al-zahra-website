@@ -37,3 +37,11 @@ The owner has authorised implementation on `feat/layali-managed-content-cms`, no
 - Verified branch `feat/layali-managed-content-cms` at `dbd22794c87a7f6cd80003e32c4713d1463d8b34` immediately before this documentation update; it is 15 commits ahead of audited code baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`, with documentation-only changes.
 - Build/audit/tests passed on `046c4b7e4b5a7629fc860538b6d37b0e3b969e48` in [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); reachable text/binary scan passed on the same baseline in [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483). No CI is established for `dbd22794c87a7f6cd80003e32c4713d1463d8b34`: only a Vercel failure status pointing to generic configuration docs was returned, and no Actions runs were returned. This is not deployment evidence; owner confirms Vercel remains disconnected.
 - **Next ordered task:** Short Task List Task 02, confirm an authorised non-production verification environment. Then resume Core CMS Task 6 Steps 2–5; Step 1 is CI-evidenced only on `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. Keep Google API access, staging/runtime acceptance, SSR fallback, crawler HTTP, rollback and release gates open.
+
+
+## Short Task List Task 04 — Offers automated acceptance (2026-10-12)
+
+- Code/test commit: `526047628878e300791450700d6e3f43e7d1c2e0`.
+- Build verification [38271554877](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38271554877) passed dependency install, `npm audit --audit-level=high` (0 vulnerabilities), `npm test` (80 Node tests + 22 Vitest tests across 5 files) and `npm run build` (client, SSR and smoke test).
+- Offers tests cover create/edit, publish/unpublish/delete, published-only public reads, display price labels, recurring/descriptive labels and date boundaries. Fixed stale date values persisting after switching an offer to a non-date validity type.
+- Runtime/staging acceptance remains blocked by Task 02. Vercel stays disconnected; no database migration or public cutover.
