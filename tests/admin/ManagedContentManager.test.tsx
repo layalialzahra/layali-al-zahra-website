@@ -12,13 +12,15 @@ beforeEach(() => vi.stubGlobal("fetch", vi.fn()));
 
 test("service manager publishes only after the explicit Save & Publish action", async () => {
   const request = vi.mocked(fetch);
-  request.mockResolvedValueOnce(response({ success: true, items: [] }));
+  request.mockResolvedValueOnce(response({ success: true, items: [] }))
+    .mockResolvedValueOnce(response({ success: true, item: { _id: "new", title: "Hair Cut", status: "published" } }))
+    .mockResolvedValueOnce(response({ success: true, items: [{ _id: "new", title: "Hair Cut", status: "published" }] }));
   render(<ServicesManager />);
   await screen.findByText("No services yet");
   await userEvent.click(screen.getByRole("button", { name: /add service/i }));
   await userEvent.type(screen.getByLabelText("Title"), "Hair Cut");
   await userEvent.click(screen.getByRole("button", { name: /save & publish/i }));
-  await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
   expect(request.mock.calls[1][0]).toBe("/api/admin/services");
   expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toMatchObject({ title: "Hair Cut", status: "published" });
 });
