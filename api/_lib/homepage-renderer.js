@@ -42,7 +42,6 @@ async function loadPublishedHomeReviews() {
       ? review.authorName.trim()
       : "Google customer";
     return {
-      googleReviewId: record.googleReviewId,
       googleReviewId: typeof record.googleReviewId === "string" ? record.googleReviewId : "",
       title,
       initials: initialsFor(title),
@@ -58,12 +57,6 @@ export function createHomepageRenderHandler(options = {}) {
   const getPublishedReviews = options.getPublishedReviews || (async () => {
     if (process.env.MANAGED_HOME_REVIEWS_ENABLED !== "true") return undefined;
     return loadPublishedHomeReviews();
-  });
-  const getSuppressedReviewIds = options.getSuppressedReviewIds || (async () => {
-    const { getDb } = await import("./mongodb.js");
-    const db = await getDb();
-    const records = await db.collection("google_review_suppressions").find({}).toArray();
-    return records.map((record) => record.googleReviewId).filter((id) => typeof id === "string");
   });
   const getSuppressedReviewIds = options.getSuppressedReviewIds || (async () => []);
   const renderPage = options.renderPage || (async (pathname, reviews) => {
