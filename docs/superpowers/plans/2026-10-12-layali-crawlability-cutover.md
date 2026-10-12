@@ -23,7 +23,7 @@
 ## Review Focus
 
 1. Unpublished reviews must not leak through SSR HTML, cached responses or public API.
-2. A database/network failure must fall back to the existing reviewed static snapshot instead of a blank homepage.
+2. **Two distinct fallback cases must be tested separately:** managed-review lookup failure in managed mode intentionally returns an empty review list and does not restore legacy reviews; a generic homepage SSR render exception currently returns the original HTML shell with an empty `#root` and HTTP 200. The latter is a confirmed useful-fallback gap and must be resolved/approved before crawlability acceptance.
 3. The Vercel SPA rewrites must not shadow or break any new SSR/HTML handler.
 4. Canonical URLs and page metadata must remain stable after rendering changes.
 5. A migration must be repeatable and must not duplicate, reorder or alter existing public content.
@@ -98,7 +98,7 @@
 ## Current acceptance status — 2026-10-12
 - Source-level baseline recorded: static title/description/canonical/social metadata and JSON-LD exist in index.html, but the body content root is empty until the React app renders. That means static metadata is present; it does not prove review or CMS content is present in crawler-facing HTML.
 - The strict script CSP change is implemented and passed tests/build in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374). It does not itself solve crawlability.
-- **Still pending:** compare SSR/prerender options against the current Vite configuration, build a local/test proof of concept, add rendered-HTML assertions, and confirm published review text appears while unpublished content is absent. No staging or live URL was accessed.
+- **Historical status (superseded by the local SSR implementation section below):** compare SSR/prerender options and build a local proof of concept. Route-aware SSR/hydration and rendered-output assertions have since been implemented and passed CI; deployed crawler-facing HTTP acceptance remains pending. No staging or live URL was accessed.
 - Vercel remains disconnected until project completion and explicit release approval. Do not deploy to test crawler output.
 
 
@@ -113,3 +113,10 @@
 - Tests cover published-only output, unpublished review exclusion, suppression filtering, safe hydration-data encoding, fallback behavior and fail-closed behavior when managed data is unavailable.
 - The built SSR handler smoke test checks the actual built template, canonical metadata, initial homepage content and absence of hidden opacity:0 carousel content.
 - Live HTTP/crawler verification remains intentionally pending until the approved final verification window. Do not reconnect or deploy Vercel early.
+
+## Documentation reconciliation checkpoint — 2026-10-12
+
+- Audited HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. Build/test/audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); historical text/binary printable-string scan passed in [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483).
+- Route-aware SSR/hydration is implemented locally, but actual Vercel rewrite/function packaging, live database access and crawler-facing HTTP output remain unverified. Vercel remains disconnected by owner instruction.
+- Confirmed gap: generic SSR render exceptions currently produce a static HTML shell with empty `#root` and HTTP 200. The requirement for a useful fallback is not met by that catch path. Keep this acceptance item open; do not conflate it with the intentional managed-review lookup fail-closed behavior.
+- Plan-sequence deviation: this SSR implementation preceded Core CMS Task 6 and live Google Reviews acceptance. No cutover/deployment is implied. Next approved task remains Core CMS Task 6.
