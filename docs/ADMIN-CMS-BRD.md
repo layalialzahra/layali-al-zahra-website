@@ -774,4 +774,4 @@ Required to unblock: verified Google API approval/enablement and OAuth/location 
 
 ## Google Reviews Task 17 — sync failure preservation — 2026-10-13
 - Added mocked-provider regression cases for provider HTTP error, timeout-class exception, incomplete page count and malformed response. Each checks no review write occurs and the previous local/published review fixture remains intact.
-- Live Google/provider behavior and authorised staging acceptance remain unverified. See `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`. Do not cut over public review content.
+- Build verification [38321074011](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321074011) and historical secret scan [38321073947](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321073947) passed. Live Google/provider behavior and authorised staging acceptance remain unverified. See `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`. Do not cut over public review content.
