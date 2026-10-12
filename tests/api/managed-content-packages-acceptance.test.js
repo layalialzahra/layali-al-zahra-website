@@ -121,7 +121,7 @@ test("package validation preserves legacy categories, display prices, image path
 
 test("package validation rejects missing prices, unsafe image/booking URLs, invalid ordering and malformed included items", () => {
   assert.throws(() => validatePackageInput({ title: "Missing Price" }), /price label is required/i);
-  assert.throws(() => validatePackageInput({ title: "Bad Image", priceLabel: "AED 99", imageUrl: "javascript:alert(1)" }), /safe HTTPS URL|invalid/i);
+  assert.throws(() => validatePackageInput({ title: "Bad Image", priceLabel: "AED 99", imageUrl: "javascript:alert(1)" }), /HTTPS|invalid/i);
   assert.throws(() => validatePackageInput({ title: "Bad Booking", priceLabel: "AED 99", bookingUrl: "http://booking.example" }), /HTTPS/i);
   assert.throws(() => validatePackageInput({ title: "Bad Order", priceLabel: "AED 99", sortOrder: null }), /sort order/i);
   assert.throws(() => validatePackageInput({ title: "Bad Order", priceLabel: "AED 99", sortOrder: "" }), /sort order/i);

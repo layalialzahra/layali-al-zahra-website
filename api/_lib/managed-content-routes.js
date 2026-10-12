@@ -136,7 +136,7 @@ export function createManagedContentHandler(type, options = {}) {
       return res.status(200).json({ success: true, item: serialize(type, updated, false) });
     } catch (error) {
       if (error?.code === 11000) return fail(res, 409, "An item with this slug already exists");
-      if (error instanceof Error && /required|invalid|must be|page key|validity|sort order|subservice|price label|date-range/i.test(error.message)) return fail(res, 400, error.message);
+      if (error instanceof Error && /required|invalid|must be|must use HTTPS|page key|validity|sort order|subservice|price label|date-range/i.test(error.message)) return fail(res, 400, error.message);
       return fail(res, 503, "Managed content service unavailable");
     }
   };
