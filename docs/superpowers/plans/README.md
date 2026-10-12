@@ -45,3 +45,12 @@ The owner has authorised implementation on `feat/layali-managed-content-cms`, no
 - Build verification [38271554877](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38271554877) passed dependency install, `npm audit --audit-level=high` (0 vulnerabilities), `npm test` (80 Node tests + 22 Vitest tests across 5 files) and `npm run build` (client, SSR and smoke test).
 - Offers tests cover create/edit, publish/unpublish/delete, published-only public reads, display price labels, recurring/descriptive labels and date boundaries. Fixed stale date values persisting after switching an offer to a non-date validity type.
 - Runtime/staging acceptance remains blocked by Task 02. Vercel stays disconnected; no database migration or public cutover.
+
+
+## Short Task List Task 05 — Packages automated acceptance (2026-10-12)
+
+- Tested code commit: [cc6603ffae487a827e98d81ed7d5b1f3ac89a548](https://github.com/layalialzahra/layali-al-zahra-website/commit/cc6603ffae487a827e98d81ed7d5b1f3ac89a548).
+- Build verification [38273001219](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001219) passed dependency audit (0 vulnerabilities), 87 Node tests, 27 Vitest tests across 6 files, client/SSR builds and homepage SSR smoke test.
+- Historical scan [38273001202](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001202) passed: 463 reachable commits / ~117.35 MB with zero Gitleaks findings; 118 binary blobs / 170,446,401 bytes with zero printable-string findings.
+- Packages CRUD, category/price/image/details/order persistence, publication, duplicate slugs, validation and public allowlist are covered by automated tests. A validation-error mapping defect was fixed (unsafe HTTP image URL now returns 400 rather than 503).
+- Task 02 still blocks live/staging acceptance. Vercel remains disconnected. Next ordered task: Short Task List Task 06 — FAQ management; do not infer runtime acceptance from CI.

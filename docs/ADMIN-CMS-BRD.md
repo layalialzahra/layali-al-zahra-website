@@ -664,3 +664,15 @@ No CMS runtime tests, migration, upload, deployment or production writes were pe
 ## CMS expansion checkpoint — Short Task List Task 04 (2026-10-12)
 
 Automated Offers management checks pass on code/test commit `526047628878e300791450700d6e3f43e7d1c2e0`; Build verification [38271554877](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38271554877) passed dependency install, `npm audit --audit-level=high` (0 vulnerabilities), 80 Node tests, 22 Vitest tests across 5 files, client/SSR build and homepage SSR smoke test. Added API/route and admin UI tests for CRUD, publication, display-price strings, recurring/descriptive validity labels and date-boundary validation. Fixed stale `validFrom`/`validUntil` values persisting when an offer changes to a non-date validity type. This is not staging/runtime acceptance: Task 02's safe non-production environment/database blocker remains open. No live database write, migration, deployment or public content-source cutover occurred; Vercel remains disconnected.
+
+
+## Short Task List Task 05 — Packages admin automated acceptance (2026-10-12)
+
+**Outcome:** Automated API/model/UI checks PASS on code/test commit [cc6603ffae487a827e98d81ed7d5b1f3ac89a548](https://github.com/layalialzahra/layali-al-zahra-website/commit/cc6603ffae487a827e98d81ed7d5b1f3ac89a548). Staging/runtime acceptance remains BLOCKED by Task 02; this does not close Core CMS Task 6 Steps 2–5 or authorise a migration or public-source cutover.
+
+- Added package acceptance tests for CRUD, draft defaults, partial edits, category and exact price-label preservation, image URL/alt, included items, booking destination, ordering, publish/unpublish/delete, duplicate normalized slugs, invalid input and published-only public serialization.
+- Added Packages admin UI tests for saving a draft, image-upload response wiring, explicit publication transitions, visible API errors and delete confirmation.
+- Fixed `api/_lib/managed-content-routes.js` error handling: an unsafe HTTP image URL generated a validation message that was incorrectly mapped to HTTP 503. It now returns HTTP 400, with a regression test confirming no collection mutation.
+- Build verification [38273001219](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001219) passed install, `npm audit --audit-level=high` (0 vulnerabilities), 87 Node tests, 27 Vitest tests across 6 files, client build, SSR build and homepage SSR smoke test.
+- Historical scan [38273001202](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001202) passed: 463 reachable commits / ~117.35 MB, zero Gitleaks findings; 118 reachable binary blobs / 170,446,401 bytes, zero findings.
+- No authorised isolated staging database has been verified, so actual MongoDB persistence, real Blob upload/storage, staging CRUD/auth/origin/public-read checks and migration comparison remain unverified. No live writes, upload, migration, deployment or public content-source change occurred. Vercel remains disconnected.
