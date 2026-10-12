@@ -109,3 +109,6 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 
 - The standalone secret-scan workflow did not appear in the observed Actions run list after addition on the feature branch. Wired pinned Gitleaks `v8.30.1` into the existing Build verification workflow with full-history checkout and redacted output, so the next feature-branch run can execute it.
 - First result is pending; do not claim a clean history scan until the Gitleaks step completes and any findings are triaged.
+
+
+- **Secret scan workflow correction:** the first Build verification attempt after wiring Gitleaks failed before job execution due to invalid YAML command quoting. Corrected both workflow files to use a block scalar. The all-history scan result is still pending.

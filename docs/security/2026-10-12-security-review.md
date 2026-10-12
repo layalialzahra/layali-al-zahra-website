@@ -79,3 +79,8 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - The separate scan workflow did not appear in the observed Actions run list after its addition to the feature branch. To ensure execution on this branch, the established Build verification workflow now checks out full history and runs the same pinned, redacted Gitleaks scan before dependency installation/tests/build.
 - The standalone `.github/workflows/secret-scan.yml` is retained for explicit/manual and pull-request use when recognized by GitHub Actions. The combined build workflow is the immediate execution path.
 - Scan result remains pending until the Build verification run reaches the Gitleaks step. No clean-scan claim is made before that result.
+
+
+### Secret scan workflow syntax correction — 2026-10-12
+- The first Build verification run after adding Gitleaks failed before creating a job; inspection found the shell command was incorrectly quoted as a YAML scalar. Corrected both workflow definitions to use a block scalar for the command.
+- The all-history scan has **not yet completed**. Wait for the corrected Build verification run and inspect only redacted findings. Keep the history/binary secret-review gate open.

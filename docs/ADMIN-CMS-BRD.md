@@ -538,3 +538,8 @@ This section is the current status for the separate managed Services, Offers, Pa
 ### 2026-10-12 — Wire secret scan into established CI
 - The new standalone workflow did not appear in the observed Actions run list after being added on the feature branch. Added the pinned, redacted all-reachable-history Gitleaks scan to the existing Build verification workflow and changed checkout to full history so this branch's push reliably exercises the scan.
 - The scan result remains pending. CI may fail on a finding or scanner/configuration issue; review only redacted output and do not copy secret values into documentation.
+
+
+### 2026-10-12 — Secret scan workflow syntax correction
+- The initial Build verification attempt after wiring Gitleaks failed before starting a job because the command quoting was invalid YAML. Corrected the Gitleaks run command in both workflow files to use a block scalar.
+- The full-history scan result remains pending; no clean-scan claim is made.
