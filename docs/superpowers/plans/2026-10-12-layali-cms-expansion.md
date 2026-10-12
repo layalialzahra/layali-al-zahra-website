@@ -43,7 +43,7 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 
 - [x] Owner authorised proceeding with the next planned task on 2026-10-12.
 - [x] Repository visibility state and owner decision recorded: remain public until project completion. The implementation branch is `feat/layali-managed-content-cms`; production deployment/cutover remains prohibited without verification and approval.
-- [ ] Verify the new `npm test` command and CI execution before proceeding to implementation tasks.
+- [x] Add and verify `npm test` in GitHub Actions (Node.js 20); tests and build passed on commit `bdc0fcb1b64b158b052390b5f2061a2ddd589267`.
 - [ ] Confirm Google Business Profile API/OAuth access before building live sync.
 - [ ] Decide review deletion suppression and source-edit/removal behavior before sync acceptance.
 - [ ] Validate the least invasive crawlable rendering approach against current Vite/Vercel deployment.
