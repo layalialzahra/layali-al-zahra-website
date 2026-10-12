@@ -3,7 +3,7 @@
 **Date:** 2026-10-12  
 **Repository:** `layalialzahra/layali-al-zahra-website`  
 **Branch:** `feat/layali-managed-content-cms`  
-**Application baseline observed before documentation-only follow-up:** `228e79206ed28c14e1e726cbab0c302ca28ced54`. Documentation-only follow-up commits are listed below.
+**Historical application baseline observed before documentation-only follow-up:** `228e79206ed28c14e1e726cbab0c302ca28ced54`. **Audited application/code HEAD before this reconciliation:** `046c4b7e4b5a7629fc860538b6d37b0e3b969e48` (confirmed identical to the branch ref). Documentation-only follow-up commits are listed below.
 
 > This status is authoritative for the CMS expansion and supersedes stale deployment assumptions in older records. Follow the owner-confirmed constraints below.
 
@@ -32,7 +32,7 @@
 | Workstream | State | Remaining proof |
 |---|---|---|
 | Core CMS implementation | Implemented in branch | End-to-end controlled acceptance |
-| CI, tests, dependency audit, build | [Run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed after security changes | Rerun after future code changes |
+| CI, tests, dependency audit, build | [Run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) passed on audited HEAD | Future changes require fresh CI; pass is not staging/runtime acceptance |
 | Security | Targeted code fixes and CI checks passed | style-src inline allowance, actual proxy chain and browser/runtime acceptance remain open; session revocation and script-CSP changes implemented; reachable history/binary-string scan passed |
 | CRUD/auth/uploads/public API | Not accepted end-to-end | Test auth, same-origin rejection, validation, upload limits/signatures, draft exclusion, error/fallback behavior |
 | Migration | Dry-run/count/display-value/idempotency unit tests pass | Real staging source/target comparison remains pending; no production apply |
@@ -51,11 +51,11 @@ Current status: script-src no longer permits unsafe-inline or unsafe-eval; track
 
 ## Next work in order
 
-1. **Priority 2 — Security:** complete historical/binary secret review, targeted security tests, CSP plan, proxy-header trust review and session-revocation assessment.
-2. **Priority 3 — Functional acceptance:** test CRUD, auth/origin failures, uploads, published-only reads, Blog/Beauty Tips/News regressions, migration dry-run/count/repeatability and fallback behavior.
-3. **Priority 4 — Google Reviews/crawlability:** verify external API prerequisites and sync safety; route-aware SSR is implemented locally. Validate deployed rewrite/function packaging and crawler-facing HTML only during the approved final verification window.
-4. **Priority 5 — Release readiness:** reconcile plan checklists, responsive browser QA, route inventory, environment checklist, rollback evidence and owner acceptance. Vercel stays disconnected until project completion.
-5. **Other pending:** keep BRD, Superpowers plans, security review and Notion aligned; decide repository privacy only at final stage.
+1. **Next approved task — Core CMS Task 6: Stage verification and core CMS acceptance gate.** Automated checks have passed at the audited HEAD, so record that evidence; do not close the task while safe staging CRUD/auth/origin/upload/public-read checks, real staging migration comparison and owner acceptance remain incomplete.
+2. **Resolve the SSR generic-render fallback gap.** The current catch path returns an HTML shell with an empty root and HTTP 200 on a generic render exception. Define/implement an approved useful fallback in a later implementation task, with regression tests. Keep this distinct from managed-review lookup failure, which intentionally fails closed to an empty review list when managed mode is enabled.
+3. **Google Reviews acceptance:** verify Business Profile API approval, OAuth and location access; then perform controlled sync/publish/unpublish/delete/failure-preservation checks. These external prerequisites remain unverified.
+4. **Crawlability and release readiness:** verify actual Vercel rewrite/function packaging and crawler-facing HTTP HTML, browser/responsive behavior, environment/proxy/security behavior, migration/rollback evidence and owner acceptance only in the approved final verification window. Vercel remains disconnected.
+5. **Documentation and final release:** keep BRD, plans, GitHub issue and Notion aligned. No deployment, production migration/cutover, `main` push or visibility change without explicit approval.
 
 ## Documentation rules
 
@@ -182,3 +182,14 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Only published, non-suppressed Google reviews can be rendered when MANAGED_HOME_REVIEWS_ENABLED is explicitly true. The flag defaults false; current hard-coded reviews remain the fallback until owner-approved cutover. Managed-mode lookup failure does not restore legacy reviews.
 - Build verification [38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839) passed dependency audit, tests, client build, SSR build and the built-server smoke test. Historical scan [38259645791](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645791) passed with zero text and binary printable-string findings.
 - Live Vercel routing/function packaging, database credentials, Google Business Profile access and crawler HTTP response remain unverified. Vercel remains disconnected; no production change occurred.
+
+## Documentation reconciliation checkpoint — 2026-10-12
+
+- **Audited application/code HEAD before this documentation-only reconciliation:** `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. GitHub compare confirmed `feat/layali-managed-content-cms` was identical to this SHA before these edits.
+- **Build/test/audit:** [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) completed successfully. Its job steps confirm dependency install, `npm audit --audit-level=high`, `npm test` and `npm run build` all passed.
+- **Reachable-history secret scan:** [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) completed successfully, including text/history and binary printable-string scan steps. Recorded output reports 413 reachable commits / approximately 117.24 MB, zero text findings, and 118 binary blobs containing printable strings / 170,446,401 bytes with zero findings. This heuristic does not semantically inspect compressed/encrypted payloads, unreachable objects, external systems or deployed environment values.
+- **Vercel status boundary:** a GitHub status context named “Vercel” exists on the audited commit, but this is not deployment evidence. The owner-confirmed state remains that Vercel is disconnected and no current feature-branch changes are deployed. No deployment, production migration, cutover or `main` push was performed.
+- **Implementation versus acceptance:** core CMS, Google Reviews provider-independent logic and route-aware homepage SSR/hydration exist in source. CI does not establish staging/runtime acceptance. Core CMS Task 6 remains open because staging CRUD/auth/upload/public-read verification, real staging migration comparison and owner acceptance are not evidenced. Google Business Profile API/OAuth/location access and crawler-facing HTTP verification remain unverified.
+- **Confirmed SSR fallback gap:** a managed-review source lookup failure intentionally fails closed to an empty review list when managed reviews are enabled. Separately, a generic homepage-render exception returns the original HTML template with an empty `#root` and HTTP 200; that is not a useful crawlable fallback. Treat this as an open design/acceptance gap, not as a test failure that has been fixed.
+- **Plan-sequence deviation:** route-aware SSR implementation proceeded before Core CMS Task 6 and live Google Reviews staging acceptance gates were satisfied. The code remains local/CI-only and the public source switch defaults off; do not mark upstream acceptance complete or perform cutover.
+- **Next approved task:** Core CMS plan Task 6 — Stage verification and core CMS acceptance gate. Keep it open until required evidence is obtained in an owner-authorized safe environment. Do not start a downstream acceptance/cutover task or deploy as part of this documentation reconciliation.
