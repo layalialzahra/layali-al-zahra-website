@@ -82,3 +82,16 @@ Image-upload automated acceptance passed on tested commit [a9c5469e94d0c8b18006c
 - Build verification [38281099834](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281099834) passed on tested commit [49292cebd8b3c495faaa748062d34ca8d74dbe8d](https://github.com/layalialzahra/layali-al-zahra-website/commit/49292cebd8b3c495faaa748062d34ca8d74dbe8d): 0 high-severity dependency vulnerabilities, 114 Node tests, 29 Vitest tests across 7 files, client/SSR builds and homepage SSR smoke test.
 - First CI run failed because the test imported MongoDB helpers before setting a test-only URI; the harness was corrected and the final run passed.
 - Runtime/staging acceptance remains open because Task 02 has no verified authorised isolated non-production target. No real Blob upload, live DB, migration, deployment or public-source cutover occurred. Vercel remains disconnected.
+
+
+## Task 11 — migration source reconciliation (2026-10-12)
+
+**Source-to-migration comparison: PASS. Database/staging comparison: NOT RUN, blocked by Task 02.**
+
+- Added `tests/managed-content-migration-snapshot.test.js` to compare the migration builder against authoritative source files for all 56 records: 15 Services, 5 Offers, 23 Packages and 13 FAQs.
+- Compared exact source titles, descriptions, labels/prices, image paths/URLs, source order, subservice names/prices, validity labels/types, FAQ question/answer/page assignment/order and the existing Zylu booking URL. FAQ assignment counts are Services 5, Offers 4, Packages 4.
+- **Discrepancies found: 0. Source content changes: 0.** No source values were changed.
+- Documented explicit schema-generated mapping values separately from discrepancies: blank service description where source has none, title-derived image alt, generated subservice IDs, normalized offer/package slugs, shared booking fallback and zero-based sort order.
+- Full reconciliation: [`docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md`](https://github.com/layalialzahra/layali-al-zahra-website/blob/feat/layali-managed-content-cms/docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md).
+- Build verification [38281562425](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281562425) passed on tested code/test commit [acc1accdb15c93ae43df285dd28179b0d606c671](https://github.com/layalialzahra/layali-al-zahra-website/commit/acc1accdb15c93ae43df285dd28179b0d606c671): 0 dependency vulnerabilities; 120 Node tests passed, 29 Vitest tests across 7 files passed, client/SSR builds and homepage SSR smoke test passed.
+- This verifies the generated source projection only, not database contents or an applied migration. No database connection/write, migration, deployment or public-source switch occurred. Task 02 remains blocked; Vercel remains disconnected. Temporary CI PR [#8](https://github.com/layalialzahra/layali-al-zahra-website/pull/8) was closed unmerged.
