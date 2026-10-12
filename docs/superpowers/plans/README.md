@@ -66,3 +66,10 @@ Latest Task 06 test-only follow-up: commit `09debf63f90ae32f5fc449cb29dcb8ccb9f7
 ## Short Task List Task 08 checkpoint — 2026-10-12
 
 Image-upload automated acceptance passed on tested commit [a9c5469e94d0c8b18006cbb4c21059b7cdfd7d28](https://github.com/layalialzahra/layali-al-zahra-website/commit/a9c5469e94d0c8b18006cbb4c21059b7cdfd7d28). Build verification [38277348263](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348263) passed 104 Node tests, 29 Vitest tests across 7 files, high-severity dependency audit (0 vulnerabilities), client/SSR builds and homepage SSR smoke test. Historical scan [38277348295](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348295) passed with zero findings across 491 reachable commits and 118 binary blobs / 170,446,401 bytes. Task 02 still blocks real staging/Blob acceptance; Vercel remains disconnected.
+
+## Short Task List Task 09 — public CMS API boundaries (2026-10-12)
+
+- Automated acceptance passed on tested HEAD [f832185898175ac10432546915d0a38bd5e66666](https://github.com/layalialzahra/layali-al-zahra-website/commit/f832185898175ac10432546915d0a38bd5e66666). Build verification [38280386368](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386368): 0 high-severity dependency vulnerabilities, 107 Node tests passed, 29 Vitest tests passed across 7 files, client/SSR builds and homepage SSR smoke test passed.
+- Added all-four-endpoint tests for empty datasets, published-only reads, resource allowlists, FAQ page scoping and safe generic 503 behavior for DB connection/index/read failures. Fixed a confirmed nested-field exposure path in service subservices by allowlisting nested fields.
+- Historical scan [38280386362](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386362) passed: 501 reachable commits, zero text/history findings; 118 binary blobs with printable strings, zero findings.
+- Runtime acceptance remains blocked by Task 02; no live DB, deployment, migration or cutover. Vercel remains disconnected.
