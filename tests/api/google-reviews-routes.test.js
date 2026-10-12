@@ -52,3 +52,20 @@ test("public reviews exclude drafts and suppressed source IDs", async () => {
   assert.equal(res.code, 200);
   assert.equal(res.body.items.length, 0);
 });
+
+test("cross-origin review writes are rejected before database access", async () => {
+  const handler = createGoogleReviewsAdminHandler({ requireAdmin: () => ({ username: "admin" }), sameOrigin: () => false, getDb: () => { throw new Error("database must not be reached"); } });
+  const res = response();
+  await handler({ method: "PUT", query: {}, headers: {}, body: { ids: ["aaaaaaaaaaaaaaaaaaaaaaaa"], action: "publish" } }, res);
+  assert.equal(res.code, 403);
+});
+
+test("invalid review IDs return a validation error without mutation", async () => {
+  const review = { _id: "aaaaaaaaaaaaaaaaaaaaaaaa", googleReviewId: "g-1", isPublished: false, sortOrder: 0 };
+  const store = database([review]);
+  const handler = createGoogleReviewsAdminHandler(adminOptions(store.db));
+  const res = response();
+  await handler({ method: "PUT", query: {}, headers: {}, body: { ids: ["not-an-id"], action: "publish" } }, res);
+  assert.equal(res.code, 400);
+  assert.equal(store.store.google_reviews[0].isPublished, false);
+});
