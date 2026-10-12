@@ -21,7 +21,7 @@
 - Do not change the public source of truth until migration and acceptance checks pass.
 - Do not claim a test, deployment, API access or live-state check unless it was actually performed.
 - Avoid unrelated cleanup, especially tracked `node_modules/` and `build/`; minimise coherent commits and do not push feature implementation to `main` without release approval.
-- Repository privacy was last verified as public; the owner must change it separately.
+- Repository is public; the owner has chosen to keep it public until project completion. Treat this as an accepted risk, never commit secrets, and do not change visibility without instruction.
 
 ## Review Focus
 
@@ -41,9 +41,9 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 
 ## Cross-plan release gates
 
-- [ ] Owner approves this plan set.
-- [ ] Confirm repository visibility and which Vercel project/branch is safe for implementation.
-- [ ] Confirm test tooling and a repeatable local test command.
+- [x] Owner authorised proceeding with the next planned task on 2026-10-12.
+- [x] Repository visibility state and owner decision recorded: remain public until project completion. The implementation branch is `feat/layali-managed-content-cms`; production deployment/cutover remains prohibited without verification and approval.
+- [ ] Verify the new `npm test` command and CI execution before proceeding to implementation tasks.
 - [ ] Confirm Google Business Profile API/OAuth access before building live sync.
 - [ ] Decide review deletion suppression and source-edit/removal behavior before sync acceptance.
 - [ ] Validate the least invasive crawlable rendering approach against current Vite/Vercel deployment.
