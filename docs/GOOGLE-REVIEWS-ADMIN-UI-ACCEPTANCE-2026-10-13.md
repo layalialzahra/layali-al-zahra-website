@@ -1,7 +1,7 @@
 # Task 18 — Google Reviews admin UI acceptance
 
 **Date:** 2026-10-13  
-**Status:** UI regression coverage added; CI/runtime acceptance pending.
+**Status:** UI regression coverage added; confirmed error-state defect fixed; latest CI pending confirmation and runtime acceptance remains open.
 
 ## Automated UI cases added
 
@@ -27,9 +27,13 @@ The new failed-response fixture accepts explicit HTTP status and `ok` values so 
 - Sync remains disabled unless the list API reports `syncAvailable: true`.
 - Failed list/action/sync requests are surfaced as alerts. Failed publish/sync paths do not intentionally remove the displayed review.
 
+## Confirmed defect and fix
+
+The first CI run exposed two test failures. One assertion matched both the filter option and review status label; the test was corrected to target the status element. More importantly, an initial list-load failure showed an error alert alongside the misleading “No synced Google reviews yet” empty state. The component now clears stale list/selection state on a list-load failure, shows a dedicated “Unable to load Google reviews” state with a retry action, and distinguishes an empty filtered result from a truly empty review list.
+
 ## Results and limits
 
-- CI for the test changes is pending confirmation.
+- CI for the corrected component and tests is pending confirmation.
 - These are automated component/API-fixture tests, not deployed browser acceptance or live database persistence proof.
 - Google Business Profile API/OAuth/location access and an authorised isolated staging target remain unverified. No provider-level sync was performed.
 - No production data, live Google source, Vercel deployment or public review cutover was touched.
