@@ -117,7 +117,7 @@ export default function GoogleReviewsManager() {
   return <section className="managed-cms google-reviews-manager">
     <header className="managed-cms-head">
       <div><span className="cms-kicker">REPUTATION MANAGEMENT</span><h1>Google Reviews</h1><p>Choose which synced Google reviews appear on the website. Selecting a review never publishes it by itself.</p></div>
-      <button type="button" className="cms-secondary-button" disabled={!syncAvailable || busy} onClick={() => void syncReviews}><RefreshCw size={16}/> Sync from Google</button>
+      <button type="button" className="cms-secondary-button" disabled={!syncAvailable || busy} onClick={() => void syncReviews()}><RefreshCw size={16}/> Sync from Google</button>
     </header>
     <div className="cms-alert info" role="status">{syncMessage}</div>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
@@ -134,7 +134,7 @@ export default function GoogleReviewsManager() {
       <div className="google-review-action-buttons">
         <button type="button" className="cms-primary-button" disabled={!selectedIds.length || busy} onClick={() => void updateSelected("publish")}><Check size={15}/> Publish Selected Reviews</button>
         <button type="button" className="cms-secondary-button" disabled={!selectedIds.length || busy} onClick={() => void updateSelected("unpublish")}>Unpublish Selected</button>
-        <button type="button" className="cms-secondary-button danger" disabled={!selectedIds.length || busy} onClick={() => void deleteSelected}><Trash2 size={15}/> Delete Selected Synced Reviews</button>
+        <button type="button" className="cms-secondary-button danger" disabled={!selectedIds.length || busy} onClick={() => void deleteSelected()}><Trash2 size={15}/> Delete Selected Synced Reviews</button>
       </div>
     </div>
     {loading ? <div className="managed-empty"><Loader2 className="cms-spin" size={22}/><p>Loading Google reviews…</p></div> :
