@@ -223,3 +223,13 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - **Unblock requirement:** owner-authorise a specific non-production URL/project and provide redacted evidence of its database identity, dedicated staging credentials/permissions, production write isolation and (for upload tests) isolated Blob configuration. Keep all secret values out of Notion/GitHub.
 
 Environment discovery is documented, but Core CMS acceptance remains blocked. Do not treat production or an unverified Preview environment as staging.
+
+
+## Task 03 — Services admin automated test checkpoint (2026-10-12)
+
+- Automated source/API/UI acceptance was added and passed on tested commit [`0b97e33e4cfcaf16e9a985a7d570ea206fcdf3a1`](https://github.com/layalialzahra/layali-al-zahra-website/commit/0b97e33e4cfcaf16e9a985a7d570ea206fcdf3a1).
+- Build verification [run 38270049182](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049182) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build`.
+- Coverage now exercises create/default draft, partial edit, display ordering, publish/unpublish, delete, required-field and sort-order validation, duplicate normalized slug handling, published-only public reads and public sort order. UI tests also check draft creation, edit/order submission and visible duplicate-slug error handling.
+- Fixed sort-order coercion in `api/_lib/managed-content.js`: null/blank/boolean values no longer silently become zero; finite numeric ordering remains supported.
+- The historical secret scan [run 38270049237](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049237) was still in progress when recorded; its result is not inferred here.
+- **Acceptance boundary:** This does not verify a live/staging runtime. No database writes, uploads, migration, production test, deployment or public-source switch occurred. Task 02 still blocks runtime acceptance until a safe, authorised, production-isolated target is verified. Vercel remains disconnected.
