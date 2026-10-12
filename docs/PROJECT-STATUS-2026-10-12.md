@@ -397,3 +397,7 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - Added route-level regression coverage for local deletion + suppression + subsequent sync, default-unpublished import, explicit publish, and preservation of existing publication/order.
 - Evidence: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
 - Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]); dependency install, audit, tests and build passed. Live staging/runtime acceptance remains blocked by the existing environment hold. Task 16 stays open. No Google API call, production database write or deployment occurred.
+
+## Google Reviews Task 17 — sync failure preservation — 2026-10-13
+- Added regression fixtures for provider HTTP failure, timeout-class exception, incomplete final page and malformed response. Assertions cover HTTP 502, zero review bulk writes and preservation of both local records and the published subset.
+- CI pending. This is mocked-provider evidence, not a live Google test; authorised API access and isolated runtime remain unverified. Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`.
