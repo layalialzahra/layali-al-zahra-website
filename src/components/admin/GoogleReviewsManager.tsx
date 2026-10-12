@@ -138,7 +138,8 @@ export default function GoogleReviewsManager() {
       </div>
     </div>
     {loading ? <div className="managed-empty"><Loader2 className="cms-spin" size={22}/><p>Loading Google reviews…</p></div> :
-      visibleItems.length === 0 ? <div className="managed-empty"><h2>No synced Google reviews yet</h2><p>Reviews will appear here after Google Business Profile access is verified and a sync completes.</p></div> :
+      error && items.length === 0 ? <div className="managed-empty"><h2>Unable to load Google reviews</h2><p>The review list could not be loaded. Check the error above and retry.</p><button type="button" className="cms-secondary-button" onClick={() => void loadRecords()}>Retry loading reviews</button></div> :
+      visibleItems.length === 0 ? <div className="managed-empty"><h2>{search || searchInput.trim() || ratingFilter || publicationFilter !== "all" ? "No reviews match the current filters" : "No synced Google reviews yet"}</h2><p>{search || searchInput.trim() || ratingFilter || publicationFilter !== "all" ? "Change or clear the filters to see other reviews." : "Reviews will appear here after Google Business Profile access is verified and a sync completes."}</p></div> :
       <div className="google-review-list">{visibleItems.map((review) => <article className="google-review-record" key={review._id}>
         <input type="checkbox" aria-label={`Select review by ${review.authorName || "reviewer name unavailable"}`} checked={selectedSet.has(review._id)} disabled={busy} onChange={() => toggleReview(review._id)}/>
         <div className="google-review-content">
