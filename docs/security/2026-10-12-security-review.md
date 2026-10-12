@@ -198,3 +198,12 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - Build verification [38280386368](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386368) passed: 0 high-severity dependency vulnerabilities, 107 Node tests passed, 29 Vitest tests across 7 files passed, client/SSR builds and homepage SSR smoke test passed.
 - Historical scan [38280386362](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386362) passed with zero findings across 501 reachable commits and 118 binary blobs / printable strings. Binary inspection remains heuristic.
 - This is source and automated CI evidence only. No live API, MongoDB or staging request was performed; Task 02 remains blocked. Vercel remains disconnected.
+
+
+## Task 10 — Existing Blog, Beauty Tips and News CMS regression checks (2026-10-12)
+
+- Automated regression tests added in `tests/api/legacy-content-regression.test.js` for legacy content types, partial edit preservation, schedule validation, sanitized article bodies, public-field privacy, stable listing/detail route contracts and retention of upload tests.
+- Source review found no confirmed application regression; no application logic changes were made.
+- Build verification [38281099834](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281099834) passed on tested commit [49292cebd8b3c495faaa748062d34ca8d74dbe8d](https://github.com/layalialzahra/layali-al-zahra-website/commit/49292cebd8b3c495faaa748062d34ca8d74dbe8d): 0 high-severity dependency vulnerabilities, 114 Node tests, 29 Vitest tests across 7 files, client/SSR builds and homepage SSR smoke test.
+- First CI run failed because the test imported MongoDB helpers before setting a test-only URI; the harness was corrected and the final run passed.
+- Runtime/staging acceptance remains open because Task 02 has no verified authorised isolated non-production target. No real Blob upload, live DB, migration, deployment or public-source cutover occurred. Vercel remains disconnected.
