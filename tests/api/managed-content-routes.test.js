@@ -7,7 +7,7 @@ function response() {
 }
 
 test("admin writes stop when there is no authenticated session", async () => {
-  const handler = createManagedContentHandler("service", { admin: true, requireAdmin: (_req, res) => { res.status(401).json({ success: false }); return null; }, getDb: () => { throw new Error("database must not be reached"); } });
+  const handler = createManagedContentHandler("service", { admin: true, requireAdmin: (_req, res) => { res.status(401).json({ success: false }); return null; }, sameOrigin: () => true, getDb: () => { throw new Error("database must not be reached"); } });
   const res = response();
   await handler({ method: "POST", headers: {}, body: { title: "Hair" }, query: {} }, res);
   assert.equal(res.code, 401);
