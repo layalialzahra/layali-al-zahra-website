@@ -101,3 +101,81 @@ test("sync refuses unauthenticated requests before calling Google", async () => 
   assert.equal(res.code, 401);
   assert.equal(called, false);
 });
+
+test("provider errors, request timeouts and incomplete responses preserve the entire local and published review set", async (t) => {
+  const scenarios = [
+    {
+      name: "provider returns an unsuccessful review response",
+      fetchImpl: async (url) => {
+        if (String(url).includes("oauth2.googleapis.com")) return { ok: true, json: async () => ({ access_token: "temporary-token" }) };
+        return { ok: false, status: 503, json: async () => ({ error: "upstream unavailable" }) };
+      },
+    },
+    {
+      name: "provider request times out",
+      fetchImpl: async (url) => {
+        if (String(url).includes("oauth2.googleapis.com")) return { ok: true, json: async () => ({ access_token: "temporary-token" }) };
+        const error = new Error("simulated timeout");
+        error.name = "TimeoutError";
+        throw error;
+      },
+    },
+    {
+      name: "provider returns an incomplete final page",
+      fetchImpl: async (url) => {
+        if (String(url).includes("oauth2.googleapis.com")) return { ok: true, json: async () => ({ access_token: "temporary-token" }) };
+        return { ok: true, json: async () => ({
+          totalReviewCount: 2,
+          reviews: [{ reviewId: "g-incomplete", reviewer: { displayName: "Partial" }, starRating: "FIVE", comment: "Must not be imported" }],
+        }) };
+      },
+    },
+    {
+      name: "provider returns a malformed page shape",
+      fetchImpl: async (url) => {
+        if (String(url).includes("oauth2.googleapis.com")) return { ok: true, json: async () => ({ access_token: "temporary-token" }) };
+        return { ok: true, json: async () => ({ totalReviewCount: 2, reviews: null }) };
+      },
+    },
+  ];
+
+  for (const scenario of scenarios) {
+    await t.test(scenario.name, async () => {
+      const initial = [
+        { _id: "published-1", googleReviewId: "g-published", authorName: "Published", rating: 5, reviewText: "Last known good published review", isPublished: true, sortOrder: 4, createdAt: new Date("2026-01-01T00:00:00.000Z") },
+        { _id: "draft-1", googleReviewId: "g-draft", authorName: "Draft", rating: 3, reviewText: "Last known good draft", isPublished: false, sortOrder: 8, createdAt: new Date("2026-02-01T00:00:00.000Z") },
+      ];
+      const db = database(initial);
+      const before = structuredClone(db.store.google_reviews);
+      let reviewBulkWrites = 0;
+      const originalCollection = db.db.collection.bind(db.db);
+      db.db.collection = (name) => {
+        const collection = originalCollection(name);
+        if (name === "google_reviews") {
+          const originalBulkWrite = collection.bulkWrite;
+          collection.bulkWrite = async (...args) => {
+            reviewBulkWrites += 1;
+            return originalBulkWrite(...args);
+          };
+        }
+        return collection;
+      };
+
+      const handler = createGoogleReviewsSyncHandler({
+        ...auth, env, getDb: async () => db.db, fetchImpl: scenario.fetchImpl,
+      });
+      const res = response();
+      await handler({ method: "POST", headers: {}, body: {} }, res);
+
+      assert.equal(res.code, 502, "failed source retrieval must fail the sync");
+      assert.equal(reviewBulkWrites, 0, "review writes must not start before all source pages validate");
+      assert.deepEqual(db.store.google_reviews, before, "all local records and moderation fields must remain unchanged");
+      assert.deepEqual(
+        db.store.google_reviews.filter((review) => review.isPublished === true),
+        before.filter((review) => review.isPublished === true),
+        "the last known-good published review set must remain unchanged",
+      );
+      assert.equal(db.store.google_reviews.some((review) => review.googleReviewId.startsWith("g-incomplete")), false);
+    });
+  }
+});
