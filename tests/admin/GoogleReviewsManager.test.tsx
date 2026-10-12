@@ -40,6 +40,8 @@ test("delete confirmation explains only the local copy is removed", async () => 
   render(<GoogleReviewsManager />);
   await screen.findByText("Great service");
   await userEvent.click(screen.getByRole("checkbox", { name: "Select review by A Reviewer" }));
+  await screen.findByText("1 selected");
+  expect(screen.getByRole("button", { name: "Delete Selected Synced Reviews" })).toBeEnabled();
   await userEvent.click(screen.getByRole("button", { name: "Delete Selected Synced Reviews" }));
   expect(confirm).toHaveBeenCalledWith(expect.stringMatching(/local copy.*original Google review will not be modified/i));
   await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
