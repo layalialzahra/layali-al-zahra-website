@@ -113,3 +113,24 @@ test("managed review mode fails closed instead of restoring legacy reviews on lo
     else process.env.MANAGED_HOME_REVIEWS_ENABLED = previous;
   }
 });
+
+
+test("SSR preserves the requested /home alias while rendering the same homepage", async () => {
+  const res = response();
+  let pathnameSeen;
+  const handler = createHomepageRenderHandler({
+    readTemplate: async () => '<!doctype html><html><head><link rel="canonical" href="https://www.layalialzahra.com/"></head><body><div id="root"></div></body></html>',
+    getPublishedReviews: async () => [],
+    renderPage: async (pathname) => {
+      pathnameSeen = pathname;
+      return "<main>Homepage</main>";
+    },
+    logger: { error() {} },
+  });
+
+  await handler({ method: "GET", url: "/home?source=test" }, res);
+  assert.equal(res.code, 200);
+  assert.equal(pathnameSeen, "/home");
+  assert.match(res.body, /rel="canonical" href="https:\/\/www\.layalialzahra\.com\//);
+  assert.match(res.body, /<main>Homepage<\/main>/);
+});
