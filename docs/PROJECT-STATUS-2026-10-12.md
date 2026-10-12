@@ -356,3 +356,13 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - No migration was run. No database connection/write, rollback attempt, production access, deployment, Vercel reconnection or public-source cutover occurred.
 - Task 11's 56-record source projection passed with zero discrepancies, but it does not verify database contents or an applied migration. Existing unit tests provide dry-run/repeat-apply fixture coverage only; staging counts/field integrity, real repeat-run idempotency and rollback/recovery remain unverified.
 - Evidence and resume criteria: [Task 12 staging migration blocker](./MIGRATION-STAGING-BLOCKER-2026-10-12.md). First establish Task 02's authorised isolated target, then capture pre-state, apply only in staging, verify 15 Services/5 Offers/23 Packages/13 FAQs and exact field integrity, repeat the migration, and exercise rollback/recovery. Leave Task 12 unchecked until evidence exists.
+
+
+## Task 13 — Core CMS acceptance evidence reconciliation (2026-10-12)
+
+- **Decision: HOLD — Core CMS is not accepted for managed public-content enablement.** Tasks 03, 04 and 07–11 have automated/source-level evidence at their recorded commits, but this is not end-to-end staging acceptance. Task 05 remains open for runtime persistence/Blob acceptance; Task 06 has API/UI tests and later integrated-suite evidence, but no staging acceptance; Task 12 is blocked by Task 02.
+- Reconciled each task's evidence, missing checks, fixed defects, unresolved runtime risks and acceptance criteria in [Core CMS Acceptance Summary](./CORE-CMS-ACCEPTANCE-SUMMARY-2026-10-12.md).
+- Task 11 compares the source projection for all 56 records with zero discrepancies; it does not prove database contents. Task 12 migration apply, database field/count verification, real repeat-run idempotency and rollback/recovery were NOT RUN.
+- No additional confirmed application defect was identified in the recorded Task 03–12 evidence. Previously fixed defects include Services sort-order coercion, Offer stale date fields, Package image URL error classification and nested public subservice field leakage. Separate release risks remain: generic SSR exception can return empty-root HTML with HTTP 200; live proxy/browser security and deployed crawler HTML/responsive acceptance are unverified.
+- No authorised production-isolated staging DB is verified. No production migration/writes, Vercel reconnection/deployment or public-source switch occurred.
+- **Task 13 remains OPEN pending explicit owner acceptance.** Do not enable managed public content or change the public source until Tasks 02 and 12 blockers are resolved, end-to-end staging evidence is captured, and the owner explicitly accepts in writing. This report is not approval.
