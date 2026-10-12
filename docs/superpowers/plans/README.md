@@ -100,3 +100,8 @@ Image-upload automated acceptance passed on tested commit [a9c5469e94d0c8b18006c
 ## Core CMS acceptance checkpoint — 2026-10-12
 
 Tasks 03–12 were reconciled in [Core CMS Acceptance Summary](../../CORE-CMS-ACCEPTANCE-SUMMARY-2026-10-12.md). **Decision: HOLD; Task 13 remains open pending explicit owner acceptance.** Task 02's authorised staging environment is not verified; Task 05 runtime persistence/Blob acceptance and Task 06 staging acceptance remain open; Task 12 migration/count/field/idempotency/rollback evidence was not run. Automated CI/source results must not be treated as staging acceptance. Do not enable managed public content, change its source, run production migration or deploy without completed staging evidence and explicit written owner approval.
+
+
+## Core CMS verification refresh — 2026-10-12
+
+Latest branch HEAD `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438` passed Build verification [38282811459](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811459): 120 Node tests, 29 Vitest tests across 7 files, 0 dependency vulnerabilities, client/SSR builds and homepage SSR smoke test. Historical secret scan [38282811451](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811451) passed. The integrated run resolves the missing Task 06 automated execution trace, but does not constitute staging acceptance. Task 02/12 and explicit owner acceptance remain blocked; Task 05 and Task 06 runtime acceptance remain open. No deployment, production migration or public-source switch occurred.
