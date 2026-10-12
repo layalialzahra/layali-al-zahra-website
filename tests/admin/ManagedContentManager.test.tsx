@@ -34,3 +34,23 @@ test("FAQ manager reloads records when the page filter changes", async () => {
   await userEvent.selectOptions(screen.getByLabelText("FAQ page"), "offers");
   await waitFor(() => expect(request).toHaveBeenLastCalledWith("/api/admin/faqs?limit=100&pageKey=offers", expect.objectContaining({ credentials: "include" })));
 });
+
+test("published records can be unpublished and then locally deleted", async () => {
+  const request = vi.mocked(fetch);
+  const published = { _id: "abc", title: "Hair Cuts", slug: "hair-cuts", status: "published", sortOrder: 0, subservices: [] };
+  const draft = { ...published, status: "draft" };
+  request.mockResolvedValueOnce(response({ success: true, items: [published] }))
+    .mockResolvedValueOnce(response({ success: true, item: draft }))
+    .mockResolvedValueOnce(response({ success: true, items: [draft] }))
+    .mockResolvedValueOnce(response({ success: true }))
+    .mockResolvedValueOnce(response({ success: true, items: [] }));
+  vi.spyOn(window, "confirm").mockReturnValue(true);
+  render(<ServicesManager />);
+  await screen.findByText("Hair Cuts");
+  await userEvent.click(screen.getByRole("button", { name: /unpublish/i }));
+  await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
+  expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toEqual({ status: "draft" });
+  await userEvent.click(screen.getByRole("button", { name: /delete hair cuts/i }));
+  await waitFor(() => expect(request).toHaveBeenCalledTimes(5));
+  expect(request.mock.calls[3][1]?.method).toBe("DELETE");
+});
