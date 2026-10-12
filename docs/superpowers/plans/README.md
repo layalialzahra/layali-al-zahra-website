@@ -59,3 +59,6 @@ The owner has authorised implementation on `feat/layali-managed-content-cms`, no
 ## Short Task List Task 06 checkpoint — 2026-10-12
 
 FAQ API and admin UI regression tests have been added in commits `83b248c2480c0859911c58bbcf940bf0fe8dcbea` and `e0efd65cac369ff242b3093753c5e1a9ac209da3`. The available status/workflow query did not return a CI run for these commits, so execution and build success are not claimed. Task 02 remains blocked; no authorised staging database is verified. Task 06 remains open until automated run evidence and authorised staging/runtime acceptance are recorded. Vercel remains disconnected.
+
+
+Latest Task 06 test-only follow-up: commit `09debf63f90ae32f5fc449cb29dcb8ccb9f7d643` adds an explicit unpublish-to-public-API regression assertion. Test execution and build success remain unverified because no run evidence was returned by the available status/workflow lookup.
