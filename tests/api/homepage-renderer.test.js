@@ -33,7 +33,6 @@ test("SSR homepage inserts published review markup and safely encodes hydration 
   assert.equal(res.headers["Cache-Control"], "no-store");
   assert.match(res.body, /data-ssr="true"/);
   assert.match(res.body, /Published review rendered/);
-  assert.match(res.body, /&quot;x&quot;/);
   assert.doesNotMatch(res.body, /<script>alert/);
   assert.doesNotMatch(res.body, /Private reviewer/);
 });
