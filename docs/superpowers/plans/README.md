@@ -54,3 +54,8 @@ The owner has authorised implementation on `feat/layali-managed-content-cms`, no
 - Historical scan [38273001202](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001202) passed: 463 reachable commits / ~117.35 MB with zero Gitleaks findings; 118 binary blobs / 170,446,401 bytes with zero printable-string findings.
 - Packages CRUD, category/price/image/details/order persistence, publication, duplicate slugs, validation and public allowlist are covered by automated tests. A validation-error mapping defect was fixed (unsafe HTTP image URL now returns 400 rather than 503).
 - Task 05 remains OPEN overall until authorised staging persistence/upload/runtime checks pass; Task 02 remains blocked. Vercel remains disconnected. Task 06 is next in the queue, but do not start it until explicitly instructed.
+
+
+## Short Task List Task 06 checkpoint — 2026-10-12
+
+FAQ API and admin UI regression tests have been added in commits `83b248c2480c0859911c58bbcf940bf0fe8dcbea` and `e0efd65cac369ff242b3093753c5e1a9ac209da3`. The available status/workflow query did not return a CI run for these commits, so execution and build success are not claimed. Task 02 remains blocked; no authorised staging database is verified. Task 06 remains open until automated run evidence and authorised staging/runtime acceptance are recorded. Vercel remains disconnected.
