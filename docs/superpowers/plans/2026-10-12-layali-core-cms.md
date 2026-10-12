@@ -118,13 +118,13 @@
 ### Task 4: Extract existing hard-coded content into migration-safe snapshots
 
 **Files:**
-- Create: `src/data/legacy-services.json`, `src/data/legacy-offers.json`, `src/data/legacy-packages.json`, `src/data/legacy-faqs.json`
+- Create: `src/data/legacy-services.js`, `src/data/legacy-offers.js`, `src/data/legacy-packages.js`, `src/data/legacy-faqs.js`
 - Modify: `src/components/ServicesPage.tsx`, `src/components/OffersPage.tsx`, `src/components/PackagesPage.tsx`, `src/components/HomePage.tsx`
 - Create: `scripts/migrate-managed-content.js`
 - Test: `tests/scripts/migrate-managed-content.test.js`
 
 **Interfaces:**
-- The JSON snapshots preserve current source values and ordering exactly.
+- The JavaScript snapshot modules preserve current literal values and ordering exactly by moving the existing arrays without JSON conversion. They export plain data and are not runtime-editable CMS content.
 - Migration script reads `MONGODB_URI` and optional `MONGODB_DB_NAME`, is idempotent, and supports dry-run and explicit apply modes. It must not print connection strings.
 
 - [ ] **Step 1: Write snapshot/migration tests**
