@@ -119,12 +119,12 @@
 
 **Files:**
 - Create: `src/data/legacy-services.js`, `src/data/legacy-offers.js`, `src/data/legacy-packages.js`, `src/data/legacy-faqs.js`
-- Modify: `src/components/ServicesPage.tsx`, `src/components/OffersPage.tsx`, `src/components/PackagesPage.tsx`, `src/components/HomePage.tsx`
+- Modify: `src/components/ServicesPage.tsx`, `src/components/OffersPage.tsx`, `src/components/PackagesPage.tsx`
 - Create: `scripts/migrate-managed-content.js`
 - Test: `tests/scripts/migrate-managed-content.test.js`
 
 **Interfaces:**
-- The JavaScript snapshot modules preserve current literal values and ordering exactly by moving the existing arrays without JSON conversion. They export plain data and are not runtime-editable CMS content.
+- The JavaScript snapshot modules preserve current literal values and ordering exactly by moving the existing arrays without JSON conversion. They export plain data and are not runtime-editable CMS content. Leave the curated homepage showcase arrays untouched in this task; connect them to canonical managed records only during the later cutover task.
 - Migration script reads `MONGODB_URI` and optional `MONGODB_DB_NAME`, is idempotent, and supports dry-run and explicit apply modes. It must not print connection strings.
 
 - [ ] **Step 1: Write snapshot/migration tests**
