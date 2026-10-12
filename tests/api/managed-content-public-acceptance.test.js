@@ -81,7 +81,7 @@ test("public CMS endpoints exclude drafts and top-level non-allowlisted fields",
     ],
     packages: [
       { _id: ID(), title: "Visible package", slug: "visible-package", status: "published", sortOrder: 1, priceLabel: "AED 199", includedItems: ["Wash"], ...secret },
-      { _id: ID(), title: "Draft package", slug: "draft-package", status: "draft", sortOrder: 0, ...secret },
+      { ...secret, _id: ID(), title: "Draft package", slug: "draft-package", status: "draft", sortOrder: 0 },
     ],
     faqs: [
       { _id: ID(), pageKey: "services", question: "Visible question", answer: "Visible answer", status: "published", sortOrder: 1, ...secret },
