@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Phone, MessageCircle, Download } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 
-import { legacyServicesData as servicesData } from '../data/legacy-services.js';
+import { legacyServicesData } from '../data/legacy-services.js';
+import { loadPublicServices, loadPublicFaqs } from '../data/managed-content-public.js';
 import { legacyFaqs } from '../data/legacy-faqs.js';
 const phoneNumbers = [
   { label: 'Mobile 1', number: '+971 52 370 6025', link: 'tel:+971523706025' },
@@ -13,8 +14,20 @@ const phoneNumbers = [
 ];
 
 export default function ServicesPage() {
-  const [selectedService, setSelectedService] = useState<(typeof servicesData)[0] | null>(null);
+  const [servicesData, setServicesData] = useState(legacyServicesData);
+  const [faqs, setFaqs] = useState(legacyFaqs.services);
+  const [selectedService, setSelectedService] = useState<(typeof legacyServicesData)[0] | null>(null);
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    void Promise.all([loadPublicServices(), loadPublicFaqs("services")]).then(([services, loadedFaqs]) => {
+      if (!active) return;
+      setServicesData(services as typeof legacyServicesData);
+      setFaqs(loadedFaqs as typeof legacyFaqs.services);
+    });
+    return () => { active = false; };
+  }, []);
 
   return (
     <div className="min-h-screen pt-8 pb-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
@@ -163,7 +176,7 @@ export default function ServicesPage() {
             <p className="text-gray-600">Everything you need to know about our beauty services in Al Barsha, Dubai</p>
           </div>
           <div className="space-y-3">
-            {legacyFaqs.services.map((faq, i) => (
+            {faqs.map((faq, i) => (
               <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
                 <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
                   <span>{faq.q}</span>

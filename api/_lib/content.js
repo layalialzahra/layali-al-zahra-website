@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "./mongodb.js";
+import sanitizeHtml from "sanitize-html";
 
 const CONTENT_TYPES = new Set(["blog", "tip", "news"]);
 const DEFAULT_CATEGORIES = [
@@ -17,13 +18,29 @@ export function normalizeTags(value) {
   const source = Array.isArray(value) ? value : String(value || "").split(",");
   return [...new Set(source.map((tag) => String(tag).trim().toLowerCase()).filter(Boolean))].slice(0, 30);
 }
+const SANITIZE_OPTIONS = {
+  allowedTags: [...new Set([...sanitizeHtml.defaults.allowedTags, "img", "h2", "h3", "h4", "span", "div", "small", "figure", "figcaption"])],
+  allowedAttributes: {
+    a: ["href", "name", "target", "rel"],
+    img: ["src", "alt", "title", "width", "height", "loading"],
+    "*": ["class"],
+  },
+  allowedSchemes: ["http", "https", "mailto", "tel"],
+  disallowedTagsMode: "discard",
+  transformTags: {
+    a: (tagName, attributes) => ({
+      tagName,
+      attribs: attributes.target === "_blank"
+        ? { ...attributes, rel: "noopener noreferrer" }
+        : attributes,
+    }),
+  },
+};
+
 export function sanitizeBody(value) {
-  return String(value || "")
-    .replace(/<\s*(script|style|iframe|object|embed|form|textarea|select|button)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, "")
-    .replace(/<\s*\/??\s*(form|textarea|select|button)\b[^>]*>/gi, "")
-    .replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-    .replace(/\s(href|src)\s*=\s*(["'])\s*(?:(?:javascript|vbscript|data|file):)[\s\S]*?\2/gi, " $1=$2#");
+  return sanitizeHtml(String(value || ""), SANITIZE_OPTIONS);
 }
+
 export async function ensureContentIndexes() {
   if (!indexesPromise) {
     indexesPromise = (async () => {
@@ -99,8 +116,25 @@ export function validateContentInput(input, partial = false) {
   }
   return result;
 }
-export function serializeContent(doc) {
-  return { ...doc, _id: String(doc._id), createdAt: doc.createdAt?.toISOString?.() || doc.createdAt, updatedAt: doc.updatedAt?.toISOString?.() || doc.updatedAt, publishDate: doc.publishDate?.toISOString?.() || doc.publishDate };
+const CONTENT_PUBLIC_FIELDS = [
+  "_id", "type", "title", "slug", "excerpt", "body", "featuredImage", "altText",
+  "category", "tags", "author", "relatedService", "seoTitle", "metaDescription",
+  "socialImage", "publishDate", "tip1", "tip2", "tip3", "tip4", "tip5",
+];
+const CONTENT_ADMIN_FIELDS = [...CONTENT_PUBLIC_FIELDS, "status", "createdAt", "updatedAt"];
+
+export function serializeContent(doc, { publicOnly = false } = {}) {
+  const output = {};
+  for (const field of (publicOnly ? CONTENT_PUBLIC_FIELDS : CONTENT_ADMIN_FIELDS)) {
+    if (!Object.hasOwn(doc, field)) continue;
+    const value = doc[field];
+    if (field === "body") output.body = sanitizeBody(value);
+    else if (["createdAt", "updatedAt", "publishDate"].includes(field)) {
+      output[field] = value?.toISOString?.() || value || null;
+    } else output[field] = value;
+  }
+  output._id = String(doc._id);
+  return output;
 }
 export function toObjectId(value) {
   return ObjectId.isValid(String(value)) ? new ObjectId(String(value)) : null;

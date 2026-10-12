@@ -29,7 +29,7 @@ export default async function handler(req, res) {
           return res.status(404).json({ success: false, message: "Content not found" });
         }
       }
-      return res.status(200).json({ success: true, item: serializeContent(item) });
+      return res.status(200).json({ success: true, item: serializeContent(item, { publicOnly: true }) });
     }
 
     const filter = { $or: [{ status: "published", $or: [{ publishDate: null }, { publishDate: { $lte: now } }] }, { status: "scheduled", publishDate: { $lte: now } }] };
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       collection.find(filter).sort({ publishDate: -1, createdAt: -1 }).skip((page - 1) * limit).limit(limit).toArray(),
       collection.countDocuments(filter),
     ]);
-    return res.status(200).json({ success: true, items: items.map(serializeContent), page, limit, total, pages: Math.ceil(total / limit) });
+    return res.status(200).json({ success: true, items: items.map((item) => serializeContent(item, { publicOnly: true })), page, limit, total, pages: Math.ceil(total / limit) });
   } catch (error) {
     console.error("Public content API failed", error);
     return res.status(503).json({ success: false, message: "Content service unavailable" });

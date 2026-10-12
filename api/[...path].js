@@ -2,6 +2,7 @@ import { createManagedContentHandler } from "./_lib/managed-content-routes.js";
 import {
   createGoogleReviewsAdminHandler,
   createGoogleReviewsPublicHandler,
+  createGoogleReviewsSyncHandler,
 } from "./_lib/google-reviews-routes.js";
 
 function fail(res, status, message) {
@@ -39,6 +40,7 @@ export function createApiRouterHandler(options = {}) {
     ["admin/packages", createManaged("package", { admin: true })],
     ["admin/faqs", createManaged("faq", { admin: true })],
     ["admin/google-reviews", createReviewsAdmin()],
+    ["admin/google-reviews-sync", options.createGoogleReviewsSyncHandler ? options.createGoogleReviewsSyncHandler() : createGoogleReviewsSyncHandler()],
     ["published-google-reviews", createReviewsPublic()],
   ]);
 

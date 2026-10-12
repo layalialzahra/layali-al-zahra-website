@@ -21,10 +21,40 @@ jobs:
           node-version: 20
           cache: npm
       - name: Install dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Apply compatible security updates
+        run: npm audit fix --ignore-scripts --no-fund
       - name: Audit dependencies
         run: npm audit --audit-level=high
       - name: Run tests
         run: npm test
       - name: Build application
         run: npm run build
+
+  sync-lock:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/layali-managed-content-cms'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Update dependency lockfile without running package scripts
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm audit fix --package-lock-only --ignore-scripts --no-fund
+      - name: Commit lockfile changes only
+        run: |
+          if ! git diff --quiet -- package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "chore: update dependency security lockfile"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

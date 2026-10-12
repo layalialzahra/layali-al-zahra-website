@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeGoogleReview, mergeSyncedReview, filterSuppressedReviews, serializeGoogleReview } from "../../api/_lib/google-reviews.js";
+import { normalizeGoogleReview, mergeSyncedReview, filterSuppressedReviews, serializeGoogleReview, fetchAllGoogleReviews, isGoogleReviewsSyncConfigured } from "../../api/_lib/google-reviews.js";
 
 test("maps documented Google review fields without inventing values", () => {
   const review = normalizeGoogleReview({ reviewId: "g-1", reviewer: { displayName: "A. Reviewer", isAnonymous: false }, starRating: "FIVE", comment: "Excellent service", createTime: "2026-09-01T10:00:00Z", updateTime: "2026-09-02T10:00:00Z" });
@@ -35,4 +35,58 @@ test("suppressed source IDs are excluded and public serialization omits local me
   assert.equal(publicReview.reviewText, "Good");
   assert.equal("googleReviewId" in publicReview, false);
   assert.equal("accessToken" in publicReview, false);
+});
+
+
+const syncEnv = {
+  GOOGLE_BUSINESS_PROFILE_CLIENT_ID: "test-client",
+  GOOGLE_BUSINESS_PROFILE_CLIENT_SECRET: "test-secret",
+  GOOGLE_BUSINESS_PROFILE_REFRESH_TOKEN: "test-refresh",
+  GOOGLE_BUSINESS_PROFILE_PARENT: "accounts/123/locations/456",
+};
+
+test("sync configuration requires OAuth credentials and a valid account/location resource", () => {
+  assert.equal(isGoogleReviewsSyncConfigured(syncEnv), true);
+  assert.equal(isGoogleReviewsSyncConfigured({ ...syncEnv, GOOGLE_BUSINESS_PROFILE_PARENT: "https://attacker.example" }), false);
+  assert.equal(isGoogleReviewsSyncConfigured({ ...syncEnv, GOOGLE_BUSINESS_PROFILE_REFRESH_TOKEN: "" }), false);
+});
+
+test("fetches every review page and derives IDs from the documented resource name when needed", async () => {
+  const calls = [];
+  const fetchImpl = async (url) => {
+    calls.push(String(url));
+    if (String(url).includes("oauth2.googleapis.com")) {
+      return { ok: true, json: async () => ({ access_token: "short-lived-test-token" }) };
+    }
+    if (String(url).includes("pageToken=next")) {
+      return { ok: true, json: async () => ({
+        totalReviewCount: 2,
+        reviews: [{ name: "accounts/123/locations/456/reviews/g-2", reviewer: { displayName: "B" }, starRating: "FOUR", comment: "Good" }],
+      }) };
+    }
+    return { ok: true, json: async () => ({
+      totalReviewCount: 2,
+      nextPageToken: "next",
+      reviews: [{ name: "accounts/123/locations/456/reviews/g-1", reviewer: { displayName: "A" }, starRating: "FIVE", comment: "Great" }],
+    }) };
+  };
+  const result = await fetchAllGoogleReviews({ env: syncEnv, fetchImpl });
+  assert.equal(result.totalReviewCount, 2);
+  assert.deepEqual(result.reviews.map((item) => item.googleReviewId), ["g-1", "g-2"]);
+  assert.equal(calls.length, 3);
+  assert.ok(calls[1].startsWith("https://mybusiness.googleapis.com/v4/accounts/123/locations/456/reviews?"));
+});
+
+test("rejects incomplete pagination before returning any review set", async () => {
+  let apiCalls = 0;
+  const fetchImpl = async (url) => {
+    if (String(url).includes("oauth2.googleapis.com")) return { ok: true, json: async () => ({ access_token: "token" }) };
+    apiCalls++;
+    return { ok: true, json: async () => ({
+      totalReviewCount: 2,
+      reviews: [{ reviewId: "g-1", starRating: "FIVE" }],
+    }) };
+  };
+  await assert.rejects(fetchAllGoogleReviews({ env: syncEnv, fetchImpl }), /pagination was incomplete/i);
+  assert.equal(apiCalls, 1);
 });

@@ -1,5 +1,11 @@
 import { ObjectId } from "mongodb";
-import { serializeGoogleReview } from "./google-reviews.js";
+import {
+  serializeGoogleReview,
+  mergeSyncedReview,
+  filterSuppressedReviews,
+  fetchAllGoogleReviews,
+  isGoogleReviewsSyncConfigured,
+} from "./google-reviews.js";
 
 const ADMIN_METHODS = ["GET", "PUT", "DELETE"];
 function fail(res, status, message) { return res.status(status).json({ success: false, message }); }
@@ -71,8 +77,10 @@ export function createGoogleReviewsAdminHandler(options = {}) {
           success: true,
           items: items.map((item) => serializeGoogleReview(item)),
           page, limit, total, pages: Math.ceil(total / limit),
-          syncAvailable: false,
-          syncMessage: "Google Business Profile API access has not been verified. Sync is disabled.",
+          syncAvailable: isGoogleReviewsSyncConfigured(),
+          syncMessage: isGoogleReviewsSyncConfigured()
+            ? "Google credentials are configured. Sync will verify access before importing reviews."
+            : "Google Business Profile API credentials are not configured. Sync is disabled.",
         });
       }
 
@@ -105,6 +113,62 @@ export function createGoogleReviewsAdminHandler(options = {}) {
     } catch (error) {
       if (error instanceof Error && /select between|invalid|rating|action must/i.test(error.message)) return fail(res, 400, error.message);
       return fail(res, 503, "Google review management service unavailable");
+    }
+  };
+}
+
+
+export function createGoogleReviewsSyncHandler(options = {}) {
+  return async function syncHandler(req, res) {
+    if (String(req.method || "GET").toUpperCase() !== "POST") {
+      res.setHeader("Allow", "POST");
+      return fail(res, 405, "Method not allowed");
+    }
+    const auth = await getAuth(options);
+    if (!auth.requireAdmin(req, res)) return;
+    if (!auth.sameOrigin(req)) return fail(res, 403, "Forbidden");
+
+    const env = options.env || process.env;
+    if (!isGoogleReviewsSyncConfigured(env)) {
+      return fail(res, 503, "Google Business Profile API credentials are not configured. Existing local reviews were not changed.");
+    }
+
+    try {
+      const db = await getDb(options.getDb);
+      const reviews = db.collection("google_reviews");
+      const suppressions = db.collection("google_review_suppressions");
+      await ensureIndexes(reviews, suppressions);
+
+      // Complete provider pagination and validation before any local review write.
+      const source = await fetchAllGoogleReviews({ env, fetchImpl: options.fetchImpl || globalThis.fetch });
+      const suppressed = await suppressedIds(suppressions);
+      const importable = filterSuppressedReviews(source.reviews, suppressed);
+      const existingRows = importable.length
+        ? await reviews.find({ googleReviewId: { $in: importable.map((item) => item.googleReviewId) } }).toArray()
+        : [];
+      const existingBySourceId = new Map(existingRows.map((item) => [item.googleReviewId, item]));
+      const now = options.now ? options.now() : new Date();
+      const operations = importable.map((incoming) => ({
+        updateOne: {
+          filter: { googleReviewId: incoming.googleReviewId },
+          update: { $set: mergeSyncedReview(existingBySourceId.get(incoming.googleReviewId), incoming, now) },
+          upsert: true,
+        },
+      }));
+      const result = operations.length ? await reviews.bulkWrite(operations, { ordered: true }) : {};
+      return res.status(200).json({
+        success: true,
+        message: "Google reviews synced successfully.",
+        fetched: source.reviews.length,
+        inserted: result.upsertedCount || 0,
+        updated: result.modifiedCount || 0,
+        suppressed: source.reviews.length - importable.length,
+        totalReviewCount: source.totalReviewCount,
+      });
+    } catch (error) {
+      // Do not log provider response bodies, OAuth material or request headers.
+      console.error("Google review sync failed", error instanceof Error ? error.message : "Unknown error");
+      return fail(res, 502, "Google review sync failed. The previous local review set was retained if the provider request failed.");
     }
   };
 }
