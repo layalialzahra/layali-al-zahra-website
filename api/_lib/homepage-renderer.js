@@ -98,7 +98,7 @@ export function createHomepageRenderHandler(options = {}) {
       }
     } catch (error) {
       logger.error?.("Homepage published-review lookup failed", error?.name || "Error");
-      reviews = undefined;
+      reviews = process.env.MANAGED_HOME_REVIEWS_ENABLED === "true" ? [] : undefined;
     }
 
     try {
