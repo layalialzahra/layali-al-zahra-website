@@ -36,9 +36,10 @@
 - Update: `docs/superpowers/specs/2026-10-12-layali-cms-expansion-design.md` only if owner-approved decisions change
 - Update: Notion `decisions.md` and `log.md`
 
-- [ ] **Step 1: Verify Business Profile access without exposing secrets**
-  - Confirm API project approval, API enablement, OAuth setup and verified location access with the account owner.
-  - Check presence/names of expected environment variables only; never print their values.
+- [x] **Step 1: Inspect repository configuration and record the external-access gap**
+  - Checked `.env.example`, `api/_lib/google-reviews.js`, and the admin route. Expected variable names are present in the example, but values are placeholders/empty; this does not establish whether live deployment variables exist.
+  - The code checks non-empty values and the location-name shape only. It cannot prove API approval, OAuth grant validity, required scope or verified-location access.
+  - No secret values were accessed, no API request/token exchange was attempted, and Vercel remains disconnected. External prerequisites remain **UNVERIFIED/BLOCKED**. See [Task 14 prerequisite report](../../GOOGLE-BUSINESS-PROFILE-PREREQUISITES-2026-10-12.md).
 - [x] **Step 2: Confirm policy for removed/edited reviews and local deletion**
   - **Decision recorded and implemented:** use durable suppression/tombstones keyed by `googleReviewId`; local deletion remains local and the review must not silently re-import. Source-owned fields may update while local publication/order are preserved. Reviews absent from one completed sync are retained for explicit admin review.
 - [x] **Step 3: Record verified result and owner decision**
