@@ -30,6 +30,14 @@ function slugValue(data, result, partial) {
   if (!slug) throw new Error("A valid slug is required");
   result.slug = slug;
 }
+function finiteSortOrder(value) {
+  if (value === null || typeof value === "boolean" || (typeof value === "string" && !value.trim())) {
+    throw new Error("Sort order must be a finite number");
+  }
+  const sortOrder = Number(value);
+  if (!Number.isFinite(sortOrder)) throw new Error("Sort order must be a finite number");
+  return sortOrder;
+}
 function common(data, partial, result) {
   if (!partial || data.title !== undefined) result.title = text(data.title, "Title", 180, true);
   slugValue(data, result, partial);
@@ -42,9 +50,7 @@ function common(data, partial, result) {
     result.status = status;
   }
   if (data.sortOrder !== undefined || !partial) {
-    const sortOrder = data.sortOrder === undefined ? 0 : Number(data.sortOrder);
-    if (!Number.isFinite(sortOrder)) throw new Error("Sort order must be a finite number");
-    result.sortOrder = sortOrder;
+    result.sortOrder = data.sortOrder === undefined ? 0 : finiteSortOrder(data.sortOrder);
   }
 }
 function safeUrl(value, field, { required = false } = {}) {
@@ -151,9 +157,7 @@ export function validateFaqInput(input, partial = false) {
     result.status = status;
   }
   if (data.sortOrder !== undefined || !partial) {
-    const sortOrder = data.sortOrder === undefined ? 0 : Number(data.sortOrder);
-    if (!Number.isFinite(sortOrder)) throw new Error("Sort order must be a finite number");
-    result.sortOrder = sortOrder;
+    result.sortOrder = data.sortOrder === undefined ? 0 : finiteSortOrder(data.sortOrder);
   }
   return result;
 }
