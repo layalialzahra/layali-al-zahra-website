@@ -161,4 +161,4 @@ Keep Task 15 unchecked until the owner-authorised non-production target and live
 - Source review confirms selection is client-only until explicit publish; sync preserves existing publication/order; local deletion creates a suppression record and does not call Google to delete the source review.
 - Existing UI tests cover selection without writes and the explicit publish action. Existing sync tests cover default-unpublished imports and merge preservation.
 - Evidence report: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
-- CI execution result and authorised staging/runtime acceptance are pending. Task 16 remains open; no live API, production database or deployment was used.
+- Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38320839858)): dependency install, audit, tests and build. Authorised staging/runtime acceptance remains open. Task 16 remains open; no live API, production database or deployment was used.
