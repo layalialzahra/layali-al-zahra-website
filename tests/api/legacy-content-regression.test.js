@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { CONTENT_TYPES, sanitizeBody, serializeContent, validateContentInput } from "../../api/_lib/content.js";
+process.env.MONGODB_URI ||= "mongodb://127.0.0.1:27017/layali-test";
+const { CONTENT_TYPES, sanitizeBody, serializeContent, validateContentInput } = await import("../../api/_lib/content.js");
 
 const source = async (path) => readFile(new URL(path, import.meta.url), "utf8");
 
