@@ -426,3 +426,12 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - Added a jsdom hydration regression checking for React hydration mismatch warnings and an API route regression for `/home`.
 - Acceptance evidence is tracked in `docs/HOMEPAGE-SSR-HYDRATION-ACCEPTANCE-2026-10-13.md`.
 - Fresh Build verification is pending. Do not mark Task 20 complete until CI passes. Live database ordering and deployed Vercel routing/crawler output remain unverified; Vercel remains disconnected.
+
+
+## Task 21 — Services and FAQ integration — 2026-10-13
+
+**Status: BLOCKED; no implementation started.** The prerequisite Core CMS acceptance is not explicitly recorded. Task 13 remains HOLD/OPEN pending end-to-end staging evidence and written owner acceptance. No owner-authorised production-isolated staging database is verified; Task 12 migration apply, database counts/field integrity, real repeat-run idempotency and rollback/recovery were NOT RUN. Core CRUD/auth/upload/public-read and FAQ staging persistence/publication checks remain incomplete.
+
+Automated Services/FAQ tests and CI do not satisfy this gate. Stopped before application-code changes, feature-flag changes or new integration tests. Managed public content remains disabled and legacy content remains the public source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
+
+Blocker record: [Services and FAQ Integration Blocker](./SERVICES-FAQ-INTEGRATION-BLOCKER-2026-10-13.md). Resume Task 21 only after Core CMS acceptance is explicitly recorded.
