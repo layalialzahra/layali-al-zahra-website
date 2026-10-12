@@ -375,3 +375,12 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - Historical secret scan [38282811451](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811451) passed on the same HEAD.
 - This confirms automated execution for the integrated suite, including FAQ API/UI tests, resolving the earlier missing Task 06 CI trace. It does not establish live/staging persistence, real Blob storage, admin runtime security, public read behavior, or migration acceptance.
 - Task 02 remains blocked: no owner-authorised, production-isolated staging database has been verified. Task 12 migration and Task 13 owner acceptance remain open. No Vercel reconnect/deployment, production migration/write, public source change or approval occurred.
+
+
+## Task 14 — Google Business Profile API prerequisites (2026-10-12)
+
+- **Repository inspection complete; live prerequisites BLOCKED/UNVERIFIED.** `.env.example` lists the four expected GBP variables, but the values are placeholders/empty. This does not prove whether live Vercel environment variables exist.
+- Source checks only variable presence and the `accounts/{id}/locations/{id}` shape. It cannot prove Google project approval/API enablement, OAuth consent/scope or access to the verified salon location.
+- No Google Cloud/Vercel environment access was available to verify those external states. No secret values were accessed; no token exchange, API request, sync, DB write, deployment or Vercel reconnection occurred.
+- Keep Google sync and managed homepage reviews disabled. Next: obtain console/account evidence for API approval and enabled APIs, verify OAuth grant/scope and secret presence without printing values, then make a read-only reviews-list request for the verified salon location during the controlled integration/release window.
+- Evidence report: [Google Business Profile prerequisites](./GOOGLE-BUSINESS-PROFILE-PREREQUISITES-2026-10-12.md).
