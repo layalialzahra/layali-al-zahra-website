@@ -154,3 +154,11 @@
 Source review confirms that `fetchAllGoogleReviews` validates every page, reported total counts, duplicate IDs, page tokens and the final fetched count before returning data to the sync handler; the existing unit tests cover a multi-page fixture and an incomplete result. This is not live-sync acceptance. Record counts and field integrity against the real source, and runtime preservation of existing data on provider failure, remain NOT RUN. A separate risk remains: MongoDB `bulkWrite` is not atomic across documents, so a database-side write failure may apply only part of a batch; this must be tested and addressed before claiming complete write-failure atomicity.
 
 Keep Task 15 unchecked until the owner-authorised non-production target and live Google access are verified and controlled sync evidence is recorded. Vercel remains disconnected; no production source cutover is authorised.
+
+## Task 16 — moderation lifecycle regression — 2026-10-13
+
+- Added `tests/api/google-reviews-moderation-e2e.test.js`, exercising local deletion/suppression followed by sync, new-import draft state, explicit publish, and persistence of existing publication/order across another sync.
+- Source review confirms selection is client-only until explicit publish; sync preserves existing publication/order; local deletion creates a suppression record and does not call Google to delete the source review.
+- Existing UI tests cover selection without writes and the explicit publish action. Existing sync tests cover default-unpublished imports and merge preservation.
+- Evidence report: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
+- CI execution result and authorised staging/runtime acceptance are pending. Task 16 remains open; no live API, production database or deployment was used.
