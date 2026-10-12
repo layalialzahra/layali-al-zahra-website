@@ -104,7 +104,8 @@ test("managed review mode fails closed instead of restoring legacy reviews on lo
     await handler({ method: "GET" }, res);
     assert.equal(res.code, 200);
     assert.deepEqual(renderedReviews, []);
-    assert.doesNotMatch(res.body, /data-initial-reviews=/);
+    assert.match(res.body, /data-initial-reviews="\[\]"/);
+    assert.doesNotMatch(res.body, /Shauna Haberlin/);
   } finally {
     if (previous === undefined) delete process.env.MANAGED_HOME_REVIEWS_ENABLED;
     else process.env.MANAGED_HOME_REVIEWS_ENABLED = previous;
