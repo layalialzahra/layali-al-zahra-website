@@ -43,7 +43,7 @@ export function createManagedContentHandler(type, options = {}) {
     const method = String(req.method || "GET").toUpperCase();
     if (admin) {
       const auth = await getAuthFunctions(options.requireAdmin, options.sameOrigin);
-      if (!auth.requireAdmin(req, res)) return;
+      if (!(await auth.requireAdmin(req, res))) return;
       if (!ADMIN_METHODS.includes(method)) {
         res.setHeader("Allow", ADMIN_METHODS.join(", "));
         return fail(res, 405, "Method not allowed");

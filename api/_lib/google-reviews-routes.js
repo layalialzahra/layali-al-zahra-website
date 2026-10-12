@@ -40,7 +40,7 @@ export function createGoogleReviewsAdminHandler(options = {}) {
   return async function handler(req, res) {
     const method = String(req.method || "GET").toUpperCase();
     const auth = await getAuth(options);
-    if (!auth.requireAdmin(req, res)) return;
+    if (!(await auth.requireAdmin(req, res))) return;
     if (!ADMIN_METHODS.includes(method)) {
       res.setHeader("Allow", ADMIN_METHODS.join(", "));
       return fail(res, 405, "Method not allowed");
@@ -125,7 +125,7 @@ export function createGoogleReviewsSyncHandler(options = {}) {
       return fail(res, 405, "Method not allowed");
     }
     const auth = await getAuth(options);
-    if (!auth.requireAdmin(req, res)) return;
+    if (!(await auth.requireAdmin(req, res))) return;
     if (!auth.sameOrigin(req)) return fail(res, 403, "Forbidden");
 
     const env = options.env || process.env;
