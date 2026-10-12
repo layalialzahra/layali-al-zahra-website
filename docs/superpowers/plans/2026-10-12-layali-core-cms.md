@@ -33,23 +33,20 @@
 ### Task 1: Establish a minimal test harness
 
 **Files:**
-- Create: `vitest.config.ts` (or extend existing Vite config after inspection)
-- Create: `tests/setup.ts`
 - Modify: `package.json`
-- Modify: lockfile used by the repository, if one exists
-- Test: `tests/setup.test.ts`
+- Create: `tests/setup.test.js`
+- Modify: `.github/workflows/build.yml` to run tests on the implementation branch
 
 **Interfaces:**
-- Produces: `npm test` for a one-shot test run; tests use Vitest and DOM testing utilities only where component tests require them.
+- Produces: `npm test` for a one-shot test run using Node.js built-in `node:test` (Node 20 in CI). No dependency or lockfile changes are needed for initial API/model unit tests.
 
 - [ ] **Step 1: Add a smoke test for the test command**
-  - Create `tests/setup.test.ts` with a single assertion that verifies the test runner is configured.
+  - Create `tests/setup.test.js` with a single assertion that verifies the test runner is configured.
 - [ ] **Step 2: Run the test command and confirm it fails before configuration**
   - Run: `npm test`
   - Expected: fails because no test script/test runner is configured.
 - [ ] **Step 3: Add the smallest compatible test dependencies and config**
-  - Add Vitest, jsdom, `@testing-library/react`, `@testing-library/user-event` and `@testing-library/jest-dom` only if required by the chosen config.
-  - Add `"test": "vitest run"`; do not change the existing build command.
+  - Add `"test": "node --test"`; do not change the existing build command or add dependencies for the smoke test.
 - [ ] **Step 4: Run the test command**
   - Run: `npm test`
   - Expected: smoke test passes.
