@@ -69,9 +69,9 @@ Fields:
 - `_id`, unique `slug`, `title`, `description`.
 - `priceLabel` or `badgeText` for current display badges.
 - `imageUrl`, `imageAlt`.
-- `validityType`: defined date range or recurring text label, so existing values like “Every Monday” are not misrepresented as dates.
+- `validityType`: `date-range`, `recurring` or `label`. Use `date-range` only for actual dates, `recurring` for labels such as “Every Monday” and `label` for descriptive values such as “Midday Special”.
 - `validFrom`, `validUntil` for actual date-based offers; optional.
-- `validityLabel` for display when validity is recurring or descriptive.
+- `validityLabel` for display when validity is recurring or descriptive. Do not infer dates from text labels.
 - `bookingUrl`, `sortOrder`, `status`, optional SEO fields and timestamps.
 
 Expired-offer behavior must be based on validity type: a date-bound offer can be excluded or marked expired according to an owner-approved rule; recurring labels must not be treated as expired dates. Do not invent validity dates.
