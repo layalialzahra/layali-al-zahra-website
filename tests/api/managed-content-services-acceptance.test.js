@@ -166,3 +166,19 @@ test("delete removes only the selected service and it no longer appears in publi
   assert.equal(deleted.body.success, true);
   assert.deepEqual(publicResult.body.items, []);
 });
+
+
+test("rejects changing a service slug to another record's slug", async () => {
+  const { admin, call, collection } = fixture();
+  const first = await call(admin, "POST", { body: { title: "Hair Cuts" } });
+  const second = await call(admin, "POST", { body: { title: "Hair Colour" } });
+  const duplicateEdit = await call(admin, "PUT", {
+    query: { id: second.body.item._id },
+    body: { slug: "hair-cuts" },
+  });
+  assert.equal(duplicateEdit.code, 409);
+  assert.match(duplicateEdit.body.message, /slug already exists/i);
+  assert.equal(collection.snapshot().length, 2);
+  assert.equal(collection.snapshot().find((item) => String(item._id) === second.body.item._id).slug, "hair-colour");
+  assert.equal(first.code, 201);
+});
