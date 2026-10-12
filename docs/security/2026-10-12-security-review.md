@@ -27,3 +27,26 @@ No production database was queried or modified. No live exploit attempt, externa
 
 ## Owner-confirmed release constraint — 2026-10-12
 Vercel remains disconnected by owner instruction and today's feature-branch changes are not deployed. Do not reconnect or trigger deployments during implementation. Reconnect only for the final controlled release after security, functional, crawlability and rollback acceptance are complete and the owner explicitly approves. No live penetration test or production verification has been performed in this review.
+
+
+## Targeted follow-up review — 2026-10-12
+
+### Additional checks performed
+- Re-read the current authentication/session helpers, setup and password-change handlers, auth regression tests, catch-all API router, Google Reviews route handlers, upload handler, `index.html`, `vercel.json` and CI workflow on `feat/layali-managed-content-cms`.
+- Existing automated auth coverage directly checks missing-Origin rejection for POST/PUT/DELETE, safe GET without Origin, matching vs mismatched HTTPS origins and malformed-cookie tolerance. It does not establish the reverse proxy's deployed header-trust behavior or session revocation.
+- Reviewed the current repository tree for obvious credential-named paths and common binary/secret file extensions. The current tree includes tracked dependency/build artifacts, including a Windows esbuild executable under `node_modules/`; this is a repository hygiene/review item, not evidence of a secret. Do not remove tracked `node_modules/` or `build/` as part of this security pass without a separate scoped decision.
+- The connector's code-search responses did not return reliable results for even known source identifiers. Therefore they are **not evidence of a clean secret scan** and are not used to close the historical/source/binary secret-review requirement.
+
+### Current assessment
+- No secret value was intentionally retrieved or printed during this follow-up. The complete all-history scan of text and binary blobs is **still outstanding**; current-tree filename checks alone are insufficient.
+- CSP remains a deliberate follow-up rather than an untested one-line change: `index.html` contains inline Google Analytics and Meta Pixel snippets, while `vercel.json` permits inline scripts and eval. Plan a controlled CSP change that preserves analytics behavior and verify it with browser/runtime tests before release.
+- `sameOrigin()` derives the effective protocol from the first `x-forwarded-proto` value when present. Whether that header is overwritten by the production proxy has not been verified; keep this open until the actual proxy trust contract is confirmed.
+- Sessions are stateless signed cookies with an eight-hour expiry. Password change clears the current response cookie, but there is no server-side token version/revocation check in the inspected helper. A previously copied valid token may remain accepted until expiry. Immediate revocation requires a deliberate design change and regression tests; do not imply it is already implemented.
+- No code changes, secret rotations, production configuration checks, deployed exploit attempts or live penetration tests were performed during this follow-up.
+
+### Priority 2 disposition
+- Source-level review: continued; the above residual risks are confirmed.
+- Targeted regression coverage: existing auth tests inspected, but no new tests were run in this connector-only pass.
+- Full history/binary secret scan: open.
+- CSP/proxy/session decisions and verification: open.
+- Live environment checks: deferred to the final controlled release window; Vercel remains disconnected by owner instruction.
