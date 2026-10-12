@@ -593,3 +593,10 @@ This section is the current status for the separate managed Services, Offers, Pa
 - Moved Google Analytics and Meta Pixel bootstrap code from inline script blocks in index.html into same-origin public/tracking.js. Removed unsafe-inline and unsafe-eval from CSP script-src; added tests that reject those script allowances and executable inline scripts in index.html. style-src unsafe-inline remains because the site still uses inline styles.
 - Build verification [38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed dependency audit, tests and build. Historical secret scan [38255367338](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367338) passed with zero text/history and binary printable-string findings.
 - No production database, Vercel connection or deployment was used. Browser/runtime acceptance remains pending the final approved release window.
+
+
+### 2026-10-12 — Migration and crawlability acceptance tests
+- The existing migration tests assert 15 services, 5 offers, 23 packages and 13 FAQs (56 records total), preserve display labels, verify dry-run does not connect to MongoDB and confirm repeat apply does not duplicate records. These are mocked/unit-test results; no real staging or production DB migration was run.
+- Added a component-level SSR proof in `tests/rendering/homepage-crawlability-poc.test.tsx`. It confirms rendered HTML contains supplied published review text and excludes a supplied review marked unpublished, while the existing hard-coded reviews remain the default fallback.
+- CI build/test/audit passed in [run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658); reachable-history scan passed in [run 38256652699](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652699) with zero text and binary printable-string findings.
+- This does not yet integrate SSR into a request handler, fetch database-backed reviews into initial HTML or prove crawler HTTP output. Vercel remains disconnected and no deployment or production migration occurred.

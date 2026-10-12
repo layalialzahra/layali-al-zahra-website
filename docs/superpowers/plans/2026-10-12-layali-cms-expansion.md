@@ -53,7 +53,7 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 - [x] Implement server-checked session versioning. Password changes increment the admin session version; protected requests validate it against MongoDB, so previously copied tokens are rejected on their next request. Unit regression tests and CI passed in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374).
 - [x] Remove `unsafe-inline` and `unsafe-eval` from CSP `script-src`; move Google Analytics and Meta Pixel bootstrap code to same-origin `/tracking.js` and add regression tests. CI passed in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374). `style-src 'unsafe-inline'` remains because the current site uses inline styles; review that separately without breaking layout. Browser/runtime verification remains pending.
 - [ ] Verify actual proxy/header behavior, auth/upload/database routes, responsive rendering and crawler-facing HTML during the final controlled release window. Vercel remains disconnected until then.
-- [ ] Validate the least invasive crawlable rendering approach against the current Vite configuration without reconnecting Vercel; use a local/test proof of concept first, then controlled staging only at the approved final verification window.
+- [ ] Continue from the passing component-level SSR test to a route-aware server entry/hydration path that can render database-backed published reviews into initial HTML. Add HTML escaping, fallback and route regression tests locally; do not reconnect Vercel until the approved final verification window.
 - [ ] Owner explicitly approves migration/cutover after staging verification.
 
 ---
@@ -64,3 +64,8 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 - Session versioning is implemented and covered by regression tests; password changes revoke old copied sessions on the next protected request.
 - CSP script-src has no unsafe inline/eval directives. Tracking bootstrap is now external. Style-src still permits unsafe-inline due existing inline styles; live/browser acceptance remains open.
 - Vercel remains disconnected. Google API access, crawler-facing HTML, migration acceptance, responsive browser QA and final release approval remain pending.
+
+
+## Crawlability component POC — 2026-10-12
+- Component-level SSR test passes in [run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658): rendered HTML includes a published review and excludes a review marked unpublished.
+- The POC is not the final feature: no route-aware server entry, request handler, DB-backed initial HTML, hydration or crawler HTTP acceptance exists yet. Continue the SSR/hydration work on the feature branch only.

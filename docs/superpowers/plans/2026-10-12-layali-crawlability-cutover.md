@@ -38,15 +38,15 @@
 - Test: `tests/rendering/homepage-crawlability.test.*` (selected after approach is chosen)
 
 - [x] **Step 1: Capture current baseline from source**
-  - Record homepage response headers/status, initial HTML, current review section output, route behavior and metadata on the intended staging project only during an approved final verification window. Until then, document that live/staging baseline evidence is pending and do not reconnect Vercel.
-- [ ] **Step 2: Compare compatible approaches**
+  - Source baseline only: index.html contains metadata and JSON-LD, while the body starts with an empty #root and React renders the visible content. A live/staging response-header or crawler fetch remains pending; do not reconnect Vercel.
+- [x] **Step 2: Compare compatible approaches**
   - Evaluate minimal SSR for homepage only, a Vercel serverless homepage handler with React rendering, or an established prerender approach compatible with this repository.
-  - Include build/runtime impact, dynamic data freshness, caching, fallback and route/CSP interactions.
-- [ ] **Step 3: Run a small proof of concept**
-  - Demonstrate the selected candidate can render one published review into returned HTML while omitting one unpublished review.
-  - Do not connect production review data or change the public route.
-- [ ] **Step 4: Record recommendation and owner gate**
-  - Document measured result, required dependencies and rollback behavior.
+  - The research note compares client-side fetch, static-fragment injection, SSR/hydration and build-time prerender, including data freshness, hydration, rewrite/CSP and fallback risks.
+- [x] **Step 3: Run a component-level proof of concept**
+  - The passing test uses React renderToString to confirm published review text is present in rendered HTML and a supplied unpublished review is omitted. See [CI run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658).
+  - Scope limitation: this does not yet exercise a request handler, database-backed initial data, route-aware SSR, hydration or a crawler HTTP response. No production review data was connected and the public route is unchanged.
+- [x] **Step 4: Record recommendation and owner gate**
+  - The research note records the component-level result and recommends continuing with a route-aware SSR/hydration proof before any public-root change. Vercel remains disconnected until the final approved release window.
   - If the least invasive solution cannot preserve current behavior, stop and return the trade-off for approval before expanding scope.
 
 ### Task 2: Implement and verify the approved crawlable rendering path
@@ -100,3 +100,9 @@
 - The strict script CSP change is implemented and passed tests/build in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374). It does not itself solve crawlability.
 - **Still pending:** compare SSR/prerender options against the current Vite configuration, build a local/test proof of concept, add rendered-HTML assertions, and confirm published review text appears while unpublished content is absent. No staging or live URL was accessed.
 - Vercel remains disconnected until project completion and explicit release approval. Do not deploy to test crawler output.
+
+
+## Latest POC evidence — 2026-10-12
+- Build/test/audit: [38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658) passed.
+- Reachable-history text/binary scan: [38256652699](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652699) passed with zero findings (371 commits / ~117.20 MB; 118 binary blobs / 170,446,401 bytes).
+- Remaining: route-aware server entry and hydration, fetching only published reviews for initial HTML, HTML escaping/metadata/fallback regression tests, and later crawler-facing HTTP verification. Do not deploy or reconnect Vercel to perform this work.

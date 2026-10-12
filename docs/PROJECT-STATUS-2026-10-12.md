@@ -35,9 +35,9 @@
 | CI, tests, dependency audit, build | [Run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed after security changes | Rerun after future code changes |
 | Security | Targeted code fixes and CI checks passed | style-src inline allowance, actual proxy chain and browser/runtime acceptance remain open; session revocation and script-CSP changes implemented; reachable history/binary-string scan passed |
 | CRUD/auth/uploads/public API | Not accepted end-to-end | Test auth, same-origin rejection, validation, upload limits/signatures, draft exclusion, error/fallback behavior |
-| Migration | Not verified | Dry-run, source-to-schema mapping, count/content comparison and repeatability; no production apply |
-| Google Reviews | Code exists; live access blocked | Verify API/OAuth/location prerequisites and test failure-preservation/suppression in controlled conditions |
-| Crawlability | Research only | SSR/hydration proof of concept and HTTP HTML checks for published vs unpublished reviews |
+| Migration | Dry-run/count/display-value/idempotency unit tests pass | Real staging source/target comparison remains pending; no production apply |
+| Google Reviews | Provider-independent logic, route and UI tests pass; live access blocked | Verify API/OAuth/location prerequisites and controlled sync/failure-preservation acceptance |
+| Crawlability | Research plus component-level SSR proof passed in CI | Route-aware SSR/hydration, DB-backed initial HTML and crawler HTTP acceptance remain pending |
 | Responsive QA | Pending | Browser checks on public/admin desktop and mobile layouts |
 | Rollback/cutover | Pending, not authorised | Document rollback, acceptance evidence and explicit owner approval |
 | Vercel release | Deferred | Reconnect only after completion for one controlled final release |
@@ -168,3 +168,10 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Session versioning is implemented and covered by regression tests. Password changes invalidate previous copied sessions on the next protected request.
 - script-src has no unsafe-inline/unsafe-eval; tracking initialization is externalized. style-src unsafe-inline remains and requires separate layout-safe hardening. No browser/runtime test was performed.
 - Google Business Profile access, crawlability proof of concept, migration dry-run/repeatability, responsive browser QA and final release approval remain pending. Vercel stays disconnected.
+
+
+## Migration and crawlability proof checkpoint — 2026-10-12
+- Migration tests cover the 56-record source mapping (15 services, 5 offers, 23 packages, 13 FAQs), dry-run without a MongoDB connection, preservation of display labels and repeat-apply idempotency. These are mock/unit tests; no real staging or production DB comparison/apply occurred.
+- Added a component-level server-rendering proof test. [Build verification 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658) passed audit, tests and build. Rendered HTML contains supplied published review text and excludes a supplied unpublished review. Existing hard-coded reviews remain the fallback.
+- [Historical scan 38256652699](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652699) passed: 371 commits / ~117.20 MB with zero text findings; 118 binary blobs / 170,446,401 bytes with zero findings.
+- Remaining: route-aware SSR/hydration, database-backed published-review HTML, crawler HTTP acceptance, real staging migration comparison, Google API access, responsive browser QA and final release approval. Vercel remains disconnected.
