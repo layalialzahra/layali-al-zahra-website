@@ -438,13 +438,13 @@ import React, { useState, useEffect } from 'react';
         </section>
 
         {/* Reviews Section */}
-        <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
-          <div className="container mx-auto px-4">
-            {reviewItems.length > 0
-              ? <AutoCarousel items={reviewItems} title="What Our Clients Say" isReview={true} />
-              : <div className="py-12 text-center"><h2 className="font-tangerine text-5xl md:text-7xl text-rose-900 mb-4">What Our Clients Say</h2><p className="text-gray-600">Reviews will appear here soon.</p></div>}
-          </div>
-        </section>
+        {reviewItems.length > 0 && (
+          <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
+            <div className="container mx-auto px-4">
+              <AutoCarousel items={reviewItems} title="What Our Clients Say" isReview={true} />
+            </div>
+          </section>
+        )}
       </div>
     );
   }
