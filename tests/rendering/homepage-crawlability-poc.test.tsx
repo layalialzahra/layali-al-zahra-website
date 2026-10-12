@@ -49,7 +49,7 @@ describe("homepage server rendering and hydration", () => {
     expect(html).not.toContain('<script>alert("x")</script>');
   });
 
-  it("hydrates server-rendered homepage markup without React hydration warnings", async () => {
+  it("hydrates server-rendered homepage markup without React hydration mismatch warnings", async () => {
     const previousPath = window.location.pathname;
     window.history.replaceState({}, "", "/");
     vi.spyOn(window, "scrollTo").mockImplementation(() => {});
