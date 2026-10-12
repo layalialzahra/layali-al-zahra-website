@@ -408,4 +408,4 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 
 ### Task 18 UI error-state fix — 2026-10-13
 - Fixed a confirmed UI defect: failed list loading could show “No synced Google reviews yet” alongside an error, which confused failure with an empty dataset. The UI now clears stale rows/selection, shows a dedicated load-error state and retry action, and distinguishes filtered no-results.
-- Updated regression coverage and acceptance report. CI for the fixes pending; no deployed browser/runtime acceptance. No live API, production write or deployment.
+- Updated regression coverage and acceptance report. Build verification [38321584041](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321584041) passed on `d6170e93e67d5950f46a4eb3a116dbafc10c77aa`: 126 Node tests, 37 Vitest tests and application build. No deployed browser/runtime acceptance. No live API, production write or deployment.
