@@ -220,3 +220,12 @@ Full evidence, risk assessment and the unblock checklist: [docs/ENVIRONMENT-VERI
 - GitHub Actions Build verification [run 38270049182](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049182) completed successfully on tested commit `0b97e33e4cfcaf16e9a985a7d570ea206fcdf3a1`: dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build` all passed.
 - Historical secret scan [run 38270049237](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049237) completed successfully; both the redacted Gitleaks history scan and binary-blob scan passed on the tested commit.
 - No live API/database writes, staging tests, image uploads, migrations, deployment or public-source changes were performed. Task 02's environment-isolation blocker remains in force. Keep the Services staging/runtime acceptance gate open until a safe authorised target is evidenced.
+
+
+## Task 03 follow-up — duplicate slug on edit and final automated checks (2026-10-12)
+
+- Added an API regression test confirming a service cannot be edited to use another service's slug; the request returns HTTP 409 and neither record is overwritten.
+- Latest tested code/test commit: [`5bab4a5992315c529a708e48b6f07c2f6e596042`](https://github.com/layalialzahra/layali-al-zahra-website/commit/5bab4a5992315c529a708e48b6f07c2f6e596042).
+- Build verification [run 38270400681](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400681) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build`.
+- Historical secret scan [run 38270400613](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400613) passed the redacted Gitleaks reachable-history scan and binary-blob scan.
+- These checks verify the feature-branch source only. Task 02 still blocks live/staging runtime acceptance; no database writes, uploads, migrations, deployment or public content-source changes were performed. Vercel remains disconnected.
