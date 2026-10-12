@@ -753,3 +753,8 @@ Automated test/build evidence exists for the recorded Services, Offers, security
 No additional confirmed Task 03–12 application defect is established by the available evidence. Fixed defects are listed in the acceptance summary. Separate release-readiness issues remain: generic SSR exceptions can return empty-root HTML with HTTP 200, and live proxy/browser security, deployed crawler HTML and responsive acceptance are not verified.
 
 **Required before acceptance:** verify Task 02's authorised staging target and isolation; complete Task 12 with evidence; run end-to-end staging acceptance across CRUD, publication, security, uploads and public reads; then obtain explicit written owner acceptance. Task 13 remains open until that owner decision is recorded. This documentation is not approval. No production migration, deployment or public source cutover occurred.
+
+
+## Google Business Profile integration prerequisite checkpoint — 2026-10-12
+
+Task 14 repository/configuration inspection is complete, but external access is **UNVERIFIED/BLOCKED**. The example environment file lists the required client ID, client secret, refresh token and `accounts/{accountId}/locations/{locationId}` setting, with placeholders rather than working credentials. Source-level checks cannot establish live environment-variable presence, API approval/enablement, OAuth consent/scope or access to the verified salon location. No secret values were accessed and no live API call or sync was attempted. Keep sync and managed homepage review flags disabled until these prerequisites are confirmed and a controlled read-only integration check passes. See [Task 14 evidence report](./GOOGLE-BUSINESS-PROFILE-PREREQUISITES-2026-10-12.md).
