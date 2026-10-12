@@ -145,3 +145,12 @@
 - Provider-independent review mapping/merge, protected local review APIs, moderation UI and manual sync source are implemented and included in prior CI; they are not live API acceptance.
 - Current feature branch was verified at `dbd22794c87a7f6cd80003e32c4713d1463d8b34` before this documentation-only update. Build/test/audit and reachable-history/binary scan evidence [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) / [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) applies to code baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48` only; no CI is established for the docs-only HEAD. Vercel remains disconnected and its failure status is not deployment evidence.
 - Next ordered task is Short Task List Task 02 (safe non-production environment confirmation), then Core CMS Task 6 staging acceptance. Google Business Profile API approval, OAuth and verified location access remain unverified; live sync and moderation/failure-preservation acceptance remain open. Do not connect Vercel or claim live sync success.
+
+
+## Task 15 — controlled sync blocker checkpoint (2026-10-13)
+
+**Status: OPEN / BLOCKED. No live sync attempted.** Task 14's Google Business Profile API approval/enablement, OAuth grant/scope, live server-side credential presence and verified-location access remain unverified. No OAuth exchange, Google API call, database write or deployment was performed. See [Task 15 controlled sync blocker report](../../GOOGLE-REVIEWS-CONTROLLED-SYNC-BLOCKER-2026-10-13.md).
+
+Source review confirms that `fetchAllGoogleReviews` validates every page, reported total counts, duplicate IDs, page tokens and the final fetched count before returning data to the sync handler; the existing unit tests cover a multi-page fixture and an incomplete result. This is not live-sync acceptance. Record counts and field integrity against the real source, and runtime preservation of existing data on provider failure, remain NOT RUN. A separate risk remains: MongoDB `bulkWrite` is not atomic across documents, so a database-side write failure may apply only part of a batch; this must be tested and addressed before claiming complete write-failure atomicity.
+
+Keep Task 15 unchecked until the owner-authorised non-production target and live Google access are verified and controlled sync evidence is recorded. Vercel remains disconnected; no production source cutover is authorised.
