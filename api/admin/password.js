@@ -1,4 +1,4 @@
-import { adminExists, findAdmin, getSession, clearSession, sameOrigin, verifyPassword, hashPassword } from "../_lib/auth.js";
+import { adminExists, findAdmin, getValidSession, clearSession, sameOrigin, verifyPassword, hashPassword } from "../_lib/auth.js";
 import { getDb } from "../_lib/mongodb.js";
 
 export default async function handler(req, res) {
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   if (!sameOrigin(req)) return res.status(403).json({ success: false, message: "Forbidden" });
   try {
     if (!(await adminExists())) return res.status(503).json({ success: false, message: "Admin account is not configured" });
-    const session = getSession(req);
+    const session = await getValidSession(req);
     if (!session) return res.status(401).json({ success: false, message: "Authentication required" });
 
     const currentPassword = String(req.body?.currentPassword || "");
@@ -24,7 +24,10 @@ export default async function handler(req, res) {
     if (!admin || !verifyPassword(currentPassword, admin.passwordHash)) return res.status(401).json({ success: false, message: "Current password is incorrect" });
 
     const db = await getDb();
-    await db.collection("admins").updateOne({ _id: admin._id }, { $set: { passwordHash: hashPassword(newPassword), updatedAt: new Date() } });
+    await db.collection("admins").updateOne(
+      { _id: admin._id },
+      { $set: { passwordHash: hashPassword(newPassword), updatedAt: new Date() }, $inc: { sessionVersion: 1 } },
+    );
     clearSession(res);
     return res.status(200).json({ success: true, authenticated: false, message: "Password changed. Please sign in again." });
   } catch (error) {

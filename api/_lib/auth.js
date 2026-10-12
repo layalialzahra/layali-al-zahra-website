@@ -123,16 +123,36 @@ export function getSession(req) {
   const token = parseCookies(req)[COOKIE_NAME];
   return token ? verify(token) : null;
 }
+export function isSessionVersionCurrent(session, admin) {
+  if (!session || !admin || String(admin._id) !== String(session.sub)) return false;
+  const currentVersion = Number.isInteger(admin.sessionVersion) ? admin.sessionVersion : 0;
+  const tokenVersion = Number.isInteger(session.sessionVersion) ? session.sessionVersion : 0;
+  return currentVersion === tokenVersion;
+}
+export async function getValidSession(req) {
+  const session = getSession(req);
+  if (!session) return null;
+  const admin = await findAdmin(session.username);
+  return isSessionVersionCurrent(session, admin) ? session : null;
+}
 export function setSession(res, admin) {
   const now = Math.floor(Date.now() / 1000);
-  const token = sign({ sub: String(admin._id), username: admin.username, iat: now, exp: now + SESSION_TTL_SECONDS });
+  const sessionVersion = Number.isInteger(admin.sessionVersion) ? admin.sessionVersion : 0;
+  const token = sign({ sub: String(admin._id), username: admin.username, sessionVersion, iat: now, exp: now + SESSION_TTL_SECONDS });
   res.setHeader("Set-Cookie", `${COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_TTL_SECONDS}; ${process.env.NODE_ENV === "production" ? "Secure; " : ""}`);
 }
 export function clearSession(res) {
   res.setHeader("Set-Cookie", `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; ${process.env.NODE_ENV === "production" ? "Secure; " : ""}`);
 }
-export function requireAdmin(req, res) {
-  const session = getSession(req);
+export async function requireAdmin(req, res) {
+  let session;
+  try {
+    session = await getValidSession(req);
+  } catch (error) {
+    console.error("Admin session validation failed", error);
+    res.status(503).json({ success: false, message: "Authentication service unavailable" });
+    return null;
+  }
   if (!session) { res.status(401).json({ success: false, message: "Authentication required" }); return null; }
   return session;
 }

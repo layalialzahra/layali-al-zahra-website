@@ -19,8 +19,8 @@ export default async function handler(req, res) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) return res.status(400).json({ success: false, message: "Enter a valid admin email" });
     if (password.length < 12) return res.status(400).json({ success: false, message: "Password must be at least 12 characters" });
     const db = await getDb(); const now = new Date();
-    const result = await db.collection("admins").insertOne({ username, passwordHash: hashPassword(password), role: "admin", createdAt: now, updatedAt: now });
-    const admin = { _id: result.insertedId, username }; setSession(res, admin);
+    const result = await db.collection("admins").insertOne({ username, passwordHash: hashPassword(password), role: "admin", sessionVersion: 0, createdAt: now, updatedAt: now });
+    const admin = { _id: result.insertedId, username, sessionVersion: 0 }; setSession(res, admin);
     return res.status(201).json({ success: true, admin: { username } });
   } catch (error) {
     console.error("Admin setup failed", error);

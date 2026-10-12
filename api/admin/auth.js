@@ -1,9 +1,9 @@
-import { adminExists, findAdmin, getSession, setSession, clearSession, sameOrigin, verifyPassword, checkLoginRateLimit, recordLoginFailure, clearLoginFailures } from "../_lib/auth.js";
+import { adminExists, findAdmin, getValidSession, setSession, clearSession, sameOrigin, verifyPassword, checkLoginRateLimit, recordLoginFailure, clearLoginFailures } from "../_lib/auth.js";
 
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const session = getSession(req);
+      const session = await getValidSession(req);
       if (session) return res.status(200).json({ success: true, authenticated: true, setupRequired: false, admin: { username: session.username } });
       const setupRequired = !(await adminExists());
       return res.status(200).json({ success: true, authenticated: false, setupRequired });
