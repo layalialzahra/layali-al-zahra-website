@@ -276,8 +276,17 @@ import React, { useState, useEffect } from 'react';
     },
   ];
 
+  interface HomePageReview {
+    title: string;
+    initials: string;
+    description: string;
+    image?: string;
+    isPublished?: boolean;
+  }
+
   interface HomePageProps {
     onNavigate: (page: string) => void;
+    reviews?: HomePageReview[];
   }
 
   function AutoCarousel({ items, title, isReview = false }: { items: any[]; title: string; isReview?: boolean }) {
@@ -364,7 +373,10 @@ import React, { useState, useEffect } from 'react';
     );
   }
 
-  export default function HomePage({ onNavigate }: HomePageProps) {
+  export default function HomePage({ onNavigate, reviews }: HomePageProps) {
+    const eligibleReviews = reviews?.filter((review) => review.isPublished !== false);
+    const reviewItems = eligibleReviews && eligibleReviews.length > 0 ? eligibleReviews : reviewsData;
+
     return (
       <div className="min-h-screen">
         {/* Hero Section */}
@@ -427,7 +439,7 @@ import React, { useState, useEffect } from 'react';
         {/* Reviews Section */}
         <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
           <div className="container mx-auto px-4">
-            <AutoCarousel items={reviewsData} title="What Our Clients Say" isReview={true} />
+            <AutoCarousel items={reviewItems} title="What Our Clients Say" isReview={true} />
           </div>
         </section>
       </div>
