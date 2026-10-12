@@ -497,3 +497,20 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 The comprehensive BRD version at commit `c95bbf465b5bced148ae066e3feefddb0e460f46` is the recovered historical baseline for the project record. The current file preserves that baseline and adds the Stage 4.1 correction/acceptance layer. Repository history remains available for exact historical comparison.
 
 **Rule going forward:** never delete historical stage detail to make a correction pass shorter. Update the relevant checklist/status and append a dated change-log entry instead.
+
+
+## 20. Current CMS expansion checkpoint — 2026-10-12
+
+This section is the current status for the separate managed Services, Offers, Packages, FAQs, Google Reviews and crawlability expansion. It does not rewrite or invalidate the historical deployment and acceptance notes above, which describe earlier work and environments.
+
+- **Repository/branch:** `layalialzahra/layali-al-zahra-website`, `feat/layali-managed-content-cms`. Continue work only on this branch. Do not push to `main`.
+- **Deployment hold:** the owner confirmed that Vercel is disconnected and today's feature-branch changes are not deployed. Do not reconnect Vercel or trigger deployments during implementation. Preserve the daily free deployment allowance for one controlled final release after the project is complete and the owner explicitly approves.
+- **Production safety:** no production migration, public content source-of-truth change, production cutover or repository visibility change is authorised by this checkpoint. Keep current public content as the fallback until migration and acceptance evidence pass.
+- **Current expansion implementation:** managed-content validation/serialization, protected admin CRUD and published-only public reads exist for Services, Offers, Packages and FAQs. Dedicated admin UI exists. Migration tooling supports dry-run and explicit apply; no production migration for this expansion has been performed.
+- **CI evidence:** GitHub Actions run [38246829295](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38246829295) passed dependency installation, high-severity dependency audit, tests and build. This is CI evidence only, not staging or production acceptance.
+- **Security gate:** source review identified remaining CSP allowances (`unsafe-inline`/`unsafe-eval`), proxy-header trust assumptions for login throttling, stateless-session revocation limitations, and incomplete historical/binary secret review. Live environment configuration and deployed auth/upload behavior remain unverified.
+- **Google Reviews gate:** suppression keyed by `googleReviewId` is implemented; local publication/order are preserved on sync and reviews missing from one completed sync are retained for explicit review. Business Profile API approval, OAuth and location access remain unverified. New imports must remain unpublished and failed sync must preserve the last good published set.
+- **Crawlability gate:** no SSR/prerender approach has been accepted by evidence yet. Start with a local/test proof of concept. Crawler-facing HTML acceptance remains pending.
+- **Required next order:** (1) Priority 2 security review and targeted tests, (2) Priority 3 functional acceptance and migration dry-run/count/repeatability, (3) Priority 4 Google Reviews prerequisites/safety and crawlability proof of concept, (4) Priority 5 responsive QA, release checklist, rollback evidence and owner acceptance. Only then consider the final controlled release.
+- **Evidence discipline:** distinguish source-reviewed, CI-passed, staging-verified and production-released. Do not mark tasks complete without evidence, expose secret values, or claim a deployment/API test that was not performed.
+
