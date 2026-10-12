@@ -142,6 +142,12 @@ test("FAQ CRUD defaults to draft, supports ordering/publication/reassignment and
   assert.equal(reassigned.body.item.pageKey, "offers");
   assert.equal(reassigned.body.item.status, "published");
 
+  const unpublished = await call(handler, { method: "PUT", query: { id }, body: { status: "draft" } });
+  assert.equal(unpublished.code, 200);
+  assert.equal(unpublished.body.item.status, "draft");
+  const publicOffers = await call(publicHandler(db), { query: { pageKey: "offers" } });
+  assert.deepEqual(publicOffers.body.items, [], "unpublishing must immediately remove the FAQ from public reads");
+
   const deleted = await call(handler, { method: "DELETE", query: { id } });
   assert.equal(deleted.code, 200);
   assert.equal(collection.documents.length, 0);
