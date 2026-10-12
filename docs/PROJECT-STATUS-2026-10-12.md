@@ -267,3 +267,15 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - **Defect fixed:** unsafe HTTP image URL validation previously fell through to HTTP 503 because its “must use HTTPS” message was not classified as a client validation error. The route now returns HTTP 400; regression coverage confirms no data mutation.
 - **Acceptance boundary:** these are CI/mock-backed results, not a live MongoDB or Blob test. **Task 05 remains OPEN overall** because Task 02 is BLOCKED: no authorised, production-isolated non-production target/database is verified. No staging/live writes, real upload, migration, deployment or public-source change occurred. Vercel remains disconnected.
 - **Next in queue:** Short Task List Task 06 — FAQ management. Do not start it until explicitly instructed. Do not treat Task 05 automation as completion of Core CMS Task 6 or any release gate.
+
+
+## Short Task List Task 06 — FAQ management automated acceptance (2026-10-12)
+
+**Status: OPEN pending automated-run evidence and authorised staging/runtime acceptance.** Task 02 remains blocked because no owner-authorised, production-isolated non-production database has been verified. This task does not authorise deployment, migration or public-source cutover.
+
+- Added `tests/api/managed-content-faqs-acceptance.test.js` for required/valid page associations, partial updates, create/default-draft, ordering, publication, reassignment, delete, invalid/missing association rejection, page-isolated public reads, draft exclusion, malformed legacy association exclusion and invalid/missing public page-key responses.
+- Added `tests/admin/FaqManager.test.tsx` for page-filter query behavior, defaulting new FAQs to the selected page, publishing the selected association, and retaining the editor with visible API validation errors.
+- Source review: `validateFaqInput` requires `pageKey` on create and validates supplied values on partial updates; the FAQ route merges partial updates with the existing record; public reads require a valid `pageKey`, filter by both `status: published` and that key, sort by `sortOrder`, and use the public field allowlist. No confirmed implementation defect was identified in this source review, so no application logic was changed.
+- Code/test commits: `83b248c2480c0859911c58bbcf940bf0fe8dcbea` (API acceptance tests) and `e0efd65cac369ff242b3093753c5e1a9ac209da3` (admin UI tests).
+- **Execution evidence limitation:** connected GitHub status query returned no status contexts and the available workflow-run lookup returned no runs for these commits (that lookup only exposes pull-request-triggered runs). Therefore the new tests have not been recorded as executed/passing, and no test count or build result is claimed for these commits. Verify the push-triggered Build verification run before accepting automated checks.
+- No authorised staging/runtime API checks, real MongoDB persistence, migration, deployment, or public content-source change occurred. Vercel remains disconnected.
