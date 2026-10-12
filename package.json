@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "node ./node_modules/vite/bin/vite.js build && node ./node_modules/vite/bin/vite.js build --ssr src/entry-server.tsx --outDir server-dist --emptyOutDir",
+    "build": "node ./node_modules/vite/bin/vite.js build && node ./node_modules/vite/bin/vite.js build --ssr src/entry-server.tsx --outDir server-dist --emptyOutDir && node scripts/smoke-homepage-ssr.js",
     "preview": "vite preview",
     "test": "node --test tests && vitest run"
   },
