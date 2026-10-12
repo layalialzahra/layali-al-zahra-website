@@ -357,3 +357,10 @@ Review the [Core CMS Acceptance Summary](../../CORE-CMS-ACCEPTANCE-SUMMARY-2026-
 - Confirmed defects fixed in recorded work: Services sort-order coercion, stale Offer date fields, Package unsafe-image error classification and nested public subservice field leakage. No other confirmed Task 03–12 application defect is established by the current evidence. Separate SSR generic-render fallback, live proxy/browser security and deployed crawler/responsive acceptance remain open.
 
 **Acceptance gate:** first verify owner-authorised production-isolated staging (Task 02), complete Task 12 with pre/post state, 15/5/23/13 counts, exact field comparison, repeat-run and rollback/recovery evidence, and record end-to-end staging acceptance for all CMS collections, security, uploads and public reads. Then obtain explicit written owner acceptance. Silence, CI results and this summary are not approval. No production migration, deployment, public-source change or managed-content enablement is authorised by this record.
+
+
+## Latest integrated verification — 2026-10-12
+
+- Build verification [38282811459](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811459) passed on branch HEAD `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438`: 120 Node tests, 29 Vitest tests across 7 files, dependency audit with 0 vulnerabilities, client/SSR builds and homepage SSR smoke test.
+- Historical secret scan [38282811451](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811451) passed on the same HEAD. This supplies the previously missing integrated execution evidence for Task 06 API/UI tests.
+- Task 02, Task 05 runtime acceptance, Task 06 staging acceptance, Task 12 migration and Task 13 owner acceptance remain open. No authorised staging database is verified; no migration, production write, deployment or public-content source change was performed.
