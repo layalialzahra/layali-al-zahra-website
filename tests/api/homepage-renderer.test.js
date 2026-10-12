@@ -38,20 +38,22 @@ test("SSR homepage inserts published review markup and safely encodes hydration 
   assert.doesNotMatch(res.body, /Private reviewer/);
 });
 
-test("SSR falls back to the static app shell if review lookup or rendering fails", async () => {
+test("generic SSR render failure returns HTTP 500 instead of an empty-root HTTP 200", async () => {
   const template = '<!doctype html><html><body><div id="root"></div></body></html>';
   const res = response();
   const handler = createHomepageRenderHandler({
     readTemplate: async () => template,
-    getPublishedReviews: async () => { throw new Error("database unavailable"); },
+    getPublishedReviews: async () => [],
     renderPage: async () => { throw new Error("SSR bundle unavailable"); },
     logger: { error() {} },
   });
 
   await handler({ method: "GET" }, res);
-  assert.equal(res.code, 200);
-  assert.equal(res.body, template);
+  assert.equal(res.code, 500);
+  assert.equal(res.headers["Content-Type"], "text/plain; charset=utf-8");
   assert.equal(res.headers["Cache-Control"], "no-store");
+  assert.equal(res.body, "Homepage unavailable");
+  assert.notEqual(res.body, template);
 });
 
 test("SSR homepage rejects state-changing methods", async () => {
@@ -104,7 +106,7 @@ test("managed review mode fails closed instead of restoring legacy reviews on lo
     await handler({ method: "GET" }, res);
     assert.equal(res.code, 200);
     assert.deepEqual(renderedReviews, []);
-    assert.match(res.body, /data-initial-reviews="\[\]"/);
+    assert.match(res.body, /data-initial-reviews="\\[\\]"/);
     assert.doesNotMatch(res.body, /Shauna Haberlin/);
   } finally {
     if (previous === undefined) delete process.env.MANAGED_HOME_REVIEWS_ENABLED;
