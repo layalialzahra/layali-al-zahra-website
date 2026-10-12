@@ -15,9 +15,16 @@ describe("homepage server-rendering feasibility", () => {
     expect(html).not.toContain("Unpublished private text");
   });
 
-  it("keeps the existing hard-coded reviews as the fallback when no published reviews are supplied", () => {
+  it("keeps the existing hard-coded reviews as the fallback when managed reviews are disabled", () => {
     const html = render("/");
     expect(html).toContain("Shauna Haberlin");
     expect(html).toContain("My favourite salon in Dubai!");
+  });
+
+  it("does not restore legacy reviews when managed mode explicitly has no published reviews", () => {
+    const html = render("/", []);
+    expect(html).toContain("Reviews will appear here soon.");
+    expect(html).not.toContain("Shauna Haberlin");
+    expect(html).not.toContain("My favourite salon in Dubai!");
   });
 });
