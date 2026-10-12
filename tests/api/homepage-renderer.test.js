@@ -19,6 +19,7 @@ test("SSR homepage inserts published review markup and safely encodes hydration 
       { title: "Published reviewer", initials: "PR", description: '<script>alert("x")</script>', rating: 5, isPublished: true },
       { title: "Private reviewer", initials: "XR", description: "must be filtered", isPublished: false },
     ],
+    getSuppressedReviewIds: async () => [],
     renderPage: async (pathname, reviews) => {
       assert.equal(pathname, "/");
       assert.deepEqual(reviews.map((review) => review.title), ["Published reviewer"]);
