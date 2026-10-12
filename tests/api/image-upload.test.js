@@ -1,7 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createUploadHandler, MAX_FILE_SIZE } from "../../api/admin/upload.js";
-import { isAllowedImagePayload } from "../../api/_lib/image-upload.js";
+process.env.MONGODB_URI ||= "mongodb://127.0.0.1:27017/layali-test";
+process.env.ADMIN_SESSION_SECRET ||= "test-only-session-secret-that-is-at-least-32-characters";
+const { createUploadHandler, MAX_FILE_SIZE } = await import("../../api/admin/upload.js");
+const { isAllowedImagePayload } = await import("../../api/_lib/image-upload.js");
 
 const signatures = {
   "image/jpeg": Buffer.from([0xff, 0xd8, 0xff, 0x00]),
