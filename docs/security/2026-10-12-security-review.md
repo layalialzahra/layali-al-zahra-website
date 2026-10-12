@@ -233,4 +233,4 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - Source review: selection alone does not call a write endpoint; only explicit publish/unpublish actions change publication state.
 - New reviews are merged with `isPublished: false` and `sortOrder: 0`; sync preserves the existing local publication/order values.
 - Local deletion records the source ID in `google_review_suppressions` and deletes only the local review document. Subsequent sync filters suppressed IDs before upserting.
-- Added a route-level lifecycle regression in `tests/api/google-reviews-moderation-e2e.test.js`. CI execution and staging persistence remain unverified at this checkpoint. No production data or Google source was changed.
+- Added a route-level lifecycle regression in `tests/api/google-reviews-moderation-e2e.test.js`. Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]), including tests and build. Staging persistence remains unverified. No production data or Google source was changed.
