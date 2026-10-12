@@ -306,3 +306,15 @@ Full evidence, risk assessment and the unblock checklist: [docs/ENVIRONMENT-VERI
 - Build verification [38280386368](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386368) passed on tested feature-branch HEAD `f832185898175ac10432546915d0a38bd5e66666`: high-severity dependency audit found 0 vulnerabilities; 107 Node tests passed; 29 Vitest tests passed across 7 files; client/SSR builds and homepage SSR smoke test passed.
 - Historical secret scan [38280386362](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386362) passed: 501 reachable commits scanned, zero Gitleaks findings; 118 reachable binary blobs containing printable strings scanned, zero findings. Binary scanning remains heuristic.
 - No live database request, staging acceptance, production data access, deployment, migration or public-source switch occurred. Task 02 still blocks runtime acceptance. Vercel remains disconnected.
+
+
+## Task 10 — Legacy editorial CMS regression acceptance (2026-10-12)
+
+**Automated acceptance: PASS. Runtime/staging acceptance: OPEN, blocked by Task 02.**
+
+- Added `tests/api/legacy-content-regression.test.js`. Coverage protects the existing `blog`, `tip` and `news` content types; partial-edit field preservation; schedule status/date validation; rich-text sanitization; public serializer privacy; existing public route mappings for `/blog`, `/news`, `/beauty-tips` and detail routes; and inclusion of the existing upload regression suite in `npm test`.
+- Source checks confirmed the admin API uses partial `$set` updates, requires a future date for scheduled content, clears publish dates when reverting to draft, and the public API permits only published or due scheduled content and serializes through the public allowlist. No confirmed application regression was found, so no application logic was changed.
+- The first CI attempt failed because the test imported the MongoDB helper before setting a test-only `MONGODB_URI`. The test was corrected to set a local test URI before dynamically importing the legacy content helpers. No database connection or production credentials were used.
+- Build verification [38281099834](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281099834) passed on tested commit [49292cebd8b3c495faaa748062d34ca8d74dbe8d](https://github.com/layalialzahra/layali-al-zahra-website/commit/49292cebd8b3c495faaa748062d34ca8d74dbe8d): dependency audit found 0 vulnerabilities; 114 Node tests passed; 29 Vitest tests passed across 7 files; client build, SSR build and homepage SSR smoke test passed.
+- Temporary CI PRs [#6](https://github.com/layalialzahra/layali-al-zahra-website/pull/6) and [#7](https://github.com/layalialzahra/layali-al-zahra-website/pull/7) were closed unmerged.
+- This is automated/source-level evidence only. The upload tests use injected storage and do not verify a live Blob account. No staging database, real upload, production request, migration, deployment or public-source cutover occurred. Task 02 still blocks runtime acceptance; Vercel remains disconnected.
