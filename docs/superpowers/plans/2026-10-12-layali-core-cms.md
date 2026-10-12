@@ -94,24 +94,24 @@
 - Admin writes: POST create, PUT update by `id`, DELETE by `id`; all payloads validated through Task 2.
 - Public reads: GET returns only published records, sorted by `sortOrder` then stable creation order; FAQs require `pageKey=services|offers|packages`.
 
-- [ ] **Step 1: Write route tests for each resource**
+- [x] **Step 1: Write route tests for each resource**
   - Verify unauthorized admin requests stop before database mutation.
   - Verify cross-origin writes return 403.
   - Verify wrong HTTP methods return 405 with an Allow header.
   - Verify public reads exclude drafts and internal fields.
   - Verify CRUD success, 400 validation errors, 404 missing IDs and stable ordering.
-- [ ] **Step 2: Run focused tests and confirm failure**
+- [x] **Step 2: Run focused tests and confirm failure**
   - Run: `npm test -- tests/api/managed-content-routes.test.js`
   - Expected: FAIL because routes do not exist.
-- [ ] **Step 3: Implement collection-specific route handlers**
+- [x] **Step 3: Implement collection-specific route handlers**
   - Reuse MongoDB connection and auth helpers.
   - Create required unique slug/source IDs and ordering indexes idempotently.
   - Return consistent `{ success, item/items }` response shapes and controlled errors.
   - Do not change `api/_lib/content.js` or `api/admin/content.js` behavior.
-- [ ] **Step 4: Run focused route tests**
+- [x] **Step 4: Run focused route tests**
   - Run: `npm test -- tests/api/managed-content-routes.test.js`
   - Expected: PASS, including auth and cross-origin failure cases.
-- [ ] **Step 5: Run existing test suite and build**
+- [x] **Step 5: Run existing test suite and build**
   - Run: `npm test && npm run build`
   - Expected: all tests pass and build succeeds.
 
