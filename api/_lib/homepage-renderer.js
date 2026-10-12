@@ -24,9 +24,15 @@ async function loadPublishedHomeReviews() {
     import("./google-reviews.js"),
   ]);
   const db = await getDb();
+  const suppressionRows = await db.collection("google_review_suppressions")
+    .find({}, { projection: { googleReviewId: 1, _id: 0 } })
+    .toArray();
+  const suppressedIds = suppressionRows
+    .map((row) => row.googleReviewId)
+    .filter((id) => typeof id === "string" && id);
   const records = await db.collection("google_reviews")
-    .find({ isPublished: true })
-    .sort({ sortOrder: 1, sourceCreatedAt: -1 })
+    .find({ isPublished: true, googleReviewId: { $nin: suppressedIds } })
+    .sort({ sortOrder: 1, sourceCreatedAt: -1, _id: 1 })
     .limit(12)
     .toArray();
 
@@ -36,6 +42,7 @@ async function loadPublishedHomeReviews() {
       ? review.authorName.trim()
       : "Google customer";
     return {
+      googleReviewId: record.googleReviewId,
       title,
       initials: initialsFor(title),
       description: typeof review.reviewText === "string" ? review.reviewText : "",
@@ -51,6 +58,7 @@ export function createHomepageRenderHandler(options = {}) {
     if (process.env.MANAGED_HOME_REVIEWS_ENABLED !== "true") return undefined;
     return loadPublishedHomeReviews();
   });
+  const getSuppressedReviewIds = options.getSuppressedReviewIds || (async () => []);
   const renderPage = options.renderPage || (async (pathname, reviews) => {
     const bundleUrl = pathToFileURL(resolve(process.cwd(), "server-dist/entry-server.js")).href;
     const serverEntry = await import(bundleUrl);
@@ -82,7 +90,12 @@ export function createHomepageRenderHandler(options = {}) {
     let reviews;
     try {
       const loaded = await getPublishedReviews();
-      if (Array.isArray(loaded)) reviews = loaded.filter((review) => review && review.isPublished === true);
+      if (Array.isArray(loaded)) {
+        const suppressedIds = new Set(await getSuppressedReviewIds());
+        reviews = loaded
+          .filter((review) => review && review.isPublished === true && !suppressedIds.has(review.googleReviewId))
+          .map(({ googleReviewId, ...review }) => review);
+      }
     } catch (error) {
       logger.error?.("Homepage published-review lookup failed", error?.name || "Error");
       reviews = undefined;
