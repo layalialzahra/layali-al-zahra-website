@@ -17,9 +17,9 @@ Verify local server rendering and client hydration for `/` and `/home`, includin
 
 ## Verification evidence
 
-- **Pending at record creation:** GitHub Actions Build verification for the new SSR/hydration tests, production client build, SSR bundle build and built-server smoke test.
+- **PASS:** GitHub Actions Build verification [38324549630](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38324549630) on code/test commit `3d6c48d932ba9fc97d1bf2163d6b60359cccd473`. Install and `npm audit --audit-level=high` passed (0 vulnerabilities); Node tests passed (127/127); Vitest passed (39 tests across 7 files); client build passed; SSR server bundle build passed; built-server smoke passed for `/` and `/home` including initial HTML, hydration marker, canonical metadata, review publication/order/suppression and legacy fallback.
 - **Not covered by local/CI tests:** actual Vercel rewrites/function packaging, live MongoDB review query/sort behavior and crawler-facing production HTTP output. Vercel remains disconnected under the owner-confirmed release hold.
 
 ## Acceptance status
 
-Task 20 remains open until fresh Build verification passes and the results are recorded here. Do not deploy or reconnect Vercel as part of this task.
+Task 20 code and local/CI acceptance is complete for the tested code commit. Live MongoDB ordering/query behavior and deployed Vercel rewrite/crawler response remain unverified and are not claimed. Do not deploy or reconnect Vercel as part of this task.
