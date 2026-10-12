@@ -23,7 +23,8 @@ describe("homepage server-rendering feasibility", () => {
 
   it("does not restore legacy reviews when managed mode explicitly has no published reviews", () => {
     const html = render("/", []);
-    expect(html).toContain("Reviews will appear here soon.");
+    expect(html).not.toContain("What Our Clients Say");
+    expect(html).not.toContain("Reviews will appear here soon.");
     expect(html).not.toContain("Shauna Haberlin");
     expect(html).not.toContain("My favourite salon in Dubai!");
   });
