@@ -141,7 +141,7 @@
 - [x] Handler preserves the requested homepage alias (`/` or `/home`) when calling the SSR entry. Both paths render the same homepage and retain the single static canonical URL `https://www.layalialzahra.com/`.
 - [x] Expanded `scripts/smoke-homepage-ssr.js` to exercise both paths against the built server bundle and assert initial homepage content, the hydration marker, canonical metadata, no hidden initial carousel content, legacy fallback when managed reviews are unavailable/disabled, and managed review publication/order/suppression filtering.
 - [x] Added a jsdom hydration regression to detect React hydration mismatch warnings, plus a handler test for the `/home` alias.
-- [ ] Fresh Build verification must pass tests, dependency audit, client build, SSR build and the built-server smoke test before Task 20 is closed.
+- [x] Build verification [38324549630](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38324549630) passed on code/test commit `3d6c48d932ba9fc97d1bf2163d6b60359cccd473`: dependency audit (0 vulnerabilities), 127/127 Node tests, 39 Vitest tests across 7 files, client build, SSR build and built-server smoke for both `/` and `/home`.
 - [ ] Live MongoDB ordering/query behavior and deployed Vercel rewrite/crawler response remain outside this local task and are not verified while Vercel is disconnected.
 
 Acceptance record: [Homepage SSR and Hydration Acceptance](../../HOMEPAGE-SSR-HYDRATION-ACCEPTANCE-2026-10-13.md).
