@@ -771,3 +771,7 @@ Required to unblock: verified Google API approval/enablement and OAuth/location 
 ## Google Reviews moderation verification — 2026-10-13
 - Added automated lifecycle coverage for draft-on-import, explicit publication, preservation of local publication/order during sync, local-only deletion, and suppression across a later sync. See `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
 - Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]); tests and build passed. Authorised staging/runtime persistence checks remain open. This does not authorise public-source cutover; the existing homepage reviews remain unchanged.
+
+## Google Reviews Task 17 — sync failure preservation — 2026-10-13
+- Added mocked-provider regression cases for provider HTTP error, timeout-class exception, incomplete page count and malformed response. Each checks no review write occurs and the previous local/published review fixture remains intact.
+- Live Google/provider behavior and authorised staging acceptance remain unverified. See `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`. Do not cut over public review content.
