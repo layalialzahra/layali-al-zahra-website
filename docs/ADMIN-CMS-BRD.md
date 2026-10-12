@@ -527,3 +527,9 @@ This section is the current status for the separate managed Services, Offers, Pa
 - Added explicit CSP allowlist entries for the existing Meta Pixel script and Facebook beacon origins in `vercel.json`.
 - Added `tests/api/csp-config.test.js` to assert the required origins remain allowlisted.
 - GitHub Actions run [38251889567](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251889567) passed dependency installation, high-severity dependency audit, tests (including the new CSP allowlist test) and build on commit `09c393494383bc39de8c82ea29c68d95b38679b1`. This is CI-only evidence. Browser/runtime behavior is pending the final controlled release window. `unsafe-inline`/`unsafe-eval` hardening remains open.
+
+
+### 2026-10-12 — All-history secret scan automation
+- Added `.github/workflows/secret-scan.yml` using pinned Gitleaks `v8.30.1`, full Git history/ref checkout and redacted scan output.
+- The initial scan is pending. Keep the secret-review gate open until the run completes and any findings are triaged. No secret values should be copied into docs or issues.
+- This workflow runs in GitHub Actions only; Vercel remains disconnected.

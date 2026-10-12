@@ -97,3 +97,9 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 
 
 - **CSP test result:** GitHub Actions run [38251889567](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251889567) passed dependency installation, high-severity dependency audit, tests (including `tests/api/csp-config.test.js`) and build on commit `09c393494383bc39de8c82ea29c68d95b38679b1`. This is CI-only evidence; no browser or deployed runtime check was performed.
+
+
+## Historical secret scan automation — 2026-10-12
+
+- Added `.github/workflows/secret-scan.yml` using Gitleaks `v8.30.1`, full Git history/ref checkout and redacted output. First scan result is pending; do not mark the historical/text/binary secret-review gate complete before review and triage.
+- This is a GitHub Actions security check, not a Vercel deployment.

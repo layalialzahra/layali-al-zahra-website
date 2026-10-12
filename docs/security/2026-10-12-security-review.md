@@ -67,3 +67,9 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 
 
 - **CI result:** GitHub Actions run [38251889567](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251889567) passed dependency installation, high-severity dependency audit, all tests (including the new CSP allowlist test) and build on commit `09c393494383bc39de8c82ea29c68d95b38679b1`. This remains CI-only evidence; browser/runtime verification is pending.
+
+
+### Historical secret scan execution — 2026-10-12
+- Added `.github/workflows/secret-scan.yml` to run pinned Gitleaks `v8.30.1` against all reachable Git history (`fetch-depth: 0`, `--log-opts="--all"`) with redaction enabled.
+- The first scan result is pending. Until it completes and any findings are triaged, the historical/text/binary secret-review requirement remains open. A passing scan is evidence for the scanner's coverage, not proof that secrets never existed in unreachable history or external systems.
+- Workflow is limited to GitHub Actions; it does not connect Vercel or deploy the website.
