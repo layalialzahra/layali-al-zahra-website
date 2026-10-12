@@ -405,3 +405,7 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 ## Google Reviews Task 18 — admin UI acceptance — 2026-10-13
 - Added component regression tests for filters/search, unpublish persistence, cancelled delete, loading, list/action/sync errors and unavailable credentials; existing tests cover selection, publish and local deletion confirmation.
 - Acceptance evidence: `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`. CI pending confirmation. Automated component tests are not deployed browser/runtime acceptance. Authorised staging and Google API prerequisites remain unverified; no live API, production writes or deployment occurred.
+
+### Task 18 UI error-state fix — 2026-10-13
+- Fixed a confirmed UI defect: failed list loading could show “No synced Google reviews yet” alongside an error, which confused failure with an empty dataset. The UI now clears stale rows/selection, shows a dedicated load-error state and retry action, and distinguishes filtered no-results.
+- Updated regression coverage and acceptance report. CI for the fixes pending; no deployed browser/runtime acceptance. No live API, production write or deployment.
