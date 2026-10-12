@@ -73,11 +73,11 @@ test("public CMS endpoints exclude drafts and top-level non-allowlisted fields",
     services: [
       { _id: ID(), title: "Visible service", slug: "visible-service", status: "published", sortOrder: 1,
         subservices: [{ id: "cut", name: "Cut", price: "AED 50", description: "Cutting", bookingUrl: "https://example.com/book", adminNote: "private nested value", internalCost: 99 }], ...secret },
-      { _id: ID(), title: "Draft service", slug: "draft-service", status: "draft", sortOrder: 0, ...secret },
+      { ...secret, _id: ID(), title: "Draft service", slug: "draft-service", status: "draft", sortOrder: 0 },
     ],
     offers: [
       { _id: ID(), title: "Visible offer", slug: "visible-offer", status: "published", sortOrder: 1, priceLabel: "AED 99", ...secret },
-      { _id: ID(), title: "Draft offer", slug: "draft-offer", status: "draft", sortOrder: 0, ...secret },
+      { ...secret, _id: ID(), title: "Draft offer", slug: "draft-offer", status: "draft", sortOrder: 0 },
     ],
     packages: [
       { _id: ID(), title: "Visible package", slug: "visible-package", status: "published", sortOrder: 1, priceLabel: "AED 199", includedItems: ["Wash"], ...secret },
@@ -85,8 +85,8 @@ test("public CMS endpoints exclude drafts and top-level non-allowlisted fields",
     ],
     faqs: [
       { _id: ID(), pageKey: "services", question: "Visible question", answer: "Visible answer", status: "published", sortOrder: 1, ...secret },
-      { _id: ID(), pageKey: "services", question: "Draft question", answer: "Draft answer", status: "draft", sortOrder: 0, ...secret },
-      { _id: ID(), pageKey: "offers", question: "Other page", answer: "Not for services", status: "published", sortOrder: 0, ...secret },
+      { ...secret, _id: ID(), pageKey: "services", question: "Draft question", answer: "Draft answer", status: "draft", sortOrder: 0 },
+      { ...secret, _id: ID(), pageKey: "offers", question: "Other page", answer: "Not for services", status: "published", sortOrder: 0 },
     ],
   });
 
