@@ -111,12 +111,12 @@ test("dispatches the homepage route to a server-rendered HTML handler", async ()
     createGoogleReviewsAdminHandler: () => async (_req, res) => res.status(200).json({}),
     createGoogleReviewsPublicHandler: () => async (_req, res) => res.status(200).json({}),
     createGoogleReviewsSyncHandler: () => async (_req, res) => res.status(200).json({}),
-    createHomepageHandler: homepage,
+    createHomepageRenderHandler: homepage,
   });
   const res = response();
   res.send = function (body) { this.body = body; return this; };
 
-  await handler({ method: "GET", query: { path: ["homepage"] }, url: "/api/homepage", headers: {} }, res);
+  await handler({ method: "GET", query: { path: ["render-home"] }, url: "/api/homepage", headers: {} }, res);
 
   assert.equal(res.code, 200);
   assert.match(res.headers["Content-Type"], /text\/html/);
