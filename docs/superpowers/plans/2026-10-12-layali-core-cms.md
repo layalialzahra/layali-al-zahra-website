@@ -269,3 +269,11 @@ Full evidence, risk assessment and the unblock checklist: [docs/ENVIRONMENT-VERI
 - Code/test commits: `83b248c2480c0859911c58bbcf940bf0fe8dcbea` (initial API acceptance tests), `e0efd65cac369ff242b3093753c5e1a9ac209da3` (admin UI tests), and `09debf63f90ae32f5fc449cb29dcb8ccb9f7d643` (explicit unpublish/public-visibility regression).
 - **Execution evidence limitation:** connected GitHub status query returned no status contexts and the available workflow-run lookup returned no runs for these commits (that lookup only exposes pull-request-triggered runs). Therefore the new tests have not been recorded as executed/passing, and no test count or build result is claimed for these commits. Verify the push-triggered Build verification run before accepting automated checks.
 - No authorised staging/runtime API checks, real MongoDB persistence, migration, deployment, or public content-source change occurred. Vercel remains disconnected.
+
+
+## Short Task List Task 07 — admin security regression checkpoint (2026-10-12)
+
+- Added route-level tests in `tests/api/admin-security-acceptance.test.js` at commit `410429bd8c866817ca6a8998eff99be9f61e228e`.
+- Coverage: unauthenticated and cross-origin POST/PUT/DELETE requests are rejected before DB access; invalid create/update/delete requests return HTTP 400 and leave the in-memory record set unchanged. Existing auth tests cover Origin validation, production HTTPS pinning, malformed cookies and session-version mismatch/missing-admin rejection.
+- Source review found no confirmed new implementation vulnerability; no application logic change was justified. CI status for the new tests is pending verification and must not be reported as passing until a completed run is confirmed.
+- Live/runtime acceptance remains blocked by Task 02 (no verified authorised, production-isolated non-production environment/database). Vercel remains disconnected; no production changes or deployment occurred.
