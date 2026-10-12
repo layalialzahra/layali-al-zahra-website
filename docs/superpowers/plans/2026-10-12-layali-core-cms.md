@@ -340,3 +340,20 @@ Full evidence, risk assessment and the unblock checklist: [docs/ENVIRONMENT-VERI
 Task 11 verified the generated projection against 56 authoritative source records with zero discrepancies; it did not verify database state. Unit-test dry-run and repeat-apply coverage is not staging evidence. Record counts/field integrity after apply, real repeat-run idempotency and rollback/recovery are all **NOT RUN**.
 
 Do not check off Task 12. Resume only after Task 02 documents owner authorisation, target identity and production isolation. Then capture pre-migration state, apply only to staging, verify counts (15 Services, 5 Offers, 23 Packages, 13 FAQs) and exact fields, rerun for idempotency, and exercise rollback/recovery. Detailed blocker: [docs/MIGRATION-STAGING-BLOCKER-2026-10-12.md](../../MIGRATION-STAGING-BLOCKER-2026-10-12.md).
+
+
+## Task 13 — Core CMS acceptance evidence reconciliation (2026-10-12)
+
+**Status: evidence reconciliation prepared; owner acceptance PENDING. Do not enable managed public content.**
+
+Review the [Core CMS Acceptance Summary](../../CORE-CMS-ACCEPTANCE-SUMMARY-2026-10-12.md) for the per-task evidence matrix and open acceptance gates.
+
+- Tasks 03–04: automated acceptance checks passed; real staging persistence/publication acceptance is still blocked by Task 02.
+- Task 05: automated checks passed; task remains open for real MongoDB persistence, Blob storage and staging runtime acceptance.
+- Task 06: API/UI regression tests exist and the integrated Task 11 CI run passed the suite; task-specific log trace was incomplete and no staging runtime acceptance exists.
+- Tasks 07–10: automated security/upload/public-read/legacy regression checks passed at their recorded commits; live database, session/proxy/browser and real Blob/runtime behavior remain unverified.
+- Task 11: 56 source-projection records compared, zero discrepancies; this is not a database migration test.
+- Task 12: blocked by Task 02. No migration, database count/field verification, staging repeat-run idempotency or rollback/recovery was performed.
+- Confirmed defects fixed in recorded work: Services sort-order coercion, stale Offer date fields, Package unsafe-image error classification and nested public subservice field leakage. No other confirmed Task 03–12 application defect is established by the current evidence. Separate SSR generic-render fallback, live proxy/browser security and deployed crawler/responsive acceptance remain open.
+
+**Acceptance gate:** first verify owner-authorised production-isolated staging (Task 02), complete Task 12 with pre/post state, 15/5/23/13 counts, exact field comparison, repeat-run and rollback/recovery evidence, and record end-to-end staging acceptance for all CMS collections, security, uploads and public reads. Then obtain explicit written owner acceptance. Silence, CI results and this summary are not approval. No production migration, deployment, public-source change or managed-content enablement is authorised by this record.
