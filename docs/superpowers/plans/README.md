@@ -120,4 +120,4 @@ Latest branch HEAD `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438` passed Build verif
 ## Short Task List Task 17 — Google Reviews sync failure preservation — 2026-10-13
 
 - Added mocked-provider regression tests for HTTP failure, timeout-class exception, incomplete response and malformed page; assertions verify no review bulk write and unchanged local/published fixture.
-- Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`. CI result pending; provider-level testing not performed because API/OAuth/location and authorised staging prerequisites remain unverified.
+- Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`. Build verification [38321074011](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321074011) and historical secret scan [38321073947](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321073947) passed on the test commit. Provider-level testing was not performed because API/OAuth/location and authorised staging prerequisites remain unverified.
