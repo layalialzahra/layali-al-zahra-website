@@ -131,3 +131,10 @@
 - **Still pending:** owner/account verification for Google Business Profile API approval, OAuth and location access; live sync comparison; staging validation of publish/unpublish/delete and failure-preservation; approved homepage cutover. The current homepage review carousel remains the fallback.
 - All session-protected routes now await server-side session-version validation. Password changes increment the admin session version, invalidating previously copied sessions on their next protected request. This change passed the full CI suite.
 - CSP script-src no longer permits unsafe inline/eval scripts. Google Analytics and Meta Pixel bootstrapping moved to same-origin /tracking.js; a configuration test checks for inline executable scripts. Browser/runtime confirmation remains pending.
+
+## Latest verification checkpoint — 2026-10-12
+
+- Current audited feature HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`.
+- Build/test/dependency audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); reachable history and binary printable-string scan passed in [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483).
+- Provider-independent mapping/merge, routes and admin UI remain implemented/tested. Business Profile API approval, OAuth and verified location access remain unverified; live sync, staging publish/unpublish/delete, and failure-preservation acceptance remain open.
+- This CI evidence does not change the staging acceptance checkboxes. Do not reconnect Vercel or claim live API success.
