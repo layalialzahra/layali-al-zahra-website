@@ -122,3 +122,10 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - The redacted scan summary reported one `generic-api-key` match in `src/components/ContactPage.tsx` at historical commit prefix `4a1a56b0a5f2`. The value was not printed.
 - The match is the browser-side Web3Forms `access_key`. Official Web3Forms docs describe this key as public by design, not a secret API key; it can still be abused to send unsolicited submissions. Added a narrow `.gitleaks.toml` allowlist matching only this file plus an `access_key` source line.
 - The scan must be rerun after this allowlist change. This triage does not close binary-blob review or other security gates.
+
+
+## Gitleaks scan result — 2026-10-12
+
+- Standalone run [38252703895](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38252703895) passed after the documented Web3Forms access-key allowlist: 354 commits scanned, approximately 117.15 MB, 0 findings.
+- Scope is reachable Git history/text scanning from a full-history checkout. Binary-blob inspection remains open; do not generalize this to “no secrets ever existed.”
+- Removed duplicate Gitleaks installation from Build verification after that combined run failed during scanner installation and skipped audit/tests/build. The dedicated historical scan workflow remains; the standard build workflow is restored to dependency audit, tests and build.

@@ -97,3 +97,10 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - The field is the Web3Forms `access_key` used by the browser-side contact form. Web3Forms' official FAQ says its access key is public by design and is not a secret API key; its docs also warn that someone with the key can submit unsolicited email requests. Sources: https://docs.web3forms.com/getting-started/faq and https://docs.web3forms.com/getting-started/api-reference.
 - Added a narrow Gitleaks allowlist in `.gitleaks.toml` requiring both the `ContactPage.tsx` path and the `access_key` source-line pattern. This does not allowlist other rules or other files. Do not rotate/remove this key solely because of this finding; consider Web3Forms domain restrictions/spam controls if abuse occurs.
 - Re-run the all-history scan to verify the finding is suppressed and no other findings remain. The scan still does not replace a separate binary-blob review, and the full security gate remains open until the corrected run completes.
+
+
+### All-history Gitleaks scan result — 2026-10-12
+- After adding the narrow Web3Forms allowlist, the standalone [Historical secret scan run 38252703895](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38252703895) completed successfully: **354 commits scanned, approximately 117.15 MB scanned, 0 findings**.
+- This closes the current Gitleaks text/history scan for reachable refs included by the full-history checkout. It does **not** prove secrets never existed in unreachable history or external systems, and it does not replace a dedicated binary-blob scan.
+- The combined Build verification attempt at [38252703914](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38252703914) failed during Gitleaks installation and skipped the build/test steps. To avoid coupling build reliability to scanner installation, Gitleaks now runs in the separate `.github/workflows/secret-scan.yml`; Build verification remains responsible for dependency audit, tests and build.
+- Binary-blob inspection, `x-forwarded-for` trust, session revocation and strict CSP hardening remain open.

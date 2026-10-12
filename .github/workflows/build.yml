@@ -15,26 +15,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Go for history scan
-        uses: actions/setup-go@v5
-        with:
-          go-version: stable
-      - name: Install pinned Gitleaks
-        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
-      - name: Scan all reachable history with redacted output
-        shell: bash
-        run: |
-          set +e
-          "$(go env GOPATH)/bin/gitleaks" git --redact --no-banner --exit-code 1 --log-opts="--all" --report-format json --report-path /tmp/gitleaks-report.json .
-          scan_status=$?
-          if [ -f /tmp/gitleaks-report.json ]; then
-            jq -r '"Gitleaks findings: \(length)", (.[] | "rule=\(.RuleID) file=\(.File) line=\(.StartLine) commit=\(.Commit[0:12])")' /tmp/gitleaks-report.json
-          else
-            echo "Gitleaks did not create a report; inspect scanner errors without exposing secret values."
-          fi
-          exit "$scan_status"
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

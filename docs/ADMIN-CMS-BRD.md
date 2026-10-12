@@ -554,3 +554,9 @@ This section is the current status for the separate managed Services, Offers, Pa
 - Gitleaks reported one `generic-api-key` match in `src/components/ContactPage.tsx`. The value was not printed.
 - Verified against the official Web3Forms FAQ/API reference that the client-side `access_key` is intentionally public by design, not a secret API key. Added a narrow `.gitleaks.toml` allowlist requiring both the exact file path and the `access_key` line pattern.
 - A corrected scan must pass before closing the text-history scan gate. Binary-blob review remains separate and open.
+
+
+### 2026-10-12 — Gitleaks all-history scan result
+- Standalone run [38252703895](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38252703895) passed after the narrow Web3Forms access-key allowlist: 354 commits and approximately 117.15 MB scanned; zero findings.
+- This closes the reachable text/history Gitleaks check only. Binary-blob inspection remains open.
+- Removed the duplicate Gitleaks installation from Build verification because its combined run failed during scanner installation and skipped tests/build. The dedicated secret-scan workflow remains in place; standard Build verification continues to run audit, tests and build.
