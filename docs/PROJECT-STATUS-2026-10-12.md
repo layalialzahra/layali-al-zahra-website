@@ -366,3 +366,12 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - No additional confirmed application defect was identified in the recorded Task 03–12 evidence. Previously fixed defects include Services sort-order coercion, Offer stale date fields, Package image URL error classification and nested public subservice field leakage. Separate release risks remain: generic SSR exception can return empty-root HTML with HTTP 200; live proxy/browser security and deployed crawler HTML/responsive acceptance are unverified.
 - No authorised production-isolated staging DB is verified. No production migration/writes, Vercel reconnection/deployment or public-source switch occurred.
 - **Task 13 remains OPEN pending explicit owner acceptance.** Do not enable managed public content or change the public source until Tasks 02 and 12 blockers are resolved, end-to-end staging evidence is captured, and the owner explicitly accepts in writing. This report is not approval.
+
+
+## Latest Core CMS verification — 2026-10-12
+
+- Feature branch HEAD: `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438`.
+- Build verification [38282811459](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811459) passed on this exact HEAD: dependency installation, high-severity npm audit (0 vulnerabilities), 120 Node tests, 29 Vitest tests across 7 files, client/SSR builds and homepage SSR smoke test.
+- Historical secret scan [38282811451](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811451) passed on the same HEAD.
+- This confirms automated execution for the integrated suite, including FAQ API/UI tests, resolving the earlier missing Task 06 CI trace. It does not establish live/staging persistence, real Blob storage, admin runtime security, public read behavior, or migration acceptance.
+- Task 02 remains blocked: no owner-authorised, production-isolated staging database has been verified. Task 12 migration and Task 13 owner acceptance remain open. No Vercel reconnect/deployment, production migration/write, public source change or approval occurred.
