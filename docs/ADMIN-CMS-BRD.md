@@ -572,3 +572,9 @@ This section is the current status for the separate managed Services, Offers, Pa
 - The binary step examined 118 reachable binary blobs with printable strings (170,446,401 bytes) and reported zero findings.
 - Scope limitation: this is heuristic printable-string scanning, not semantic inspection of compressed/encrypted payloads, unreachable objects, external systems or production environment values.
 - Build verification [38253553795](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553795) passed dependency audit, tests and build. Remaining security items are proxy-IP trust, session revocation and strict CSP hardening/runtime acceptance.
+
+
+### 2026-10-12 — Latest security scan and proxy review
+- Latest scan [38253765871](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253765871) passed: 358 commits / ~117.17 MB text/history scanned with zero findings after the documented public Web3Forms allowlist; 118 binary blobs with printable strings / 170,446,401 bytes scanned with zero findings.
+- Vercel's official request-header documentation states that Vercel overwrites `X-Forwarded-For` to prevent IP spoofing. The current rate-limit key is supported when requests reach Vercel directly, but the actual proxy chain remains unverified.
+- Remaining security gate: session revocation decision and stricter CSP design/runtime acceptance. No deployment or live test was performed.
