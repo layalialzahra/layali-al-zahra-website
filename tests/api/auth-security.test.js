@@ -19,3 +19,21 @@ test("allows safe methods without Origin and accepts only the matching origin fo
 test("malformed cookie encoding does not throw during session lookup", () => {
   assert.equal(getSession({ headers: { cookie: "layali_admin_session=%E0%A4%A" } }), null);
 });
+
+test("production origin checks do not trust forwarded-protocol overrides", () => {
+  const previous = process.env.NODE_ENV;
+  process.env.NODE_ENV = "production";
+  try {
+    assert.equal(sameOrigin({
+      method: "POST",
+      headers: { host: "example.com", origin: "http://example.com", "x-forwarded-proto": "http" },
+    }), false);
+    assert.equal(sameOrigin({
+      method: "POST",
+      headers: { host: "example.com", origin: "https://example.com", "x-forwarded-proto": "http" },
+    }), true);
+  } finally {
+    if (previous === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previous;
+  }
+});
