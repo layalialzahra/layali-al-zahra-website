@@ -48,3 +48,21 @@ test("admin list supports pagination and total count", async () => {
   assert.equal(res.body.total, 2);
   assert.equal(res.body.pages, 2);
 });
+
+test("duplicate service slugs return a conflict", async () => {
+  const store = database([{ _id: "1", title: "Hair Cuts", slug: "hair-cuts", status: "published" }]);
+  const handler = createManagedContentHandler("service", { admin: true, requireAdmin: () => ({ username: "admin" }), sameOrigin: () => true, getDb: async () => store.db });
+  const res = response();
+  await handler({ method: "POST", query: {}, headers: {}, body: { title: "Hair Cuts" } }, res);
+  assert.equal(res.code, 409);
+  assert.equal(store.docs.length, 1);
+});
+
+test("admin delete removes the local record", async () => {
+  const store = database([{ _id: "aaaaaaaaaaaaaaaaaaaaaaaa", title: "Hair Cuts", slug: "hair-cuts", status: "draft" }]);
+  const handler = createManagedContentHandler("service", { admin: true, requireAdmin: () => ({ username: "admin" }), sameOrigin: () => true, getDb: async () => store.db });
+  const res = response();
+  await handler({ method: "DELETE", query: { id: "aaaaaaaaaaaaaaaaaaaaaaaa" }, headers: {} }, res);
+  assert.equal(res.code, 200);
+  assert.equal(store.docs.length, 0);
+});
