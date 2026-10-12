@@ -139,3 +139,10 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - No unsafe-inline or unsafe-eval remains in script-src. style-src unsafe-inline remains as a separate layout compatibility risk; it has not been removed without a tested replacement for existing inline styles.
 - Password changes increment sessionVersion; each protected API request checks the current admin record. A stale copied session is rejected after the version changes. CI regression tests pass; live MongoDB/runtime verification remains pending.
 - No production DB was queried or modified. Vercel remains disconnected; no deployment or production acceptance was performed.
+
+## Latest verified implementation and CI checkpoint — 2026-10-12
+
+- Audited feature HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. GitHub compare confirms the branch ref was identical to this SHA.
+- Build verification [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) passed dependency install, high-severity audit, tests and build. Historical scan [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) passed text/history and binary printable-string scan steps (413 commits / ~117.24 MB, zero text findings; 118 binary blobs / 170,446,401 bytes, zero findings per recorded scan output).
+- Session-version revocation and strict `script-src` hardening are implemented and CI-tested. `style-src 'unsafe-inline'` remains. Actual proxy-chain behavior, browser/runtime CSP/tracking, live MongoDB session behavior and deployed auth/upload checks remain unverified.
+- This is source/CI evidence, not a penetration test or production acceptance. Vercel remains disconnected and no production data was changed.
