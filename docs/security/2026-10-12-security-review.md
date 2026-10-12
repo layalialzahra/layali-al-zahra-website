@@ -228,3 +228,9 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - The runtime configuration predicate checks non-empty values and the `accounts/{id}/locations/{id}` format only. A true result is not proof of Google API approval, API enablement, valid OAuth consent/scope, valid refresh token or access to the verified salon location.
 - Current Vercel environment settings and Google Cloud project/quota/account permissions were not available for inspection. Therefore live credential presence and scope, API approval/enablement and location access remain **UNVERIFIED**, not confirmed missing and not passed.
 - No token exchange, Google API call, live sync, database write, deployment or Vercel reconnection occurred. Keep Google sync and managed homepage reviews gated. Detailed evidence: [Task 14 prerequisite report](../GOOGLE-BUSINESS-PROFILE-PREREQUISITES-2026-10-12.md).
+
+### Google Reviews moderation regression — 2026-10-13
+- Source review: selection alone does not call a write endpoint; only explicit publish/unpublish actions change publication state.
+- New reviews are merged with `isPublished: false` and `sortOrder: 0`; sync preserves the existing local publication/order values.
+- Local deletion records the source ID in `google_review_suppressions` and deletes only the local review document. Subsequent sync filters suppressed IDs before upserting.
+- Added a route-level lifecycle regression in `tests/api/google-reviews-moderation-e2e.test.js`. CI execution and staging persistence remain unverified at this checkpoint. No production data or Google source was changed.
