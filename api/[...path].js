@@ -8,28 +8,6 @@ function fail(res, status, message) {
   return res.status(status).json({ success: false, message });
 }
 
-function createDatabaseTestHandler() {
-  return async function databaseTestHandler(req, res) {
-    if (String(req.method || "GET").toUpperCase() !== "GET") {
-      res.setHeader("Allow", "GET");
-      return fail(res, 405, "Method not allowed");
-    }
-    try {
-      const { getDb } = await import("./_lib/mongodb.js");
-      const db = await getDb();
-      const collections = await db.listCollections({}, { nameOnly: true }).toArray();
-      return res.status(200).json({
-        success: true,
-        message: "MongoDB connected successfully",
-        collections: collections.map(({ name }) => name),
-      });
-    } catch (error) {
-      console.error("MongoDB test endpoint failed", error);
-      return res.status(503).json({ success: false, message: "Database connection unavailable" });
-    }
-  };
-}
-
 function routeSegments(req) {
   const value = req.query?.path;
   if (Array.isArray(value)) return value.map((part) => String(part)).filter(Boolean);
@@ -62,7 +40,6 @@ export function createApiRouterHandler(options = {}) {
     ["admin/faqs", createManaged("faq", { admin: true })],
     ["admin/google-reviews", createReviewsAdmin()],
     ["published-google-reviews", createReviewsPublic()],
-    ["test", options.healthHandler || createDatabaseTestHandler()],
   ]);
 
   return async function apiRouter(req, res) {

@@ -52,10 +52,18 @@ function verify(token) {
 }
 function parseCookies(req) {
   const header = req.headers?.cookie || "";
-  return Object.fromEntries(header.split(";").filter(Boolean).map((part) => {
+  const cookies = {};
+  for (const part of header.split(";").filter(Boolean)) {
     const index = part.indexOf("=");
-    return [part.slice(0, index).trim(), decodeURIComponent(part.slice(index + 1).trim())];
-  }));
+    if (index < 0) continue;
+    const name = part.slice(0, index).trim();
+    try {
+      cookies[name] = decodeURIComponent(part.slice(index + 1).trim());
+    } catch {
+      // Ignore malformed cookie values rather than letting them crash auth.
+    }
+  }
+  return cookies;
 }
 function getClientKey(req, username = "") {
   const forwarded = String(req.headers?.["x-forwarded-for"] || "").split(",")[0].trim();
@@ -129,11 +137,15 @@ export function requireAdmin(req, res) {
   return session;
 }
 export function sameOrigin(req) {
+  const method = String(req.method || "GET").toUpperCase();
   const origin = req.headers?.origin;
-  if (!origin) return true;
+  // Browser state-changing requests must carry an Origin header. SameSite cookies
+  // are defence in depth, not a substitute for validating write origins.
+  if (!origin) return ["GET", "HEAD", "OPTIONS"].includes(method);
   const host = req.headers?.host;
-  const protocol = req.headers?.["x-forwarded-proto"] || (process.env.NODE_ENV === "production" ? "https" : "http");
-  return origin === `${protocol}://${host}`;
+  const forwardedProtocol = String(req.headers?.["x-forwarded-proto"] || "").split(",")[0].trim();
+  const protocol = forwardedProtocol || (process.env.NODE_ENV === "production" ? "https" : "http");
+  return Boolean(host) && origin === `${protocol}://${host}`;
 }
 export async function adminExists() {
   await ensureAuthIndexes();

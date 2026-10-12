@@ -1,5 +1,6 @@
 import { put } from "@vercel/blob";
 import { requireAdmin, sameOrigin } from "../_lib/auth.js";
+import { isAllowedImagePayload } from "../_lib/image-upload.js";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
@@ -24,9 +25,13 @@ export default async function handler(req, res) {
     }
     if (!total) return sendError(res, 400, "No image was uploaded.");
 
+    const buffer = Buffer.concat(chunks);
+    if (!isAllowedImagePayload(contentType, buffer)) {
+      return sendError(res, 400, "The uploaded file does not match a supported image format.");
+    }
     const extension = contentType === "image/jpeg" ? "jpg" : contentType.split("/")[1];
     const pathname = `layali-al-zahra/content/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}.${extension}`;
-    const blob = await put(pathname, Buffer.concat(chunks), { access: "public", addRandomSuffix: false, contentType, cacheControlMaxAge: 2592000 });
+    const blob = await put(pathname, buffer, { access: "public", addRandomSuffix: false, contentType, cacheControlMaxAge: 2592000 });
     return res.status(201).json({ success: true, url: blob.url, pathname: blob.pathname, contentType: blob.contentType });
   } catch (error) {
     console.error("Admin image upload failed", error);

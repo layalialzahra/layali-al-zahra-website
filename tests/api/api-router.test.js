@@ -56,11 +56,10 @@ test("dispatches each managed content route to the correct public/admin handler"
   }
 });
 
-test("dispatches review endpoints and legacy database test path", async () => {
+test("dispatches review endpoints", async () => {
   for (const [path, expected] of [
     [["admin", "google-reviews"], "reviews-admin"],
     [["published-google-reviews"], "reviews-public"],
-    [["test"], "health"],
   ]) {
     const { handler, calls } = setup();
     const res = response();
@@ -70,11 +69,13 @@ test("dispatches review endpoints and legacy database test path", async () => {
   }
 });
 
-test("unknown API routes return 404 without invoking a handler", async () => {
-  const { handler, calls } = setup();
-  const res = response();
-  await handler({ method: "GET", query: { path: ["not-real"] }, headers: {} }, res);
-  assert.equal(res.code, 404);
-  assert.equal(res.body.success, false);
-  assert.deepEqual(calls, []);
+test("unknown and legacy diagnostic routes return 404 without invoking a handler", async () => {
+  for (const path of [["not-real"], ["test"]]) {
+    const { handler, calls } = setup();
+    const res = response();
+    await handler({ method: "GET", query: { path }, headers: {} }, res);
+    assert.equal(res.code, 404);
+    assert.equal(res.body.success, false);
+    assert.deepEqual(calls, []);
+  }
 });
