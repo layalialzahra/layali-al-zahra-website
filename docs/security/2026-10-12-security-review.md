@@ -234,3 +234,7 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - New reviews are merged with `isPublished: false` and `sortOrder: 0`; sync preserves the existing local publication/order values.
 - Local deletion records the source ID in `google_review_suppressions` and deletes only the local review document. Subsequent sync filters suppressed IDs before upserting.
 - Added a route-level lifecycle regression in `tests/api/google-reviews-moderation-e2e.test.js`. Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]), including tests and build. Staging persistence remains unverified. No production data or Google source was changed.
+
+### Google Reviews sync failure preservation — 2026-10-13
+- Added fixture fault-injection tests for provider HTTP failure, timeout-class exception, incomplete page count and malformed response. Tests assert the review collection receives no bulk write and the complete local/published fixture remains unchanged.
+- This validates the pre-write failure path under mocked conditions only. No live Google provider test was performed; Google API/OAuth/location and authorised isolated staging remain unverified. MongoDB bulk-write partial failure is a separate unverified risk. Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`.
