@@ -70,11 +70,13 @@ def main() -> int:
                 if not header:
                     raise RuntimeError("git cat-file batch ended unexpectedly")
                 parts = header.decode("ascii", errors="replace").strip().split()
-                if len(parts) < 3 or parts[1] != "blob":
+                if len(parts) < 3:
                     continue
                 size = int(parts[2])
                 data = cat.stdout.read(size)
-                cat.stdout.read(1)  # trailing newline after the object body
+                cat.stdout.read(1)  # trailing newline after every object body
+                if parts[1] != "blob":
+                    continue
                 if not is_binary(data):
                     continue
 
@@ -103,8 +105,13 @@ def main() -> int:
         if report_path.exists():
             report_path.unlink()
 
+        gopath = run(["go", "env", "GOPATH"], text=True)
+        if gopath.returncode:
+            print("Could not resolve the pinned Gitleaks executable path.")
+            return 2
+        gitleaks_bin = os.path.join(gopath.stdout.strip(), "bin", "gitleaks")
         scan = run([
-            "gitleaks", "dir", str(root),
+            gitleaks_bin, "dir", str(root),
             "--redact", "--no-banner", "--exit-code", "1",
             "--report-format", "json", "--report-path", str(report_path),
         ])
