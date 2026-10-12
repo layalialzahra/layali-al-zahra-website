@@ -176,7 +176,16 @@ export function serializeManagedItem(type, doc, { publicOnly = false } = {}) {
     if (doc?.[field] === undefined) continue;
     const value = doc[field];
     if (field === "_id") output[field] = String(value);
-    else if (["createdAt", "updatedAt"].includes(field)) output[field] = value?.toISOString?.() || value;
+    else if (field === "subservices" && Array.isArray(value)) {
+      // Legacy or manually inserted documents may contain fields outside the validator.
+      // Apply the nested allowlist too; a top-level allowlist alone is not sufficient.
+      const allowedSubserviceFields = ["id", "name", "price", "description", "bookingUrl"];
+      output[field] = value.map((subservice) => Object.fromEntries(
+        allowedSubserviceFields
+          .filter((key) => subservice?.[key] !== undefined)
+          .map((key) => [key, subservice[key]]),
+      ));
+    } else if (["createdAt", "updatedAt"].includes(field)) output[field] = value?.toISOString?.() || value;
     else output[field] = value;
   }
   return output;
