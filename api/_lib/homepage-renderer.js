@@ -47,7 +47,10 @@ async function loadPublishedHomeReviews() {
 
 export function createHomepageRenderHandler(options = {}) {
   const readTemplate = options.readTemplate || (() => readFile(resolve(process.cwd(), "dist/index.html"), "utf8"));
-  const getPublishedReviews = options.getPublishedReviews || loadPublishedHomeReviews;
+  const getPublishedReviews = options.getPublishedReviews || (async () => {
+    if (process.env.MANAGED_HOME_REVIEWS_ENABLED !== "true") return [];
+    return loadPublishedHomeReviews();
+  });
   const renderPage = options.renderPage || (async (pathname, reviews) => {
     const bundleUrl = pathToFileURL(resolve(process.cwd(), "server-dist/entry-server.js")).href;
     const serverEntry = await import(bundleUrl);
