@@ -74,3 +74,15 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Crawlability plan commit: `4f5216e8767229cc9ae1f6f3f8183ef50febf4da`.
 - BRD addendum commit: `5ad60d548f5b0b5d27671e44a558088c34123a45`.
 - The next security step is a reliable all-history text/binary scan and targeted test execution. CSP changes must account for inline Google Analytics/Meta Pixel behavior; do not make an untested CSP change. Vercel remains disconnected.
+
+
+## Priority 2 change in progress — production Origin scheme hardening
+
+- Updated `api/_lib/auth.js` to pin the expected origin scheme to HTTPS in production instead of using `x-forwarded-proto` for that decision.
+- Added a regression test in `tests/api/auth-security.test.js` for a spoofed forwarded-protocol value.
+- Implementation commit: `5bee062445dc9e852ebf4eca820f28073d943584`.
+- Test commit: `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
+- Security review documentation commit: `e3725f807f2f7bc91fc2a007cbdc30c6835ca12b`.
+- BRD change-log commit: `b3abd690e65859929c23d7b40e23f4ebbc1d3491`.
+- This source-level hardening is not accepted until GitHub Actions passes. The separate `x-forwarded-for` client-IP trust review, session revocation, CSP validation and complete historical/text/binary secret scan remain open.
+- No Vercel deployment or live/staging verification was initiated.
