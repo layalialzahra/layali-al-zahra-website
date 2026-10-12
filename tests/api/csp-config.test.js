@@ -43,6 +43,9 @@ test("executable tracking code is loaded from the same-origin external script", 
 test("homepage SSR rewrite and server bundle are configured without adding a function entrypoint", () => {
   const config = JSON.parse(readFileSync(new URL("../../vercel.json", import.meta.url), "utf8"));
   assert.deepEqual(config.rewrites[0], { source: "/", destination: "/api/render-home" });
+
+  const homeAlias = config.rewrites.find((entry) => entry.source === "/home");
+  assert.deepEqual(homeAlias, { source: "/home", destination: "/api/render-home" });
   assert.ok(config.functions["api/[...path].js"].includeFiles.includes("dist/index.html"));
   assert.ok(config.functions["api/[...path].js"].includeFiles.includes("server-dist/**"));
 });
