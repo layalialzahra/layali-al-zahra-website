@@ -146,31 +146,27 @@
 ### Task 5: Add dedicated admin management UI
 
 **Files:**
-- Modify: `src/components/AdminPage.tsx`
-- Create: `src/components/admin/ServicesManager.tsx`
-- Create: `src/components/admin/OffersManager.tsx`
-- Create: `src/components/admin/PackagesManager.tsx`
-- Create: `src/components/admin/FaqManager.tsx`
-- Modify: `src/components/admin.css`
+- Modify: `package.json`, `package-lock.json`, `src/components/AdminPage.tsx`
+- Create: `vitest.config.ts`, `tests/setup-dom.ts`, `src/components/admin/ManagedContentManager.tsx`, `src/components/admin/ServicesManager.tsx`, `src/components/admin/OffersManager.tsx`, `src/components/admin/PackagesManager.tsx`, `src/components/admin/FaqManager.tsx`, `src/components/admin/managed-content.css`
 - Test: `tests/admin/ManagedContentManager.test.tsx`
 
 **Interfaces:**
 - Extend authenticated navigation with Services, Offers, Packages and FAQs without replacing the current Content Library.
-- Shared form/list primitives may be extracted only if they are small and do not destabilise the existing editor.
+- Use a shared editor with resource-specific field configurations and thin wrappers to avoid duplicating validation, upload, publication and delete workflows.
 
-- [ ] **Step 1: Write UI tests**
+- [x] **Step 1: Write UI tests**
   - Verify navigation to each manager, create/edit form validation, draft/publish transitions, ordering controls, delete confirmation, loading/error/empty states and FAQ page filtering.
   - Verify existing Content Library navigation still works.
-- [ ] **Step 2: Run the UI test and confirm failure**
+- [x] **Step 2: Run the UI test and confirm failure**
   - Run: `npm test -- tests/admin/ManagedContentManager.test.tsx`
   - Expected: FAIL because the managers do not exist.
-- [ ] **Step 3: Implement managers using existing admin styles and upload API**
+- [x] **Step 3: Implement managers using existing admin styles and upload API**
   - Preserve keyboard accessibility and responsive behavior.
   - Use the APIs defined in Task 3; do not publish on a local form save unless the explicit action says publish.
-- [ ] **Step 4: Run UI tests**
+- [x] **Step 4: Run UI tests**
   - Run: `npm test -- tests/admin/ManagedContentManager.test.tsx`
   - Expected: PASS.
-- [ ] **Step 5: Run all tests and build**
+- [x] **Step 5: Run all tests and build**
   - Run: `npm test && npm run build`
   - Expected: pass without regressions to current admin authentication/editor.
 
