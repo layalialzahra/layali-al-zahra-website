@@ -97,3 +97,29 @@ test("dispatches the SSR homepage through the existing catch-all function", asyn
   assert.equal(res.body, "SSR home");
   assert.deepEqual(calls, [{ kind: "homepage" }]);
 });
+
+
+test("dispatches the homepage route to a server-rendered HTML handler", async () => {
+  const calls = [];
+  const homepage = () => async (req, res) => {
+    calls.push(req.url);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.status(200).send('<!doctype html><div id="root" data-ssr="true">Rendered homepage</div>');
+  };
+  const handler = createApiRouterHandler({
+    createManagedContentHandler: () => async (_req, res) => res.status(200).json({}),
+    createGoogleReviewsAdminHandler: () => async (_req, res) => res.status(200).json({}),
+    createGoogleReviewsPublicHandler: () => async (_req, res) => res.status(200).json({}),
+    createGoogleReviewsSyncHandler: () => async (_req, res) => res.status(200).json({}),
+    createHomepageHandler: homepage,
+  });
+  const res = response();
+  res.send = function (body) { this.body = body; return this; };
+
+  await handler({ method: "GET", query: { path: ["homepage"] }, url: "/api/homepage", headers: {} }, res);
+
+  assert.equal(res.code, 200);
+  assert.match(res.headers["Content-Type"], /text\/html/);
+  assert.match(res.body, /data-ssr="true"/);
+  assert.deepEqual(calls, ["/api/homepage"]);
+});
