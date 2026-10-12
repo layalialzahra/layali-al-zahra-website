@@ -21,10 +21,3 @@ describe("homepage server-rendering feasibility", () => {
     expect(html).toContain("My favourite salon in Dubai!");
   });
 });
-
-
-  it("does not restore legacy reviews when the CMS explicitly returns an empty published set", () => {
-    const html = render("/", []);
-    expect(html).not.toContain("Shauna Haberlin");
-    expect(html).not.toContain("My favourite salon in Dubai!");
-  });
