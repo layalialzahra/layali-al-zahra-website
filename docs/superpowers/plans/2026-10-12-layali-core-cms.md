@@ -207,3 +207,16 @@
 **Blocked:** do not start runtime acceptance or migration until a currently available, owner-authorised non-production target and isolated database are evidenced. The repository environment template contains only a placeholder `MONGODB_URI` and defaults `MONGODB_DB_NAME` to `layalialzahra`; `api/_lib/mongodb.js` does not enforce production/staging separation. Historical BRD notes about a Vercel staging admin service and Preview variables are insufficient to prove the present project identity or database isolation. Provider-level Vercel and MongoDB settings could not be verified through the available connections.
 
 Full evidence, risk assessment and the unblock checklist: [docs/ENVIRONMENT-VERIFICATION-2026-10-12.md](../../ENVIRONMENT-VERIFICATION-2026-10-12.md). Do not reconnect Vercel, use production as staging, perform a migration, or mark Task 6 Steps 2–5 complete. Continue only after explicit environment authorisation and isolation verification.
+
+
+## Task 03 — Services admin automated acceptance (2026-10-12)
+
+**Outcome:** Automated API/model/UI checks pass on tested commit `0b97e33e4cfcaf16e9a985a7d570ea206fcdf3a1`. This is source-level acceptance only; live staging acceptance remains blocked by Task 02.
+
+- Added `tests/api/managed-content-services-acceptance.test.js` covering service create/default draft, partial edit preservation, numeric ordering, publish/unpublish transitions, duplicate normalized slug conflict, invalid title/order handling, published-only public reads, public sort order and delete behavior.
+- Expanded `tests/admin/ManagedContentManager.test.tsx` for explicit draft creation, editing title/order and surfacing duplicate-slug API errors while keeping the editor open.
+- Expanded `tests/api/managed-content.test.js` to reject null/blank sort order and accept finite numeric values.
+- Fixed `api/_lib/managed-content.js`: sort-order validation previously converted `null` and empty strings to numeric zero through `Number(value)`. It now rejects null, booleans and blank strings and still accepts finite numeric values. FAQ ordering uses the same strict helper.
+- GitHub Actions Build verification [run 38270049182](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049182) completed successfully on tested commit `0b97e33e4cfcaf16e9a985a7d570ea206fcdf3a1`: dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build` all passed.
+- Historical secret scan [run 38270049237](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049237) was still in progress at the time of this checkpoint; do not infer its result from the Build run.
+- No live API/database writes, staging tests, image uploads, migrations, deployment or public-source changes were performed. Task 02's environment-isolation blocker remains in force. Keep the Services staging/runtime acceptance gate open until a safe authorised target is evidenced.
