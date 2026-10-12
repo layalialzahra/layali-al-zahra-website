@@ -27,4 +27,13 @@ describe("homepage server-rendering feasibility", () => {
     expect(html).not.toContain("Shauna Haberlin");
     expect(html).not.toContain("My favourite salon in Dubai!");
   });
+
+  it("HTML-escapes untrusted review text in the initial server-rendered markup", () => {
+    const html = render("/", [
+      { title: "Sample reviewer", initials: "SR", description: '<script>alert("x")</script>', rating: 5, isPublished: true },
+    ]);
+    expect(html).toContain('&lt;script&gt;alert("x")&lt;/script&gt;');
+    expect(html).not.toContain('<script>alert("x")</script>');
+  });
+
 });
