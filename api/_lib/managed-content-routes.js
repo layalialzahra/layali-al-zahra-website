@@ -26,8 +26,9 @@ async function getAuthFunctions(requireAdminOverride, sameOriginOverride) {
   const auth = await import("./auth.js");
   return { requireAdmin: requireAdminOverride || auth.requireAdmin, sameOrigin: sameOriginOverride || auth.sameOrigin };
 }
-async function ensureIndexes(collection, config) {
+async function ensureIndexes(collection, config, type) {
   if (config.slugs) await collection.createIndex({ slug: 1 }, { unique: true, name: "slug_unique" });
+  else if (type === "faq") await collection.createIndex({ pageKey: 1, question: 1 }, { unique: true, name: "page_question_unique" });
   await collection.createIndex({ status: 1, sortOrder: 1, createdAt: 1 }, { name: "managed_content_order" });
 }
 function serialize(type, doc, publicOnly) {
@@ -59,7 +60,7 @@ export function createManagedContentHandler(type, options = {}) {
     try {
       const db = await getDatabase(options.getDb);
       const collection = db.collection(config.collection);
-      await ensureIndexes(collection, config);
+      await ensureIndexes(collection, config, type);
 
       if (!admin) {
         const filter = { status: "published" };
