@@ -40,6 +40,22 @@ describe("public managed-content fallback and mapping", () => {
     expect(await loadPublicPackages(true, fetchImpl as typeof fetch)).toBe(legacyPackagesData);
   });
 
+  it("maps date-bound offer values and preserves recurring validity labels and display prices", async () => {
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(jsonResponse([{
+        slug: "date-offer", title: "Date Offer", priceLabel: "AED 99.75", validityType: "date-range",
+        validFrom: "2028-02-29", validUntil: "2028-03-01",
+      }]))
+      .mockResolvedValueOnce(jsonResponse([{
+        slug: "monday-offer", title: "Monday Offer", priceLabel: "From AED 99",
+        validityType: "recurring", validityLabel: "Every Monday", validFrom: null, validUntil: null,
+      }]));
+    const dateOffer = await loadPublicOffers(true, fetchImpl as typeof fetch);
+    const recurringOffer = await loadPublicOffers(true, fetchImpl as typeof fetch);
+    expect(dateOffer[0]).toMatchObject({ badge: "AED 99.75", validUntil: "2028-02-29 – 2028-03-01" });
+    expect(recurringOffer[0]).toMatchObject({ badge: "From AED 99", validUntil: "Every Monday" });
+  });
+
   it("maps FAQ records to the existing public component shape and preserves legacy FAQ on API failure", async () => {
     const fetchImpl = vi.fn()
       .mockResolvedValueOnce(jsonResponse([{ pageKey: "services", question: "New question?", answer: "New answer" }]))

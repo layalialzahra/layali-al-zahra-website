@@ -14,7 +14,8 @@ test("rejects unsafe image URLs and non-finite sort order", () => {
 test("descriptive offer labels are not treated as expiry dates", () => {
   const item = validateOfferInput({ title: "Midday Massage", priceLabel: "AED 178.50", validityType: "label", validityLabel: "Midday Special" });
   assert.equal(item.validityLabel, "Midday Special");
-  assert.equal(item.validUntil, undefined);
+  assert.equal(item.validFrom, null);
+  assert.equal(item.validUntil, null);
 });
 
 test("date ranges reject an end date before the start date", () => {

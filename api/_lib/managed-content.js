@@ -110,8 +110,15 @@ export function validateOfferInput(input, partial = false) {
     if (!VALIDITY_TYPES.has(type)) throw new Error("Invalid offer validity type");
     result.validityType = type;
   }
-  for (const field of ["validFrom", "validUntil"]) {
-    if (data[field] !== undefined) result[field] = data[field] === null || data[field] === "" ? null : dateOnly(data[field], field);
+  if (result.validityType && result.validityType !== "date-range") {
+    // Recurring/descriptive offers are labels, not date windows. Clear stale dates
+    // when changing an existing offer's validity type so they cannot linger in storage.
+    result.validFrom = null;
+    result.validUntil = null;
+  } else {
+    for (const field of ["validFrom", "validUntil"]) {
+      if (data[field] !== undefined) result[field] = data[field] === null || data[field] === "" ? null : dateOnly(data[field], field);
+    }
   }
   if (data.validityLabel !== undefined) result.validityLabel = text(data.validityLabel, "Validity label", 180);
   if (!partial) {
