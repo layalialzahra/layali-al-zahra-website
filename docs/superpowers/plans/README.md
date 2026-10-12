@@ -116,3 +116,8 @@ Latest branch HEAD `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438` passed Build verif
 - Added route-level lifecycle regression `tests/api/google-reviews-moderation-e2e.test.js` for local deletion/suppression across sync, default-unpublished imports, explicit publish and preservation of existing publication/order.
 - Acceptance record: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
 - Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]): dependency install, audit, tests and build passed. Runtime/staging acceptance remains open under Task 02's missing authorised isolated environment. No Google API call, production write, deployment or public-source cutover.
+
+## Short Task List Task 17 — Google Reviews sync failure preservation — 2026-10-13
+
+- Added mocked-provider regression tests for HTTP failure, timeout-class exception, incomplete response and malformed page; assertions verify no review bulk write and unchanged local/published fixture.
+- Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`. CI result pending; provider-level testing not performed because API/OAuth/location and authorised staging prerequisites remain unverified.
