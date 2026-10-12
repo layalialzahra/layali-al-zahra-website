@@ -2,48 +2,8 @@ import React from 'react';
   import { Sparkles } from 'lucide-react';
   import { Button } from './ui/button';
 
-  const offersData = [
-    {
-      id: 1,
-      title: 'Monday Offer – Acrylic Mani + Pedi',
-      description: 'Treat yourself every Monday with our unbeatable acrylic manicure and pedicure combo',
-      validUntil: 'Every Monday',
-      image: '/monday-acrylic-mani-pedi.webp',
-      badge: 'AED 105',
-    },
-    {
-      id: 2,
-      title: 'Monday Offer – Hair Wash + Blow Dry',
-      description: 'Start your week looking fabulous with a luxurious wash and blow dry session',
-      validUntil: 'Every Monday',
-      image: '/monday-hair-wash-blow-dry.webp',
-      badge: 'AED 99',
-    },
-    {
-      id: 3,
-      title: 'Monday Offer – Acrylic Full Set (Color)',
-      description: 'Get a stunning full set of color acrylic nails at our exclusive Monday price',
-      validUntil: 'Every Monday',
-      image: '/monday-acrylic-full-set.webp',
-      badge: 'AED 269',
-    },
-    {
-      id: 4,
-      title: 'Midday Offer – Relaxing Body Massage',
-      description: 'Recharge your afternoon with our soothing full body massage at a special midday price',
-      validUntil: 'Midday Special',
-      image: '/midday-relaxing-body-massage.webp',
-      badge: 'AED 178.50',
-    },
-    {
-      id: 5,
-      title: 'Midday Offer – Hot Oil Head Massage',
-      description: 'Unwind midday with our nourishing hot oil head massage — the perfect pick-me-up',
-      validUntil: 'Midday Special',
-      image: '/midday-offer-hot-oil.webp',
-      badge: 'AED 84',
-    },
-  ];
+  import { legacyOffersData as offersData } from '../data/legacy-offers.js';
+import { legacyFaqs } from '../data/legacy-faqs.js';
 
   export default function OffersPage() {
     return (
@@ -99,24 +59,7 @@ import React from 'react';
               <p className="text-gray-600">Common questions about our special offers and promotions in Dubai</p>
             </div>
             <div className="space-y-3">
-              {[
-                {
-                  q: "What special offers does Layali Al Zahra currently have in Dubai?",
-                  a: "We regularly run seasonal and themed promotions including Eid beauty deals, summer packages, and midweek specials. Check this page regularly or follow us on Instagram @alzahrabeauty.dubai for the latest offers."
-                },
-                {
-                  q: "Do you have regular weekly deals at your Al Barsha salon?",
-                  a: "Yes, we offer midweek deals to help clients enjoy premium beauty services at more accessible prices. Our offers page is updated regularly with current promotions across hair, nails, skin, and more."
-                },
-                {
-                  q: "Can I combine a special offer with a regular service booking?",
-                  a: "Offers apply to the specific services listed in each promotion. WhatsApp us on +971 52 370 6025 and we will be happy to advise you on how to make the most of any current deals at our salon."
-                },
-                {
-                  q: "How do I stay updated on new offers from Layali Al Zahra?",
-                  a: "Follow us on Instagram @alzahrabeauty.dubai and Facebook for our latest offers and beauty tips. You can also message us on WhatsApp to be added to our promotions updates list."
-                },
-              ].map((faq, i) => (
+              {legacyFaqs.offers.map((faq, i) => (
                 <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
                   <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
                     <span>{faq.q}</span>
