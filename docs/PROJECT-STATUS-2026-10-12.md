@@ -3,7 +3,7 @@
 **Date:** 2026-10-12  
 **Repository:** `layalialzahra/layali-al-zahra-website`  
 **Branch:** `feat/layali-managed-content-cms`  
-**Latest observed head:** `228e79206ed28c14e1e726cbab0c302ca28ced54`
+**Application baseline observed before documentation-only follow-up:** `228e79206ed28c14e1e726cbab0c302ca28ced54`. Documentation-only follow-up commits are listed below.
 
 > This status is authoritative for the CMS expansion and supersedes stale deployment assumptions in older records. Follow the owner-confirmed constraints below.
 
@@ -60,3 +60,17 @@ Residual risks: CSP allows `unsafe-inline` and `unsafe-eval`; login throttling t
 ## Documentation rules
 
 Update the Notion hub, decisions, stages, agents and log for meaningful verified work. Mark a task complete only when its acceptance evidence exists. Distinguish implemented, CI-passed, staging-verified and production-released. Never record secret values.
+
+## Documentation and security follow-up — 2026-10-12
+
+- Reconciled the Google Reviews plan: suppression/source-edit/removal policy is marked decided and implemented; live Business Profile API approval, OAuth and location access remain unverified.
+- Reconciled the crawlability plan and BRD with the owner-confirmed Vercel hold. Staging/crawler-facing checks remain deferred to the approved final verification window.
+- Targeted follow-up source review reread auth/setup/password, upload, API router, Google Reviews routes, `index.html`, `vercel.json`, auth tests and CI workflow.
+- Existing auth tests cover absent-Origin write rejection, safe GET without Origin, matching/mismatched origins and malformed cookies. Proxy header trust and immediate stateless-session revocation remain open.
+- The current tree contains tracked dependency/build artifacts, including a Windows esbuild executable under `node_modules/`. No cleanup was performed; tracked `node_modules/` and `build/` are explicitly out of scope for incidental cleanup.
+- GitHub code-search responses were not reliable even for known source identifiers. They are not evidence of a clean scan. A complete secret scan across history, text and binary blobs remains open; no secret values were retrieved or printed.
+- Security review follow-up commit: `12179d3ba3f1e77ecce9a5dd63dc1b6fac7f493d`.
+- Google Reviews plan commit: `f01e878d0a01ec3804971c0c8714aa25d0a5f18b`.
+- Crawlability plan commit: `4f5216e8767229cc9ae1f6f3f8183ef50febf4da`.
+- BRD addendum commit: `5ad60d548f5b0b5d27671e44a558088c34123a45`.
+- The next security step is a reliable all-history text/binary scan and targeted test execution. CSP changes must account for inline Google Analytics/Meta Pixel behavior; do not make an untested CSP change. Vercel remains disconnected.
