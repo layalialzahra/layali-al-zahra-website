@@ -384,3 +384,11 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - No Google Cloud/Vercel environment access was available to verify those external states. No secret values were accessed; no token exchange, API request, sync, DB write, deployment or Vercel reconnection occurred.
 - Keep Google sync and managed homepage reviews disabled. Next: obtain console/account evidence for API approval and enabled APIs, verify OAuth grant/scope and secret presence without printing values, then make a read-only reviews-list request for the verified salon location during the controlled integration/release window.
 - Evidence report: [Google Business Profile prerequisites](./GOOGLE-BUSINESS-PROFILE-PREREQUISITES-2026-10-12.md).
+
+
+## Task 15 — controlled Google Reviews sync blocker (2026-10-13)
+
+- **Status: OPEN / BLOCKED. No live sync attempted.** Google Business Profile API approval/enablement, OAuth grant/scope, live server-side credential presence and verified salon-location access remain unverified. No secret values were inspected, no OAuth exchange/API call or database write was performed, and no deployment occurred.
+- Source review: pagination and response validation occur before sync writes; code rejects provider errors, invalid/changing total counts, duplicate review IDs, repeated page tokens, incomplete final counts and pagination beyond the safety limit. Existing provider-independent tests cover multi-page retrieval and an incomplete page. These checks do not establish live API access or real data integrity.
+- Real source pagination/count comparison, field-level data integrity and preservation under actual provider failures remain NOT RUN. MongoDB `bulkWrite` is not cross-document atomic; database-side partial failure remains a separate unverified risk.
+- Evidence: [Task 15 controlled sync blocker report](./GOOGLE-REVIEWS-CONTROLLED-SYNC-BLOCKER-2026-10-13.md). Keep Task 15 open. Do not simulate a successful live sync. Vercel stays disconnected; local and hard-coded public review data remain unchanged.
