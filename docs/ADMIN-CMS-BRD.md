@@ -686,3 +686,10 @@ The test commits are `83b248c2480c0859911c58bbcf940bf0fe8dcbea` and `e0efd65cac3
 
 
 Latest Task 06 test-only follow-up: commit `09debf63f90ae32f5fc449cb29dcb8ccb9f7d643` adds an explicit unpublish-to-public-API regression assertion. Test execution and build success remain unverified because no run evidence was returned by the available status/workflow lookup.
+
+### Short Task List Task 07 — admin security regression coverage (2026-10-12)
+- Added `tests/api/admin-security-acceptance.test.js` in commit `410429bd8c866817ca6a8998eff99be9f61e228e`.
+- Regression coverage checks unauthenticated and cross-origin POST/PUT/DELETE requests are rejected before database access. Invalid service create, invalid sort-order update and malformed delete ID return controlled HTTP 400 responses without changing the in-memory records.
+- Existing auth tests cover missing/mismatched Origin, production HTTPS scheme pinning, malformed cookies, signed session validity, session-version mismatch after password change and deleted/missing admin records.
+- No additional confirmed application vulnerability was found in this review, so no auth or API implementation change was justified. CI execution for the new test commit is pending evidence; no test/build pass is claimed yet.
+- No live/staging or production runtime test occurred. Task 02 still blocks live acceptance because an authorised, production-isolated non-production environment/database is not verified. Vercel remains disconnected.
