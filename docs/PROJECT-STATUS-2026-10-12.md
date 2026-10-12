@@ -348,3 +348,11 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - Full reconciliation: [`docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md`](https://github.com/layalialzahra/layali-al-zahra-website/blob/feat/layali-managed-content-cms/docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md).
 - Build verification [38281562425](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281562425) passed on tested code/test commit [acc1accdb15c93ae43df285dd28179b0d606c671](https://github.com/layalialzahra/layali-al-zahra-website/commit/acc1accdb15c93ae43df285dd28179b0d606c671): 0 dependency vulnerabilities; 120 Node tests passed, 29 Vitest tests across 7 files passed, client/SSR builds and homepage SSR smoke test passed.
 - This verifies the generated source projection only, not database contents or an applied migration. No database connection/write, migration, deployment or public-source switch occurred. Task 02 remains blocked; Vercel remains disconnected. Temporary CI PR [#8](https://github.com/layalialzahra/layali-al-zahra-website/pull/8) was closed unmerged.
+
+
+## Task 12 — staging migration execution blocker (2026-10-12)
+
+- **Status: OPEN/BLOCKED.** Task 02 still has not established an owner-authorised, production-isolated non-production database. Repository defaults do not establish a safe staging target.
+- No migration was run. No database connection/write, rollback attempt, production access, deployment, Vercel reconnection or public-source cutover occurred.
+- Task 11's 56-record source projection passed with zero discrepancies, but it does not verify database contents or an applied migration. Existing unit tests provide dry-run/repeat-apply fixture coverage only; staging counts/field integrity, real repeat-run idempotency and rollback/recovery remain unverified.
+- Evidence and resume criteria: [Task 12 staging migration blocker](./MIGRATION-STAGING-BLOCKER-2026-10-12.md). First establish Task 02's authorised isolated target, then capture pre-state, apply only in staging, verify 15 Services/5 Offers/23 Packages/13 FAQs and exact field integrity, repeat the migration, and exercise rollback/recovery. Leave Task 12 unchecked until evidence exists.
