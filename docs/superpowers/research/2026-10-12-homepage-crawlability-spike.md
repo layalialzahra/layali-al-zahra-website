@@ -33,7 +33,8 @@ Do not change the public root route or claim crawlable review text yet. The safe
 
 ## Current implementation and acceptance reconciliation — 2026-10-12
 
-- The earlier recommendation for a route-aware SSR experiment has been superseded by the local route-aware SSR/hydration implementation recorded above. CI build/test/audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); historical scan [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) passed its text/history and binary printable-string scan steps.
+- The earlier recommendation for a route-aware SSR experiment has been superseded by the local route-aware SSR/hydration implementation recorded above.
+- Audited application/code baseline before documentation-only reconciliation: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. CI build/test/audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); historical scan [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) passed its text/history and binary printable-string scan steps.
 - Managed reviews remain disabled by default. If managed mode is enabled and review lookup fails, the handler intentionally fails closed to an empty review list rather than restoring legacy reviews.
 - Separate open gap: if the generic homepage renderer throws, the catch path returns the original HTML template with an empty `#root` and HTTP 200. That is not a useful crawlable fallback; current tests/CI do not establish that this is acceptable. Resolve through an approved implementation decision and regression test before crawlability acceptance.
 - Vercel is disconnected; deployed routing/function packaging, live DB access and crawler-facing HTTP response remain unverified. Core CMS Task 6 and live Google Reviews acceptance remain upstream open gates.
