@@ -316,3 +316,13 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - Final Build verification [38277348263](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348263) passed: `npm audit --audit-level=high` found 0 vulnerabilities; `npm test` reported 104 Node tests passed / 0 failed and Vitest reported 29 tests passed across 7 files; client build, SSR build and homepage SSR smoke test passed.
 - Historical secret scan [38277348295](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348295) passed: 491 reachable commits / approximately 117.41 MB scanned, zero Gitleaks findings; 118 binary blobs / 170,446,401 bytes of printable strings examined, zero findings. Binary scanning remains heuristic and does not semantically inspect compressed/encrypted payloads.
 - No real Blob upload, staging request, database write, migration, deployment or public-source cutover occurred. Vercel remains disconnected. Automated tests use injected storage and in-memory/request fixtures; live storage behavior and deployment configuration remain unverified until Task 02 is unblocked.
+
+## Short Task List Task 09 — public CMS reads and fallback safety (2026-10-12)
+
+**Automated acceptance: PASS. Runtime/staging acceptance: OPEN, blocked by Task 02.**
+
+- Added `tests/api/managed-content-public-acceptance.test.js` covering Services, Offers, Packages and FAQs. Checks verify empty collections return an empty items array; drafts are excluded; top-level response keys match resource-specific public allowlists; FAQs are restricted to a valid requested page; and database connection, index and read errors return only a generic HTTP 503 response without internal details or fallback records.
+- Fixed a confirmed serializer defect: nested service `subservices` objects were passed through without their own field allowlist. Nested output now permits only `id`, `name`, `price`, `description` and `bookingUrl`.
+- Build verification [38280386368](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386368) passed on tested HEAD `f832185898175ac10432546915d0a38bd5e66666`: 0 high-severity dependency vulnerabilities; 107 Node tests and 29 Vitest tests across 7 files passed; client/SSR builds and homepage SSR smoke test passed.
+- Historical secret scan [38280386362](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386362) passed: 501 reachable commits, zero Gitleaks findings; 118 binary blobs with printable strings, zero findings. Binary scan remains heuristic.
+- No live/staging DB calls, production access, migration, deployment or public-source switch occurred. Task 02 still blocks runtime acceptance. Vercel remains disconnected.
