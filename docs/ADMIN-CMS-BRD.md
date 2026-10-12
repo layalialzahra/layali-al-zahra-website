@@ -578,3 +578,10 @@ This section is the current status for the separate managed Services, Offers, Pa
 - Latest scan [38253765871](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253765871) passed: 358 commits / ~117.17 MB text/history scanned with zero findings after the documented public Web3Forms allowlist; 118 binary blobs with printable strings / 170,446,401 bytes scanned with zero findings.
 - Vercel's official request-header documentation states that Vercel overwrites `X-Forwarded-For` to prevent IP spoofing. The current rate-limit key is supported when requests reach Vercel directly, but the actual proxy chain remains unverified.
 - Remaining security gate: session revocation decision and stricter CSP design/runtime acceptance. No deployment or live test was performed.
+
+
+### 2026-10-12 — Latest security acceptance evidence
+- Historical scan [38253958356](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958356) passed: 359 commits / ~117.17 MB reachable history with zero text findings and 118 binary blobs with printable strings / 170,446,401 bytes with zero findings.
+- Standard Build verification [38253958446](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958446) passed audit, tests and build.
+- Vercel's request-header docs state that `X-Forwarded-For` is overwritten to prevent IP spoofing; direct-Vercel behavior is documented, but the live proxy chain is not verified.
+- Session revocation and stricter CSP removal of `unsafe-inline`/`unsafe-eval` remain open. No deployment or browser/runtime test occurred.

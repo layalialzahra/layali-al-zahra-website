@@ -124,3 +124,10 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - Latest [Historical secret scan run 38253765871](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253765871) passed: 358 commits / approximately 117.17 MB reachable history scanned, zero text findings after the narrow public Web3Forms allowlist; 118 binary blobs with printable strings / 170,446,401 bytes scanned, zero findings.
 - Vercel's official [request-header documentation](https://vercel.com/docs/headers/request-headers) states that Vercel overwrites `X-Forwarded-For` to prevent IP spoofing and that `x-real-ip` is equivalent. This supports the current first-`x-forwarded-for` rate-limit key when requests reach Vercel directly. The actual production proxy chain remains unverified while Vercel is disconnected; if an additional proxy is introduced, verify its trust contract.
 - The production Origin scheme fix and CSP compatibility test passed CI, but no live/browser runtime check occurred. Stateless session revocation and strict CSP removal of `unsafe-inline`/`unsafe-eval` remain open.
+
+
+### Latest verified security evidence — 2026-10-12
+- Latest [Historical secret scan run 38253958356](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958356) passed: 359 commits / approximately 117.17 MB reachable history, zero text findings; 118 reachable binary blobs with printable strings / 170,446,401 bytes, zero findings.
+- Standard Build verification [38253958446](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958446) passed dependency audit, tests and build on the same checkpoint.
+- Vercel's official request-header documentation says it overwrites `X-Forwarded-For` to prevent IP spoofing. This supports the current client-IP key when requests reach Vercel directly; actual proxy-chain behavior remains unverified while Vercel is disconnected.
+- Session revocation and stricter CSP remain open; no deployed/browser acceptance is claimed.

@@ -151,3 +151,11 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Historical scan [38253765871](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253765871) passed: 358 commits / ~117.17 MB reachable history, zero text findings; 118 binary blobs with printable strings / 170,446,401 bytes, zero findings. Scope limitations remain: unreachable objects, external systems, deployed environment values and compressed/encrypted payloads are not covered semantically.
 - Vercel documentation states that it overwrites `X-Forwarded-For` to prevent IP spoofing. This supports the current rate-limit key when requests reach Vercel directly; live proxy behavior remains unverified while disconnected.
 - Production Origin scheme and CSP compatibility regression tests pass CI. Session revocation and stricter CSP removal of `unsafe-inline`/`unsafe-eval` remain open.
+
+
+## Latest plan reconciliation — 2026-10-12
+
+- Master plan now records the successful reachable-history text/binary scan, production Origin scheme regression and CSP allowlist regression with exact CI evidence.
+- Latest scan [38253958356](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958356) reported 359 commits / ~117.17 MB with zero text findings and 118 binary blobs / 170,446,401 bytes with zero findings.
+- Build verification [38253958446](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958446) passed audit, tests and build.
+- Remaining: session revocation decision, stricter CSP, final proxy/runtime acceptance, functional acceptance, crawlability and Google API prerequisites. Vercel remains disconnected.
