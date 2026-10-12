@@ -288,9 +288,10 @@ import React, { useState, useEffect } from 'react';
   interface HomePageProps {
     onNavigate: (page: string) => void;
     reviews?: HomePageReview[];
+    disableInitialAnimations?: boolean;
   }
 
-  function AutoCarousel({ items, title, isReview = false }: { items: any[]; title: string; isReview?: boolean }) {
+  function AutoCarousel({ items, title, isReview = false, disableInitialAnimation = false }: { items: any[]; title: string; isReview?: boolean; disableInitialAnimation?: boolean }) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -317,7 +318,7 @@ import React, { useState, useEffect } from 'react';
         <h2 className="font-tangerine text-5xl md:text-7xl text-rose-900 text-center mb-12">{title}</h2>
         <div className="relative max-w-6xl mx-auto">
           <div className={`grid gap-6 ${itemsToShow === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="wait" initial={!disableInitialAnimation}>
               {Array.from({ length: itemsToShow }).map((_, offset) => {
                 const index = (currentIndex + offset) % items.length;
                 const item = items[index];
@@ -374,7 +375,7 @@ import React, { useState, useEffect } from 'react';
     );
   }
 
-  export default function HomePage({ onNavigate, reviews }: HomePageProps) {
+  export default function HomePage({ onNavigate, reviews, disableInitialAnimations = false }: HomePageProps) {
     const eligibleReviews = reviews?.filter((review) => review.isPublished !== false);
     const reviewItems = reviews === undefined ? reviewsData : (eligibleReviews || []);
 
@@ -397,7 +398,7 @@ import React, { useState, useEffect } from 'react';
         {/* Services Section */}
         <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
           <div className="container mx-auto px-4">
-            <AutoCarousel items={servicesData} title="Our Services" />
+            <AutoCarousel items={servicesData} title="Our Services" disableInitialAnimation={disableInitialAnimations} />
             <div className="text-center mt-10">
               <Button onClick={() => onNavigate('services')} className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3">
                 View All Services
@@ -409,7 +410,7 @@ import React, { useState, useEffect } from 'react';
         {/* Packages Section */}
         <section className="py-20 bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100">
           <div className="container mx-auto px-4">
-            <AutoCarousel items={packagesData} title="Combos & Packages" />
+            <AutoCarousel items={packagesData} title="Combos & Packages" disableInitialAnimation={disableInitialAnimations} />
             <div className="text-center mt-10">
               <Button onClick={() => onNavigate('packages')} className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3">
                 View All Packages
@@ -421,7 +422,7 @@ import React, { useState, useEffect } from 'react';
         {/* Offers Section */}
         <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
           <div className="container mx-auto px-4">
-            <AutoCarousel items={offersData} title="Special Offers" />
+            <AutoCarousel items={offersData} title="Special Offers" disableInitialAnimation={disableInitialAnimations} />
             <div className="text-center mt-10">
               <Button onClick={() => onNavigate('offers')} className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3">
                 View All Offers
@@ -433,7 +434,7 @@ import React, { useState, useEffect } from 'react';
         {/* Tips Section */}
         <section className="py-20 bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100">
           <div className="container mx-auto px-4">
-            <AutoCarousel items={tipsData} title="Beauty Tips" />
+            <AutoCarousel items={tipsData} title="Beauty Tips" disableInitialAnimation={disableInitialAnimations} />
           </div>
         </section>
 
@@ -441,7 +442,7 @@ import React, { useState, useEffect } from 'react';
         {reviewItems.length > 0 && (
           <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
             <div className="container mx-auto px-4">
-              <AutoCarousel items={reviewItems} title="What Our Clients Say" isReview={true} />
+              <AutoCarousel items={reviewItems} title="What Our Clients Say" isReview={true} disableInitialAnimation={disableInitialAnimations} />
             </div>
           </section>
         )}
