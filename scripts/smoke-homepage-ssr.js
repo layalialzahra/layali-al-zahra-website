@@ -1,40 +1,75 @@
 import assert from "node:assert/strict";
 import { createHomepageRenderHandler } from "../api/_lib/homepage-renderer.js";
 
-const response = {
-  code: 200,
-  headers: {},
-  body: "",
-  status(code) {
-    this.code = code;
-    return this;
-  },
-  setHeader(name, value) {
-    this.headers[name] = value;
-  },
-  send(body) {
-    this.body = body;
-    return this;
-  },
-};
+function makeResponse() {
+  return {
+    code: 200,
+    headers: {},
+    body: "",
+    status(code) {
+      this.code = code;
+      return this;
+    },
+    setHeader(name, value) {
+      this.headers[name] = value;
+    },
+    send(body) {
+      this.body = body;
+      return this;
+    },
+  };
+}
 
-const handler = createHomepageRenderHandler({
+async function request(handler, pathname) {
+  const res = makeResponse();
+  await handler({ method: "GET", url: pathname }, res);
+  return res;
+}
+
+const fallbackHandler = createHomepageRenderHandler({
   // Exercise the built React SSR bundle without requiring a database or credentials.
   getPublishedReviews: async () => { throw new Error("simulated database failure"); },
   logger: { error() {} },
 });
 
-await handler({ method: "GET" }, response);
+for (const pathname of ["/", "/home"]) {
+  const response = await request(fallbackHandler, pathname);
+  assert.equal(response.code, 200, `${pathname} should return HTTP 200 on successful SSR`);
+  assert.equal(response.headers["Content-Type"], "text/html; charset=utf-8");
+  assert.match(response.body, /data-ssr="true"/, "the response should activate client hydration");
+  assert.doesNotMatch(response.body, /opacity:0/, "SSR carousel content must not start visually hidden");
+  assert.match(response.body, /<title>Layali Al Zahra Beauty Lounge \| Luxury Ladies Salon in Dubai<\/title>/);
+  assert.equal((response.body.match(/rel="canonical"/g) || []).length, 1, "exactly one canonical link should remain");
+  assert.match(response.body, /href="https:\/\/www\.layalialzahra\.com\/"[^>]*rel="canonical"|rel="canonical"[^>]*href="https:\/\/www\.layalialzahra\.com\/" /);
+  assert.match(response.body, /Where Beauty Meets Luxury/, "the homepage should render into initial HTML");
+  assert.match(response.body, /Shauna Haberlin/, "legacy review snapshot should remain fallback when managed lookup fails while disabled");
+  assert.doesNotMatch(response.body, /data-initial-reviews=/, "fallback HTML should not claim a database review set");
+}
 
-assert.equal(response.code, 200, "the built homepage handler should return HTTP 200");
-assert.equal(response.headers["Content-Type"], "text/html; charset=utf-8");
-assert.match(response.body, /data-ssr="true"/, "the response should activate client hydration");
-assert.doesNotMatch(response.body, /opacity:0/, "SSR carousel content must not start visually hidden");
-assert.match(response.body, /<title>/, "the HTML template should retain the page title");
-assert.match(response.body, /<\/title>/, "the HTML template should close the page title");
-assert.match(response.body, /rel="canonical"/, "the HTML template should retain canonical metadata");
-assert.match(response.body, /Where Beauty Meets Luxury/, "the homepage should render into the initial HTML");
-assert.match(response.body, /Shauna Haberlin/, "the reviewed static snapshot should remain the fallback");
-assert.doesNotMatch(response.body, /data-initial-reviews=/, "fallback HTML should not claim a database review set");
+const managedHandler = createHomepageRenderHandler({
+  getPublishedReviews: async () => [
+    { googleReviewId: "first", title: "First Published Reviewer", initials: "FP", description: "First approved review", rating: 5, isPublished: true },
+    { googleReviewId: "hidden", title: "Suppressed Reviewer", initials: "SR", description: "Must never be rendered", rating: 5, isPublished: true },
+    { googleReviewId: "private", title: "Unpublished Reviewer", initials: "UR", description: "Private review text", rating: 5, isPublished: false },
+    { googleReviewId: "second", title: "Second Published Reviewer", initials: "SP", description: "Second approved review", rating: 4, isPublished: true },
+    { googleReviewId: "third", title: "Third Published Reviewer", initials: "TP", description: "Third approved review", rating: 3, isPublished: true },
+  ],
+  getSuppressedReviewIds: async () => ["hidden"],
+  logger: { error() {} },
+});
 
-console.log("Homepage SSR smoke test passed against the built HTML template and server bundle.");
+for (const pathname of ["/", "/home"]) {
+  const response = await request(managedHandler, pathname);
+  assert.equal(response.code, 200);
+  assert.match(response.body, /data-initial-reviews=/);
+  assert.match(response.body, /First Published Reviewer/);
+  assert.match(response.body, /Second Published Reviewer/);
+  assert.match(response.body, /Third Published Reviewer/);
+  assert.doesNotMatch(response.body, /Suppressed Reviewer|Must never be rendered/);
+  assert.doesNotMatch(response.body, /Unpublished Reviewer|Private review text/);
+  assert.ok(response.body.indexOf("First Published Reviewer") < response.body.indexOf("Second Published Reviewer"));
+  assert.ok(response.body.indexOf("Second Published Reviewer") < response.body.indexOf("Third Published Reviewer"));
+  assert.equal((response.body.match(/rel="canonical"/g) || []).length, 1);
+}
+
+console.log("Homepage SSR smoke passed for / and /home: initial HTML, hydration marker, canonical metadata, review publication/order/suppression and legacy fallback.");
