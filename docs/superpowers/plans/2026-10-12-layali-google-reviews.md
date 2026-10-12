@@ -39,12 +39,11 @@
 - [ ] **Step 1: Verify Business Profile access without exposing secrets**
   - Confirm API project approval, API enablement, OAuth setup and verified location access with the account owner.
   - Check presence/names of expected environment variables only; never print their values.
-- [ ] **Step 2: Confirm policy for removed/edited reviews and local deletion**
-  - Choose a durable suppression/tombstone record keyed by `googleReviewId` or explicitly approve that a deleted record can re-import on a later sync.
-  - Decide whether edited source text updates local content while preserving publication, and how source removals are handled.
-- [ ] **Step 3: Record verified result and owner decision**
-  - If API access is unavailable, stop live-sync implementation here; complete only provider-independent UI/model tests until access is available.
-  - Do not simulate a successful Google sync against real data.
+- [x] **Step 2: Confirm policy for removed/edited reviews and local deletion**
+  - **Decision recorded and implemented:** use durable suppression/tombstones keyed by `googleReviewId`; local deletion remains local and the review must not silently re-import. Source-owned fields may update while local publication/order are preserved. Reviews absent from one completed sync are retained for explicit admin review.
+- [x] **Step 3: Record verified result and owner decision**
+  - The policy decision is recorded in the project decision log and current branch. **Business Profile API approval, OAuth setup and location access are still unverified**; do not claim live sync acceptance or simulate a successful sync against real data.
+  - Until access is verified, restrict further verification to provider-independent tests and source review.
 
 ### Task 2: Implement Google review schema and safe synchronization service
 
