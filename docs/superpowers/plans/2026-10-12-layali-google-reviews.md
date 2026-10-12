@@ -162,3 +162,9 @@ Keep Task 15 unchecked until the owner-authorised non-production target and live
 - Existing UI tests cover selection without writes and the explicit publish action. Existing sync tests cover default-unpublished imports and merge preservation.
 - Evidence report: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
 - Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38320839858)): dependency install, audit, tests and build. Authorised staging/runtime acceptance remains open. Task 16 remains open; no live API, production database or deployment was used.
+
+## Task 17 — sync failure preservation — 2026-10-13
+
+- Extended `tests/api/google-reviews-sync.test.js` with mock fault cases for provider HTTP failure, timeout-class exception, incomplete final count and malformed page shape. Each asserts HTTP 502, no review bulk write, unchanged full local fixture and unchanged published subset.
+- Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`.
+- These are automated mocked-provider tests, not provider-level/live Google tests. CI result pending; authorised Google API access and isolated runtime remain unverified. MongoDB write-phase partial failure remains a separate risk.
