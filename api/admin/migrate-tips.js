@@ -15,7 +15,7 @@ function slugify(value) { return value.toLowerCase().trim().replace(/[^a-z0-9]+/
 function sendError(res, status, message) { return res.status(status).json({ success: false, message }); }
 
 export default async function handler(req, res) {
-  if (!requireAdmin(req, res)) return;
+  if (!(await requireAdmin(req, res))) return;
   if (req.method !== "POST") { res.setHeader("Allow", "POST"); return sendError(res, 405, "Method not allowed"); }
   if (!sameOrigin(req)) return sendError(res, 403, "Forbidden");
 
