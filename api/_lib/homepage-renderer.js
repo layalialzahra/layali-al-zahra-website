@@ -48,7 +48,7 @@ async function loadPublishedHomeReviews() {
 export function createHomepageRenderHandler(options = {}) {
   const readTemplate = options.readTemplate || (() => readFile(resolve(process.cwd(), "dist/index.html"), "utf8"));
   const getPublishedReviews = options.getPublishedReviews || (async () => {
-    if (process.env.MANAGED_HOME_REVIEWS_ENABLED !== "true") return [];
+    if (process.env.MANAGED_HOME_REVIEWS_ENABLED !== "true") return undefined;
     return loadPublishedHomeReviews();
   });
   const renderPage = options.renderPage || (async (pathname, reviews) => {
@@ -79,18 +79,21 @@ export function createHomepageRenderHandler(options = {}) {
       return res.status(500).send("Homepage template invalid");
     }
 
-    let reviews = [];
+    let reviews;
     try {
       const loaded = await getPublishedReviews();
       if (Array.isArray(loaded)) reviews = loaded.filter((review) => review && review.isPublished === true);
     } catch (error) {
       logger.error?.("Homepage published-review lookup failed", error?.name || "Error");
+      reviews = undefined;
     }
 
     try {
       const markup = await renderPage("/", reviews);
-      const serializedReviews = escapeAttribute(JSON.stringify(reviews));
-      const root = `<div id="root" data-ssr="true" data-initial-reviews="${serializedReviews}">${markup}</div>`;
+      const initialReviewsAttribute = Array.isArray(reviews)
+        ? ` data-initial-reviews="${escapeAttribute(JSON.stringify(reviews))}"`
+        : "";
+      const root = `<div id="root" data-ssr="true"${initialReviewsAttribute}>${markup}</div>`;
       const html = template.replace(ROOT_MARKER, root);
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.setHeader("Cache-Control", "no-store");
