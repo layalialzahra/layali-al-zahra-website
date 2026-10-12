@@ -514,3 +514,10 @@ This section is the current status for the separate managed Services, Offers, Pa
 - **Required next order:** (1) Priority 2 security review and targeted tests, (2) Priority 3 functional acceptance and migration dry-run/count/repeatability, (3) Priority 4 Google Reviews prerequisites/safety and crawlability proof of concept, (4) Priority 5 responsive QA, release checklist, rollback evidence and owner acceptance. Only then consider the final controlled release.
 - **Evidence discipline:** distinguish source-reviewed, CI-passed, staging-verified and production-released. Do not mark tasks complete without evidence, expose secret values, or claim a deployment/API test that was not performed.
 
+
+
+### 2026-10-12 — Priority 2 origin scheme hardening
+- Hardened `api/_lib/auth.js` so production same-origin validation pins the expected protocol to HTTPS rather than trusting `x-forwarded-proto` for the scheme decision.
+- Added a regression test in `tests/api/auth-security.test.js` for a spoofed forwarded-protocol header.
+- Commits: implementation `5bee062445dc9e852ebf4eca820f28073d943584`; test `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
+- GitHub Actions verification is pending; this is not live/staging verification. Vercel remains disconnected and no deployment was triggered.
