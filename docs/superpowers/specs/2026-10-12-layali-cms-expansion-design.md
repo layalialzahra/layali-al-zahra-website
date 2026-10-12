@@ -1,6 +1,6 @@
 # Layali Al Zahra CMS Expansion — Design Specification
 
-**Status:** Draft for owner review  
+**Status:** Approved by owner on 2026-10-12  
 **Date:** 2026-10-12  
 **Repository:** layalialzahra/layali-al-zahra-website  
 **Approved direction:** Dedicated content modules; reuse existing CMS infrastructure where appropriate.
@@ -24,7 +24,7 @@ Allow an authorised, non-technical admin to create, edit, order, publish, unpubl
 - CI workflow builds with `npm run build`; package scripts do not currently provide a project test command.
 - Existing BRD: `docs/ADMIN-CMS-BRD.md` has deferred stages for offers, services/packages and testimonials.
 - Repository tree contains tracked `node_modules/` and `build/` paths. This is a separate maintenance concern; do not delete them as part of this feature without a scoped review.
-- The repository was last verified public. This project has not changed its visibility.
+- Repository visibility was verified as public. The owner has chosen to keep it public until this project is complete; treat this as an accepted exposure risk, never commit secrets, and do not change visibility without instruction.
 - `.env.example` documents MongoDB and admin variables but no Google Business Profile settings. Vercel credential state and API access remain unverified.
 
 ## 3. Design principles
@@ -215,7 +215,7 @@ The selected rendering strategy is an implementation design decision that must b
 - Public design does not change except where data source wiring requires no visible difference.
 
 ### Build and SEO
-- Add a lightweight project test command or use an established compatible test approach only after inspecting current dependencies and choosing the minimum needed.
+- Use Node.js built-in `node:test` for initial server-side unit tests. This adds a repeatable `npm test` command without new dependencies or lockfile changes. Add browser/DOM tooling only when component tests require it and after compatibility review.
 - Run focused API/model/UI tests and `npm run build`.
 - Verify the actual initial HTML or chosen rendered response includes only published review content.
 - Verify page metadata, canonical routes, crawlability and no unpublished review leakage.
