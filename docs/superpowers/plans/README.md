@@ -62,3 +62,7 @@ FAQ API and admin UI regression tests have been added in commits `83b248c2480c08
 
 
 Latest Task 06 test-only follow-up: commit `09debf63f90ae32f5fc449cb29dcb8ccb9f7d643` adds an explicit unpublish-to-public-API regression assertion. Test execution and build success remain unverified because no run evidence was returned by the available status/workflow lookup.
+
+## Short Task List Task 08 checkpoint — 2026-10-12
+
+Image-upload automated acceptance passed on tested commit [a9c5469e94d0c8b18006cbb4c21059b7cdfd7d28](https://github.com/layalialzahra/layali-al-zahra-website/commit/a9c5469e94d0c8b18006cbb4c21059b7cdfd7d28). Build verification [38277348263](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348263) passed 104 Node tests, 29 Vitest tests across 7 files, high-severity dependency audit (0 vulnerabilities), client/SSR builds and homepage SSR smoke test. Historical scan [38277348295](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348295) passed with zero findings across 491 reachable commits and 118 binary blobs / 170,446,401 bytes. Task 02 still blocks real staging/Blob acceptance; Vercel remains disconnected.
