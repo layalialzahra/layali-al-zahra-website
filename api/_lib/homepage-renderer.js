@@ -14,7 +14,7 @@ export function escapeAttribute(value) {
 }
 
 function initialsFor(name) {
-  const parts = String(name || "").trim().split(/\s+/).filter(Boolean).slice(0, 2);
+  const parts = String(name || "").trim().split(/\\s+/).filter(Boolean).slice(0, 2);
   return parts.map((part) => Array.from(part)[0] || "").join("").toUpperCase() || "G";
 }
 
@@ -113,9 +113,9 @@ export function createHomepageRenderHandler(options = {}) {
       return res.status(200).send(req.method === "HEAD" ? "" : html);
     } catch (error) {
       logger.error?.("Homepage server rendering failed", error?.name || "Error");
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
       res.setHeader("Cache-Control", "no-store");
-      return res.status(200).send(req.method === "HEAD" ? "" : template);
+      return res.status(500).send(req.method === "HEAD" ? "" : "Homepage unavailable");
     }
   };
 }
