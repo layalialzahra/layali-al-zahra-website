@@ -18,6 +18,7 @@
 - Preserve page layout, routes, canonical/meta behavior, booking URLs and current content.
 - Keep a safe fallback until the owner explicitly approves cutover.
 - No production cutover or deployment claim without direct verification.
+- **Owner-confirmed release hold (2026-10-12):** Vercel is disconnected and current feature-branch changes are not deployed. Do not reconnect Vercel or trigger deployment during implementation. Use local/source-level proof of concept first; defer any staging/deployed HTML check until the final controlled release window and explicit owner approval. Preserve the daily free deployment allowance.
 
 ## Review Focus
 
@@ -37,7 +38,7 @@
 - Test: `tests/rendering/homepage-crawlability.test.*` (selected after approach is chosen)
 
 - [ ] **Step 1: Capture current baseline**
-  - Record homepage response headers/status, initial HTML, current review section output, route behavior and metadata on the intended staging project.
+  - Record homepage response headers/status, initial HTML, current review section output, route behavior and metadata on the intended staging project only during an approved final verification window. Until then, document that live/staging baseline evidence is pending and do not reconnect Vercel.
 - [ ] **Step 2: Compare compatible approaches**
   - Evaluate minimal SSR for homepage only, a Vercel serverless homepage handler with React rendering, or an established prerender approach compatible with this repository.
   - Include build/runtime impact, dynamic data freshness, caching, fallback and route/CSP interactions.
@@ -63,7 +64,7 @@
 - [ ] **Step 4: Run tests, build and route regression checks**
   - Run `npm test && npm run build`, then check homepage HTML and every route currently listed in `vercel.json`.
 - [ ] **Step 5: Verify crawler-facing output**
-  - Fetch the staging homepage as HTML and verify published review text is present and unpublished data is absent. A browser DOM alone is not sufficient evidence.
+  - During the approved final verification window, fetch the target homepage as HTML and verify published review text is present and unpublished data is absent. A browser DOM alone is not sufficient evidence. This check is pending while Vercel remains disconnected.
 
 ### Task 3: Migrate and switch public page data one module at a time
 
