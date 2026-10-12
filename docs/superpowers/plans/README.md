@@ -105,3 +105,8 @@ Tasks 03–12 were reconciled in [Core CMS Acceptance Summary](../../CORE-CMS-AC
 ## Core CMS verification refresh — 2026-10-12
 
 Latest branch HEAD `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438` passed Build verification [38282811459](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811459): 120 Node tests, 29 Vitest tests across 7 files, 0 dependency vulnerabilities, client/SSR builds and homepage SSR smoke test. Historical secret scan [38282811451](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811451) passed. The integrated run resolves the missing Task 06 automated execution trace, but does not constitute staging acceptance. Task 02/12 and explicit owner acceptance remain blocked; Task 05 and Task 06 runtime acceptance remain open. No deployment, production migration or public-source switch occurred.
+
+
+## Short Task List Task 15 — controlled Google Reviews sync (2026-10-13)
+
+**OPEN / BLOCKED.** No live sync attempted because Google Business Profile API approval/enablement, OAuth grant/scope, live credential presence and verified-location access remain unverified. Source review confirms pagination/count/duplicate-token validation before sync writes and existing unit coverage for complete multi-page and incomplete-page fixtures; this is not live acceptance. Real page/count/data-integrity checks and runtime preservation of existing records remain NOT RUN. MongoDB bulk writes may partially apply if the database write itself fails; that risk requires a separate fix/test. See [Task 15 blocker report](../../GOOGLE-REVIEWS-CONTROLLED-SYNC-BLOCKER-2026-10-13.md). Vercel remains disconnected and no successful live sync is claimed.
