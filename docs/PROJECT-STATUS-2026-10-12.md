@@ -94,3 +94,6 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Added the required Meta Pixel/Facebook origins to the relevant CSP directives in `vercel.json` and added `tests/api/csp-config.test.js` to guard the allowlist.
 - This does not remove `unsafe-inline` or `unsafe-eval`; a stricter policy still requires a separate tested change.
 - Browser/runtime verification is pending the approved final release window. Vercel remains disconnected.
+
+
+- **CSP test result:** GitHub Actions run [38251889567](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251889567) passed dependency installation, high-severity dependency audit, tests (including `tests/api/csp-config.test.js`) and build on commit `09c393494383bc39de8c82ea29c68d95b38679b1`. This is CI-only evidence; no browser or deployed runtime check was performed.

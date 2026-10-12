@@ -526,4 +526,4 @@ This section is the current status for the separate managed Services, Offers, Pa
 ### 2026-10-12 — CSP compatibility for existing Meta Pixel
 - Added explicit CSP allowlist entries for the existing Meta Pixel script and Facebook beacon origins in `vercel.json`.
 - Added `tests/api/csp-config.test.js` to assert the required origins remain allowlisted.
-- This is source/configuration coverage only. Browser/runtime behavior is pending the final controlled release window. `unsafe-inline`/`unsafe-eval` hardening remains open.
+- GitHub Actions run [38251889567](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251889567) passed dependency installation, high-severity dependency audit, tests (including the new CSP allowlist test) and build on commit `09c393494383bc39de8c82ea29c68d95b38679b1`. This is CI-only evidence. Browser/runtime behavior is pending the final controlled release window. `unsafe-inline`/`unsafe-eval` hardening remains open.
