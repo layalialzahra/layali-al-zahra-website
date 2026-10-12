@@ -19,7 +19,11 @@ Scope: repository source, serverless API handlers, admin authentication, content
 - **Rate-limit identity:** login lockout relies on proxy-provided client-IP headers. Verify the deployed proxy's header trust model before treating IP-based lockout as a strong control.
 - **Live configuration:** source review cannot prove that production environment variables are present, strong, rotated, or correctly scoped. Never print secret values; validate presence and length in the deployment environment during the final release checks.
 - **Google API:** sync remains disabled until Google Business Profile API access is approved and OAuth/location credentials are configured. The endpoint validates complete pagination before local writes and does not mutate Google reviews.
-- **Runtime verification:** Vercel deployment, live auth, upload and database behavior remain unverified because deployment checks are deferred until the final stage.
+- **Runtime verification and deployment hold:** The owner confirmed on 2026-10-12 that Vercel is disconnected and the current feature-branch changes are not deployed. Do not reconnect or trigger deployment during implementation; preserve the daily free deployment allowance. Live auth, upload and database behavior remain unverified until the final controlled release/acceptance window. A historical GitHub status/check labelled Vercel is not evidence that the current changes deployed.
 
 ## Scope limits
 No production database was queried or modified. No live exploit attempt, external scan or production deployment was performed. Findings are based on repository code and CI evidence only.
+
+
+## Owner-confirmed release constraint — 2026-10-12
+Vercel remains disconnected by owner instruction and today's feature-branch changes are not deployed. Do not reconnect or trigger deployments during implementation. Reconnect only for the final controlled release after security, functional, crawlability and rollback acceptance are complete and the owner explicitly approves. No live penetration test or production verification has been performed in this review.
