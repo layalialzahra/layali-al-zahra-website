@@ -118,7 +118,7 @@
 
 - Audited HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. Build/test/audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); historical text/binary printable-string scan passed in [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483).
 - Route-aware SSR/hydration is implemented locally, but actual Vercel rewrite/function packaging, live database access and crawler-facing HTTP output remain unverified. Vercel remains disconnected by owner instruction.
-- Confirmed gap: generic SSR render exceptions currently produce a static HTML shell with empty `#root` and HTTP 200. The requirement for a useful fallback is not met by that catch path. Keep this acceptance item open; do not conflate it with the intentional managed-review lookup fail-closed behavior.
+- Confirmed gap: generic SSR render exceptions currently produce a static HTML shell with empty `#root` and HTTP 200. Main-branch comparison confirms the shell can recover client-side in a browser using the existing hard-coded homepage, but it provides no homepage content in initial HTML. The approved specification does not define generic SSR-exception behavior. See [Task 19 fallback decision](../HOMEPAGE-SSR-FALLBACK-DECISION-2026-10-13.md). Do not implement a behavior by assumption; obtain the owner’s choice, then add regression tests. Keep this separate from the intentional managed-review lookup fail-closed behavior.
 - Plan-sequence deviation: this SSR implementation preceded Core CMS Task 6 and live Google Reviews acceptance. No cutover/deployment is implied. Next approved task remains Core CMS Task 6.
 
 ## Task 01 status reconciliation (2026-10-12)
