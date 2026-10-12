@@ -135,3 +135,12 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 
 - Added `scripts/scan-binary-history.py` to inspect printable strings from binary blobs reachable in Git history and run Gitleaks over the extracted strings.
 - Output is limited to redacted finding metadata. The scan is heuristic; compressed/encrypted payloads are not semantically inspected. First run pending; keep the binary review gate open until result and triage.
+
+
+## Reachable history and binary scan result — 2026-10-12
+
+- Historical secret scan [38253553830](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553830) passed: 357 commits, approximately 117.16 MB, zero text/history findings after the narrow Web3Forms access-key allowlist.
+- Binary scan examined 118 reachable binary blobs with printable strings, totaling 170,446,401 bytes, and reported zero findings.
+- The scan is heuristic; it does not semantically inspect compressed/encrypted payloads, unreachable Git objects, external systems or deployed environment values.
+- Standard Build verification [38253553795](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553795) passed dependency audit, tests and build.
+- Remaining Priority 2 work: proxy-IP trust assessment, session revocation decision and stricter CSP design/acceptance. Vercel remains disconnected.

@@ -565,3 +565,10 @@ This section is the current status for the separate managed Services, Offers, Pa
 ### 2026-10-12 — Binary history scan automation
 - Added a redacted binary-blob scan step to the dedicated secret-scan workflow. It extracts printable strings from reachable binary Git blobs and runs Gitleaks against them.
 - Only metadata is printed; no secret values should be copied to docs/issues. The scan is heuristic and does not inspect compressed/encrypted payloads semantically. First result pending.
+
+
+### 2026-10-12 — Binary-history scan completed
+- Historical secret scan [38253553830](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553830) passed. Gitleaks scanned 357 commits / approximately 117.16 MB of reachable history and reported zero findings after the documented public Web3Forms key allowlist.
+- The binary step examined 118 reachable binary blobs with printable strings (170,446,401 bytes) and reported zero findings.
+- Scope limitation: this is heuristic printable-string scanning, not semantic inspection of compressed/encrypted payloads, unreachable objects, external systems or production environment values.
+- Build verification [38253553795](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553795) passed dependency audit, tests and build. Remaining security items are proxy-IP trust, session revocation and strict CSP hardening/runtime acceptance.

@@ -110,3 +110,11 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - Added `scripts/scan-binary-history.py` and a step in the dedicated secret-scan workflow. It enumerates reachable Git objects, extracts printable strings from binary blobs and runs Gitleaks against those strings.
 - The script prints only finding count, rule ID, source path, line and abbreviated blob ID; it does not print secret/match fields. It is heuristic and cannot inspect compressed/encrypted content semantically.
 - First binary scan result is pending. Keep the binary-blob gate open until the workflow completes and findings, if any, are triaged.
+
+
+### Binary-blob scan result — 2026-10-12
+- The corrected [Historical secret scan run 38253553830](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553830) passed: Gitleaks text/history scan covered 357 commits and approximately 117.16 MB with zero findings after the narrow public Web3Forms access-key allowlist.
+- The binary-history step examined 118 reachable binary blobs containing printable strings, totaling 170,446,401 bytes, and reported zero findings.
+- This is a successful heuristic scan of reachable Git history and printable binary strings. It does not semantically inspect compressed/encrypted payloads, unreachable Git objects, external systems or deployed environment values.
+- Standard Build verification [38253553795](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553795) passed dependency audit, tests and build on the same commit.
+- Remaining Priority 2 items: verify proxy trust for `x-forwarded-for`, decide/implement session revocation semantics, and plan stricter CSP removal of `unsafe-inline`/`unsafe-eval` with browser/runtime acceptance.
