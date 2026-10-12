@@ -23,7 +23,7 @@
 ## Review Focus
 
 1. Unpublished reviews must not leak through SSR HTML, cached responses or public API.
-2. **Two distinct fallback cases must be tested separately:** managed-review lookup failure in managed mode intentionally returns an empty review list and does not restore legacy reviews; a generic homepage SSR render exception currently returns the original HTML shell with an empty `#root` and HTTP 200. The latter is a confirmed useful-fallback gap and must be resolved/approved before crawlability acceptance.
+2. **Two distinct fallback cases must be tested separately:** managed-review lookup failure in managed mode intentionally returns an empty review list and does not restore legacy reviews; a generic homepage SSR render exception returns HTTP 500 with a plain-text error and `Cache-Control: no-store` (Task 19; CI passed).
 3. The Vercel SPA rewrites must not shadow or break any new SSR/HTML handler.
 4. Canonical URLs and page metadata must remain stable after rendering changes.
 5. A migration must be repeatable and must not duplicate, reorder or alter existing public content.
@@ -134,3 +134,14 @@
 - [x] Renderer logs generic SSR exceptions and returns plain-text `Homepage unavailable` with `Cache-Control: no-store`; HEAD responses have no body.
 - [x] Added a regression assertion for HTTP 500 and retained separate fail-closed coverage for managed-review lookup failures.
 - [x] Build verification [38324220862](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38324220862) passed dependency audit, tests and build on code/test commit `3c29eade5dd7932485ba0faab908f5ab75bdf3ac`. Deployed runtime/crawler acceptance remains deferred while Vercel is disconnected.
+
+
+### Task 20: Verify local SSR and client hydration — 2026-10-13
+
+- [x] Handler preserves the requested homepage alias (`/` or `/home`) when calling the SSR entry. Both paths render the same homepage and retain the single static canonical URL `https://www.layalialzahra.com/`.
+- [x] Expanded `scripts/smoke-homepage-ssr.js` to exercise both paths against the built server bundle and assert initial homepage content, the hydration marker, canonical metadata, no hidden initial carousel content, legacy fallback when managed reviews are unavailable/disabled, and managed review publication/order/suppression filtering.
+- [x] Added a jsdom hydration regression to detect React hydration mismatch warnings, plus a handler test for the `/home` alias.
+- [ ] Fresh Build verification must pass tests, dependency audit, client build, SSR build and the built-server smoke test before Task 20 is closed.
+- [ ] Live MongoDB ordering/query behavior and deployed Vercel rewrite/crawler response remain outside this local task and are not verified while Vercel is disconnected.
+
+Acceptance record: [Homepage SSR and Hydration Acceptance](../../HOMEPAGE-SSR-HYDRATION-ACCEPTANCE-2026-10-13.md).
