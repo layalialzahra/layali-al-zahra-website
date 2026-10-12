@@ -1,28 +1,23 @@
-# Task 19 — Homepage SSR render-exception fallback decision
+# Task 19 — Homepage SSR render-exception handling
 
-Date: 2026-10-13
+Date: 2026-10-13  
 Branch: `feat/layali-managed-content-cms`
 
-## Main-branch comparison
+## Confirmed behavior
 
-Reviewed the approved CMS specification and the implementation on both `main` and `feat/layali-managed-content-cms`.
+The owner selected **Option B: return HTTP 500 when generic homepage server rendering fails**.
 
-- On `main`, `src/main.tsx` mounts React with `createRoot()`; `index.html` contains an empty `#root` and the browser bundle. The existing `src/components/HomePage.tsx` contains the legacy homepage sections and hard-coded review carousel.
-- The feature branch adds route-aware server rendering in `api/_lib/homepage-renderer.js`, server output through `src/entry-server.tsx`, and hydration in `src/main.tsx`.
-- If server rendering throws, the handler currently returns the original template with an empty `#root` and HTTP 200. A browser can still mount the legacy client app, but the initial HTML response has no homepage content. This is not a crawlable fallback.
-- The approved specification requires preserving existing content/design and making published reviews available in initial HTML, but does not define the required response/content when generic React SSR itself fails.
+- A successful render returns the rendered homepage with HTTP 200.
+- If the React homepage renderer throws, the handler logs the error, sets `Cache-Control: no-store`, and returns HTTP 500 with a plain-text `Homepage unavailable` response. For HEAD requests, the response body remains empty.
+- Template read/validation errors already return HTTP 500 and remain separate.
+- No second homepage or fallback content was added.
 
-## Keep these failure cases separate
+## Keep review lookup failure separate
 
-1. **Managed-review lookup failure:** in managed mode, return an empty review list and do not restore legacy reviews. This is intentional fail-closed behavior and must not change.
-2. **Generic SSR render exception:** the React page render fails. Returning the original template allows client-side recovery in browsers but does not provide homepage content to crawlers.
+When managed-review lookup fails and `MANAGED_HOME_REVIEWS_ENABLED=true`, the handler still renders with an empty review list. It must not restore legacy reviews. This behavior is unchanged and covered by a separate regression test.
 
-## Decision required before implementation
+## Verification and release limits
 
-The approved specification does not authorize inventing fallback content or error semantics. Owner decision is required between:
+Regression coverage now asserts generic SSR failure returns HTTP 500 instead of an empty-root HTTP 200, while the managed-review failure test still verifies fail-closed behavior. CI must pass before Task 19 can be marked complete.
 
-- **A. Legacy client-rendered fallback:** keep returning the original HTML shell with HTTP 200. Browser rendering may recover, but crawler-facing content is empty for that response.
-- **B. Explicit server failure:** return HTTP 500 rather than an empty-root HTTP 200. This avoids falsely reporting a successful server-rendered page, but does not provide a content fallback.
-- **C. Render a separate server-safe legacy homepage fallback:** provide meaningful initial HTML if SSR fails. This requires an agreed fallback implementation/content source and tests; it must not accidentally restore legacy reviews after a managed-review lookup failure.
-
-No option has been selected. No application code was changed for Task 19. Do not mark this task complete until the owner chooses the expected behavior and regression tests pass. Vercel remains disconnected; no deployment, production write, or public cutover occurred.
+Work remains limited to the feature branch. Vercel stays disconnected. No deployment, production write, public cutover or `main` change was performed.
