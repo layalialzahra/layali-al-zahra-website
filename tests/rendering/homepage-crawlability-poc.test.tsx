@@ -32,7 +32,8 @@ describe("homepage server-rendering feasibility", () => {
     const html = render("/", [
       { title: "Sample reviewer", initials: "SR", description: '<script>alert("x")</script>', rating: 5, isPublished: true },
     ]);
-    expect(html).toContain('&lt;script&gt;alert("x")&lt;/script&gt;');
+    expect(html).toContain('&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;');
+    expect(html).not.toContain("opacity:0");
     expect(html).not.toContain('<script>alert("x")</script>');
   });
 
