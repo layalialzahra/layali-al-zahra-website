@@ -40,7 +40,7 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 ### Current assessment
 - No secret value was intentionally retrieved or printed during this follow-up. The complete all-history scan of text and binary blobs is **still outstanding**; current-tree filename checks alone are insufficient.
 - CSP remains a deliberate follow-up rather than an untested one-line change: `index.html` contains inline Google Analytics and Meta Pixel snippets, while `vercel.json` permits inline scripts and eval. Plan a controlled CSP change that preserves analytics behavior and verify it with browser/runtime tests before release.
-- `sameOrigin()` derives the effective protocol from the first `x-forwarded-proto` value when present. Whether that header is overwritten by the production proxy has not been verified; keep this open until the actual proxy trust contract is confirmed.
+- **Production origin scheme hardened in source:** `sameOrigin()` now pins the expected scheme to HTTPS when `NODE_ENV=production`, ignoring `x-forwarded-proto` for that decision. Development still uses the forwarded protocol when supplied, otherwise HTTP. A regression test was added for a spoofed `http` forwarded-protocol header. This reduces dependence on that header for scheme validation; the separate `x-forwarded-for` client-IP trust assumption for rate limiting remains open.
 - Sessions are stateless signed cookies with an eight-hour expiry. Password change clears the current response cookie, but there is no server-side token version/revocation check in the inspected helper. A previously copied valid token may remain accepted until expiry. Immediate revocation requires a deliberate design change and regression tests; do not imply it is already implemented.
 - No code changes, secret rotations, production configuration checks, deployed exploit attempts or live penetration tests were performed during this follow-up.
 
@@ -50,3 +50,11 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - Full history/binary secret scan: open.
 - CSP/proxy/session decisions and verification: open.
 - Live environment checks: deferred to the final controlled release window; Vercel remains disconnected by owner instruction.
+
+
+### Origin scheme hardening change — 2026-10-12
+- Changed `api/_lib/auth.js` so production state-changing requests compare Origin against `https://{host}` regardless of `x-forwarded-proto`; development retains the existing local/proxy behavior.
+- Added a regression test in `tests/api/auth-security.test.js` proving a forwarded-protocol value of `http` cannot make an HTTP Origin acceptable in production, while the matching HTTPS Origin is accepted.
+- Code commit: `5bee062445dc9e852ebf4eca820f28073d943584`.
+- Test commit: `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
+- CI has been triggered by the feature-branch commits; the result must be checked before treating this change as verified. No Vercel deployment or production test occurred.
