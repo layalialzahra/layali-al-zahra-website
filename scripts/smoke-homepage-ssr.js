@@ -20,8 +20,8 @@ const response = {
 
 const handler = createHomepageRenderHandler({
   // Exercise the built React SSR bundle without requiring a database or credentials.
-  getPublishedReviews: async () => undefined,
-  logger: console,
+  getPublishedReviews: async () => { throw new Error("simulated database failure"); },
+  logger: { error() {} },
 });
 
 await handler({ method: "GET" }, response);
@@ -29,6 +29,9 @@ await handler({ method: "GET" }, response);
 assert.equal(response.code, 200, "the built homepage handler should return HTTP 200");
 assert.equal(response.headers["Content-Type"], "text/html; charset=utf-8");
 assert.match(response.body, /data-ssr="true"/, "the response should activate client hydration");
+assert.doesNotMatch(response.body, /opacity:0/, "SSR carousel content must not start visually hidden");
+assert.match(response.body, /<title>[^<]+<\\/title>/, "the HTML template should retain the page title");
+assert.match(response.body, /rel="canonical"/, "the HTML template should retain canonical metadata");
 assert.match(response.body, /Where Beauty Meets Luxury/, "the homepage should render into the initial HTML");
 assert.match(response.body, /Shauna Haberlin/, "the reviewed static snapshot should remain the fallback");
 assert.doesNotMatch(response.body, /data-initial-reviews=/, "fallback HTML should not claim a database review set");
