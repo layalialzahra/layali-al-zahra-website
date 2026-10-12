@@ -1,5 +1,7 @@
 # Layali CMS implementation plan index
 
+> **Current status checkpoint:** [Project status and acceptance gates](../PROJECT-STATUS-2026-10-12.md). This record supersedes stale deployment assumptions in older notes. Owner-confirmed: Vercel is disconnected and current changes are undeployed; do not reconnect or trigger deployment until project completion and final release approval.
+
 Read the approved design specification before any plan. Read the Notion project hub's four child pages — `decisions.md`, `stages.md`, `log.md`, `agents.md` — before every implementation task.
 
 ## Order
@@ -12,4 +14,4 @@ The master plan is [Layali CMS Expansion](2026-10-12-layali-cms-expansion.md).
 
 ## Approval boundary
 
-The owner has authorised implementation to begin on `feat/layali-managed-content-cms`. This does not authorise production data migration, production deployment or public cutover. Google sync work must stop if required API access is not verified. Rendering implementation must stop for owner review if the feasibility spike requires a broad architectural change.
+The owner has authorised implementation on `feat/layali-managed-content-cms`, not production data migration or public cutover. Vercel is disconnected by owner instruction; today's changes are not deployed. Do not reconnect Vercel or trigger deployments during implementation because the owner is preserving the daily free deployment allowance. Reconnect only for the final controlled release after all acceptance gates pass and the owner explicitly approves. A historical GitHub status/check labelled Vercel is not evidence that current changes were deployed. Google sync work must stop if required API access is not verified. Rendering implementation must stop for owner review if the feasibility spike requires a broad architectural change.
