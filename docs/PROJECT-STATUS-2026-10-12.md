@@ -51,11 +51,11 @@ Current status: script-src no longer permits unsafe-inline or unsafe-eval; track
 
 ## Next work in order
 
-1. **Next approved task — Core CMS Task 6: Stage verification and core CMS acceptance gate.** Automated checks have passed at the audited HEAD, so record that evidence; do not close the task while safe staging CRUD/auth/origin/upload/public-read checks, real staging migration comparison and owner acceptance remain incomplete.
-2. **Verify Task 19 SSR error handling.** Confirm fresh CI passes for the HTTP 500 render-exception behavior. Keep this distinct from managed-review lookup failure, which intentionally fails closed to an empty review list when managed mode is enabled.
-3. **Google Reviews acceptance:** verify Business Profile API approval, OAuth and location access; then perform controlled sync/publish/unpublish/delete/failure-preservation checks. These external prerequisites remain unverified.
-4. **Crawlability and release readiness:** verify actual Vercel rewrite/function packaging and crawler-facing HTTP HTML, browser/responsive behavior, environment/proxy/security behavior, migration/rollback evidence and owner acceptance only in the approved final verification window. Vercel remains disconnected.
-5. **Documentation and final release:** keep BRD, plans, GitHub issue and Notion aligned. No deployment, production migration/cutover, `main` push or visibility change without explicit approval.
+1. **Task 20 — Local SSR/hydration acceptance.** Fresh CI is running for `/` and `/home` route rendering, initial HTML, canonical metadata, hydration mismatch checks and review filtering/order. Keep this task open until the run passes; actual Vercel/runtime acceptance remains deferred.\n2. **Core CMS Task 6: Stage verification and core CMS acceptance gate.** Automated checks have passed at the audited HEAD, so record that evidence; do not close the task while safe staging CRUD/auth/origin/upload/public-read checks, real staging migration comparison and owner acceptance remain incomplete.
+3. **Task 19 SSR error handling.** Confirm fresh CI passes for the HTTP 500 render-exception behavior. Keep this distinct from managed-review lookup failure, which intentionally fails closed to an empty review list when managed mode is enabled.
+4. **Google Reviews acceptance:** verify Business Profile API approval, OAuth and location access; then perform controlled sync/publish/unpublish/delete/failure-preservation checks. These external prerequisites remain unverified.
+5. **Crawlability and release readiness:** verify actual Vercel rewrite/function packaging and crawler-facing HTTP HTML, browser/responsive behavior, environment/proxy/security behavior, migration/rollback evidence and owner acceptance only in the approved final verification window. Vercel remains disconnected.
+6. **Documentation and final release:** keep BRD, plans, GitHub issue and Notion aligned. No deployment, production migration/cutover, `main` push or visibility change without explicit approval.
 
 ## Documentation rules
 
@@ -417,3 +417,12 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - The handler logs the render error and returns plain-text `Homepage unavailable` with `Cache-Control: no-store`. HEAD responses have no body.
 - Regression test added for the 500 response. Managed-review lookup failure remains separately tested and unchanged.
 - Fresh GitHub Actions validation is pending. Vercel remains disconnected; no deployment, production write, cutover or `main` change occurred.
+
+
+## Task 20 — Local SSR and hydration verification — 2026-10-13
+
+- Updated the homepage renderer to pass through `/` and `/home` to the SSR entry instead of always forcing `/`; both resolve to the same home page and retain the canonical root URL.
+- Added a built-server smoke test for both routes covering initial HTML, hydration marker, canonical metadata, initial visibility, legacy fallback and managed review publication/order/suppression.
+- Added a jsdom hydration regression checking for React hydration mismatch warnings and an API route regression for `/home`.
+- Acceptance evidence is tracked in `docs/HOMEPAGE-SSR-HYDRATION-ACCEPTANCE-2026-10-13.md`.
+- Fresh Build verification is pending. Do not mark Task 20 complete until CI passes. Live database ordering and deployed Vercel routing/crawler output remain unverified; Vercel remains disconnected.
