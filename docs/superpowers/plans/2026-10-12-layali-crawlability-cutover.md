@@ -126,3 +126,11 @@
 - Route-aware SSR/hydration exists on the feature branch and passed build/tests/local built-server smoke in [38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839) on the implementation checkpoint. The latest general build/audit/test and history-scan evidence [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) / [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) applies to `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`, not the docs-only branch head `dbd22794c87a7f6cd80003e32c4713d1463d8b34`.
 - Branch `feat/layali-managed-content-cms` was verified at `dbd22794c87a7f6cd80003e32c4713d1463d8b34` immediately before this docs update, 15 commits ahead of the audited implementation baseline with documentation-only changes. No CI runs were returned for that SHA; the Vercel failure context is not deployment evidence. Vercel remains disconnected.
 - Open: generic SSR render exceptions produce an empty-root HTML shell with HTTP 200; useful fallback acceptance, live rewrites/function packaging, crawler-facing HTTP HTML, live DB/API access and owner-approved cutover remain unverified. Next ordered task is Short Task List Task 02, then Core CMS Task 6 acceptance. No deployment/cutover is authorised.
+
+
+### Task 19: Generic homepage SSR render failure
+
+- [x] Owner selected Option B: return HTTP 500 rather than an empty-root HTTP 200 or a separately maintained fallback homepage.
+- [x] Renderer logs generic SSR exceptions and returns plain-text `Homepage unavailable` with `Cache-Control: no-store`; HEAD responses have no body.
+- [x] Added a regression assertion for HTTP 500 and retained separate fail-closed coverage for managed-review lookup failures.
+- [ ] Fresh GitHub Actions run must pass before Task 19 is complete. Deployed runtime/crawler acceptance remains deferred while Vercel is disconnected.
