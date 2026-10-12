@@ -3,7 +3,6 @@ import {
   createGoogleReviewsAdminHandler,
   createGoogleReviewsPublicHandler,
 } from "./_lib/google-reviews-routes.js";
-import { getDb } from "./_lib/mongodb.js";
 
 function fail(res, status, message) {
   return res.status(status).json({ success: false, message });
@@ -16,6 +15,7 @@ function createDatabaseTestHandler() {
       return fail(res, 405, "Method not allowed");
     }
     try {
+      const { getDb } = await import("./_lib/mongodb.js");
       const db = await getDb();
       const collections = await db.listCollections({}, { nameOnly: true }).toArray();
       return res.status(200).json({
