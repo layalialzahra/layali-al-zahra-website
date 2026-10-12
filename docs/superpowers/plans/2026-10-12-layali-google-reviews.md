@@ -138,3 +138,9 @@
 - Build/test/dependency audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); reachable history and binary printable-string scan passed in [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483).
 - Provider-independent mapping/merge, routes and admin UI remain implemented/tested. Business Profile API approval, OAuth and verified location access remain unverified; live sync, staging publish/unpublish/delete, and failure-preservation acceptance remain open.
 - This CI evidence does not change the staging acceptance checkboxes. Do not reconnect Vercel or claim live API success.
+
+## Task 01 status reconciliation (2026-10-12)
+
+- Provider-independent review mapping/merge, protected local review APIs, moderation UI and manual sync source are implemented and included in prior CI; they are not live API acceptance.
+- Current feature branch was verified at `dbd22794c87a7f6cd80003e32c4713d1463d8b34` before this documentation-only update. Build/test/audit and reachable-history/binary scan evidence [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) / [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) applies to code baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48` only; no CI is established for the docs-only HEAD. Vercel remains disconnected and its failure status is not deployment evidence.
+- Next ordered task is Short Task List Task 02 (safe non-production environment confirmation), then Core CMS Task 6 staging acceptance. Google Business Profile API approval, OAuth and verified location access remain unverified; live sync and moderation/failure-preservation acceptance remain open. Do not connect Vercel or claim live sync success.
