@@ -115,4 +115,4 @@ Latest branch HEAD `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438` passed Build verif
 
 - Added route-level lifecycle regression `tests/api/google-reviews-moderation-e2e.test.js` for local deletion/suppression across sync, default-unpublished imports, explicit publish and preservation of existing publication/order.
 - Acceptance record: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
-- CI is running; do not claim test execution until the run is checked. Runtime/staging acceptance remains open under Task 02's missing authorised isolated environment. No Google API call, production write, deployment or public-source cutover.
+- Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]): dependency install, audit, tests and build passed. Runtime/staging acceptance remains open under Task 02's missing authorised isolated environment. No Google API call, production write, deployment or public-source cutover.
