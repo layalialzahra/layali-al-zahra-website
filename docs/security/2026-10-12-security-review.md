@@ -90,3 +90,10 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - The first completed all-history scan processed 352 commits and approximately 117 MB, then exited with code 1. The available step log did not expose usable finding metadata, so this cannot be treated as a clean scan and does not yet establish whether the exit was caused by findings or another scanner condition.
 - Updated both workflow definitions to write a redacted JSON report and print only finding count, rule ID, file path, line number and abbreviated commit ID. Secret/match fields are never printed by the summary.
 - The next run must be triaged using only that safe summary. Keep the historical secret-review gate open until the cause is understood and any findings are addressed or documented as verified false positives.
+
+
+### Gitleaks triage — public Web3Forms access key
+- The redacted report identified one `generic-api-key` match in `src/components/ContactPage.tsx` (historical commit prefix `4a1a56b0a5f2`). The value was not printed or copied into logs.
+- The field is the Web3Forms `access_key` used by the browser-side contact form. Web3Forms' official FAQ says its access key is public by design and is not a secret API key; its docs also warn that someone with the key can submit unsolicited email requests. Sources: https://docs.web3forms.com/getting-started/faq and https://docs.web3forms.com/getting-started/api-reference.
+- Added a narrow Gitleaks allowlist in `.gitleaks.toml` requiring both the `ContactPage.tsx` path and the `access_key` source-line pattern. This does not allowlist other rules or other files. Do not rotate/remove this key solely because of this finding; consider Web3Forms domain restrictions/spam controls if abuse occurs.
+- Re-run the all-history scan to verify the finding is suppressed and no other findings remain. The scan still does not replace a separate binary-blob review, and the full security gate remains open until the corrected run completes.

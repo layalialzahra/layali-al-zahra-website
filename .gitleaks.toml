@@ -1,0 +1,11 @@
+title = "Layali Al Zahra secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Web3Forms access_key is intentionally public in client-side code, per https://docs.web3forms.com/getting-started/faq"
+condition = "AND"
+regexTarget = "line"
+regexes = [ '''access_key\s*:\s*['"]''' ]
+paths = [ '''src/components/ContactPage\.tsx''' ]

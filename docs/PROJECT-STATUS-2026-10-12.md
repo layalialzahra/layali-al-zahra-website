@@ -115,3 +115,10 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 
 
 - **Gitleaks first-run disposition:** the scan processed 352 commits / approximately 117 MB and exited with code 1, but the available log did not expose usable finding metadata. Treat this as **not clean / unresolved**, not as proof of a secret. Both workflow definitions now emit a redacted report summary containing only rule ID, file path, line and abbreviated commit. The next run must identify and triage the cause.
+
+
+## Gitleaks finding triage — 2026-10-12
+
+- The redacted scan summary reported one `generic-api-key` match in `src/components/ContactPage.tsx` at historical commit prefix `4a1a56b0a5f2`. The value was not printed.
+- The match is the browser-side Web3Forms `access_key`. Official Web3Forms docs describe this key as public by design, not a secret API key; it can still be abused to send unsolicited submissions. Added a narrow `.gitleaks.toml` allowlist matching only this file plus an `access_key` source line.
+- The scan must be rerun after this allowlist change. This triage does not close binary-blob review or other security gates.

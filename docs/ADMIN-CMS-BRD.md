@@ -548,3 +548,9 @@ This section is the current status for the separate managed Services, Offers, Pa
 ### 2026-10-12 — Gitleaks output made safely triageable
 - Initial all-history scan processed 352 commits / approximately 117 MB and exited with code 1, but the connector-visible log did not provide usable finding metadata. No clean-scan claim is valid.
 - Updated both workflows to emit a redacted JSON report and print only rule IDs, file paths, line numbers and abbreviated commit IDs. The next run is required for safe triage; keep this gate open.
+
+
+### 2026-10-12 — Triage Web3Forms Gitleaks finding
+- Gitleaks reported one `generic-api-key` match in `src/components/ContactPage.tsx`. The value was not printed.
+- Verified against the official Web3Forms FAQ/API reference that the client-side `access_key` is intentionally public by design, not a secret API key. Added a narrow `.gitleaks.toml` allowlist requiring both the exact file path and the `access_key` line pattern.
+- A corrected scan must pass before closing the text-history scan gate. Binary-blob review remains separate and open.
