@@ -44,8 +44,8 @@
   - Create `tests/setup.test.js` with a single assertion that verifies the test runner is configured.
 - [x] **Step 2: Confirm no test script existed before configuration**
   - Confirm `package.json` has no existing test script before configuration (verified by source inspection).
-- [ ] **Step 3: Add the smallest compatible test dependencies and config**
-  - Add `"test": "node --test"`; do not change the existing build command or add dependencies for the smoke test.
+- [x] **Step 3: Add the smallest compatible test command/configuration**
+  - The repository test command and test configuration are present in the current implementation. The current `npm test` runs Node's built-in test runner and `vitest run`; this checkbox records setup implementation, not staging acceptance.
 - [x] **Step 4: Run the test command**
   - Verify `npm test` in GitHub Actions on the implementation branch. Expected: smoke test passes.
 - [x] **Step 5: Run the production build**
@@ -176,8 +176,8 @@
 - Test/update: `docs/ADMIN-CMS-BRD.md`
 - Update after verification: `docs/superpowers/plans/2026-10-12-layali-core-cms.md`
 
-- [ ] **Step 1: Run full automated checks**
-  - Run: `npm test && npm run build`.
+- [x] **Step 1: Run full automated checks**
+  - CI run [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build` on the audited HEAD `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. This is automated CI evidence only.
 - [ ] **Step 2: Verify admin API behavior in a safe staging environment**
   - Exercise CRUD, auth failures, same-origin rejection, validation, image upload, ordering and public published-only reads.
 - [ ] **Step 3: Run migration in dry-run mode and compare counts/content**
@@ -188,3 +188,9 @@
   - Record exact test/build results and environment; do not claim production deployment if only staging was tested.
 
 ---
+
+## Current acceptance checkpoint — 2026-10-12
+
+- Audited HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. Build/test/audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486).
+- Task 6 Step 1 is verified by CI and marked complete. Steps 2–5 remain unchecked: no controlled staging CRUD/auth/origin/upload/public-read acceptance, real staging DB comparison, owner acceptance or BRD acceptance record has been produced by this audit.
+- The owner-confirmed Vercel hold prevents using a new Vercel deployment for this task. Do not treat CI success as staging or production evidence. Core CMS acceptance remains open.
