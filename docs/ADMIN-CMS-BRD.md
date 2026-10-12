@@ -650,3 +650,12 @@ No CMS runtime tests, migration, upload, deployment or production writes were pe
 - Fixed strict ordering validation: `null`, blank strings and booleans are rejected instead of coercing to zero. Finite numeric order values remain valid. The helper is shared by Services/Offers/Packages and FAQs.
 - GitHub Actions Build verification [run 38270049182](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049182) passed dependency installation, high-severity dependency audit, `npm test` and `npm run build` on the tested commit.
 - Historical secret scan [run 38270049237](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049237) also passed the redacted Gitleaks history and binary-blob scan on the tested commit. This automated result does not replace authenticated runtime testing. Do not mark the wider Core CMS acceptance, migration or release gates complete. No live database changes, uploads, deployment, production migration or public content-source change were made. Vercel remains disconnected; obtain the Task 02 environment-isolation evidence before live acceptance.
+
+
+## Task 03 follow-up — duplicate slug on edit and final automated checks (2026-10-12)
+
+- Added an API regression test confirming a service cannot be edited to use another service's slug; the request returns HTTP 409 and neither record is overwritten.
+- Latest tested code/test commit: [`5bab4a5992315c529a708e48b6f07c2f6e596042`](https://github.com/layalialzahra/layali-al-zahra-website/commit/5bab4a5992315c529a708e48b6f07c2f6e596042).
+- Build verification [run 38270400681](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400681) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build`.
+- Historical secret scan [run 38270400613](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400613) passed the redacted Gitleaks reachable-history scan and binary-blob scan.
+- These checks verify the feature-branch source only. Task 02 still blocks live/staging runtime acceptance; no database writes, uploads, migrations, deployment or public content-source changes were performed. Vercel remains disconnected.
