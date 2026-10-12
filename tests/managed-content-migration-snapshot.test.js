@@ -10,19 +10,13 @@ const [
   { legacyOffersData },
   { legacyPackagesData },
   { legacyFaqs },
-  servicesPage,
-  offersPage,
-  packagesPage,
 ] = await Promise.all([
   import("../scripts/migrate-managed-content.js"),
   import("../api/_lib/managed-content.js"),
   import("../src/data/legacy-services.js"),
   import("../src/data/legacy-offers.js"),
   import("../src/data/legacy-packages.js"),
-  import("../src/data/legacy-faqs.js"),
-  import("../src/components/ServicesPage.tsx").then((m) => ({ default: m.default })).catch(() => ({ default: null })),
-  import("../src/components/OffersPage.tsx").then((m) => ({ default: m.default })).catch(() => ({ default: null })),
-  import("../src/components/PackagesPage.tsx").then((m) => ({ default: m.default })).catch(() => ({ default: null })),
+  import("../src/data/legacy-faqs.js")
 ]);
 
 const BOOKING_URL = "https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services";
