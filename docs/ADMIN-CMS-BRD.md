@@ -639,3 +639,14 @@ This section is the current status for the separate managed Services, Offers, Pa
 The repository `.env.example` only provides a placeholder `MONGODB_URI` and defaults `MONGODB_DB_NAME` to the documented production database name `layalialzahra`. The MongoDB helper does not enforce environment isolation. Historical notes mention a previously healthy Vercel staging admin service and MongoDB/admin variables in Production and Preview, but do not establish a current active project, separate staging database, or production write isolation. Current provider-level Vercel/MongoDB configuration was not accessible through the connected tools. No credentials/secrets were accessed or copied.
 
 No CMS runtime tests, migration, upload, deployment or production writes were performed. Vercel remains disconnected. Before staging acceptance, obtain owner-authorised project/URL and verify a dedicated staging database/cluster, staging-only credentials and access boundaries, and isolated Blob configuration if uploads are tested. Do not put secret values in this BRD or GitHub. The historical staging reference is not sufficient evidence to call the environment safe.
+
+
+## Task 03 — Services management acceptance addendum (2026-10-12)
+
+**Automated checks: PASS on tested commit `0b97e33e4cfcaf16e9a985a7d570ea206fcdf3a1`. Live/staging acceptance: BLOCKED by Task 02 environment verification.**
+
+- Added focused API acceptance tests for create, default draft status, partial edits, display order, publish/unpublish, delete, invalid title/order, duplicate normalized slugs and published-only public ordering/serialization.
+- Added UI tests for explicit Save Draft, editing a service's title and order, and displaying the duplicate-slug error without closing the editor.
+- Fixed strict ordering validation: `null`, blank strings and booleans are rejected instead of coercing to zero. Finite numeric order values remain valid. The helper is shared by Services/Offers/Packages and FAQs.
+- GitHub Actions Build verification [run 38270049182](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049182) passed dependency installation, high-severity dependency audit, `npm test` and `npm run build` on the tested commit.
+- This automated result does not replace authenticated runtime testing. Do not mark the wider Core CMS acceptance, migration or release gates complete. No live database changes, uploads, deployment, production migration or public content-source change were made. Vercel remains disconnected; obtain the Task 02 environment-isolation evidence before live acceptance.
