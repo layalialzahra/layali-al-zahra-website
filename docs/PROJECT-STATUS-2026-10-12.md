@@ -279,3 +279,12 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 - Code/test commits: `83b248c2480c0859911c58bbcf940bf0fe8dcbea` (initial API acceptance tests), `e0efd65cac369ff242b3093753c5e1a9ac209da3` (admin UI tests), and `09debf63f90ae32f5fc449cb29dcb8ccb9f7d643` (explicit unpublish/public-visibility regression).
 - **Execution evidence limitation:** connected GitHub status query returned no status contexts and the available workflow-run lookup returned no runs for these commits (that lookup only exposes pull-request-triggered runs). Therefore the new tests have not been recorded as executed/passing, and no test count or build result is claimed for these commits. Verify the push-triggered Build verification run before accepting automated checks.
 - No authorised staging/runtime API checks, real MongoDB persistence, migration, deployment, or public content-source change occurred. Vercel remains disconnected.
+
+
+## Short Task List Task 07 — admin security (2026-10-12)
+
+- Added route-level regression tests in `tests/api/admin-security-acceptance.test.js`, commit `410429bd8c866817ca6a8998eff99be9f61e228e`.
+- Tests cover unauthenticated and cross-origin POST/PUT/DELETE rejection before database access, plus invalid create/update/delete requests returning HTTP 400 without mutating the in-memory fixture.
+- Existing `tests/api/auth-security.test.js` covers production Origin scheme pinning, missing/mismatched Origin, malformed cookies, signed sessions, stale session-version rejection and missing admin records. Source review found no additional confirmed vulnerability requiring an application logic change.
+- Build verification status for the new test commit is **pending**; no check result was available at documentation time. Do not claim CI passed until a completed Build verification run is confirmed.
+- No live/staging request or database test was performed. Task 02 still blocks runtime acceptance because no authorised, production-isolated non-production target is verified. Vercel remains disconnected; no deployment, production write or public-source change occurred.
