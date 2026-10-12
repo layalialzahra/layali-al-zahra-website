@@ -37,7 +37,7 @@
 - Create: `docs/superpowers/research/2026-10-12-homepage-crawlability-spike.md`
 - Test: `tests/rendering/homepage-crawlability.test.*` (selected after approach is chosen)
 
-- [ ] **Step 1: Capture current baseline**
+- [x] **Step 1: Capture current baseline from source**
   - Record homepage response headers/status, initial HTML, current review section output, route behavior and metadata on the intended staging project only during an approved final verification window. Until then, document that live/staging baseline evidence is pending and do not reconnect Vercel.
 - [ ] **Step 2: Compare compatible approaches**
   - Evaluate minimal SSR for homepage only, a Vercel serverless homepage handler with React rendering, or an established prerender approach compatible with this repository.
@@ -94,3 +94,9 @@
 - [ ] **Step 5:** Update BRD and Notion log with verified deployment details and rollback status.
 
 ---
+
+## Current acceptance status — 2026-10-12
+- Source-level baseline recorded: static title/description/canonical/social metadata and JSON-LD exist in index.html, but the body content root is empty until the React app renders. That means static metadata is present; it does not prove review or CMS content is present in crawler-facing HTML.
+- The strict script CSP change is implemented and passed tests/build in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374). It does not itself solve crawlability.
+- **Still pending:** compare SSR/prerender options against the current Vite configuration, build a local/test proof of concept, add rendered-HTML assertions, and confirm published review text appears while unpublished content is absent. No staging or live URL was accessed.
+- Vercel remains disconnected until project completion and explicit release approval. Do not deploy to test crawler output.

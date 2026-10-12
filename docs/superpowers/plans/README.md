@@ -15,3 +15,10 @@ The master plan is [Layali CMS Expansion](2026-10-12-layali-cms-expansion.md).
 ## Approval boundary
 
 The owner has authorised implementation on `feat/layali-managed-content-cms`, not production data migration or public cutover. Vercel is disconnected by owner instruction; today's changes are not deployed. Do not reconnect Vercel or trigger deployments during implementation because the owner is preserving the daily free deployment allowance. Reconnect only for the final controlled release after all acceptance gates pass and the owner explicitly approves. A historical GitHub status/check labelled Vercel is not evidence that current changes were deployed. Google sync work must stop if required API access is not verified. Rendering implementation must stop for owner review if the feasibility spike requires a broad architectural change.
+
+## Security and acceptance checkpoint — 2026-10-12
+- Latest source changes are on feat/layali-managed-content-cms; no deployment was triggered.
+- [Build verification 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed dependency audit, tests and build.
+- [Historical secret scan 38255367338](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367338) passed: 364 commits / ~117.18 MB with zero text findings; 118 reachable binary blobs with printable strings / 170,446,401 bytes with zero findings.
+- Password changes now revoke prior admin sessions via a server-checked session version. script-src no longer allows unsafe inline/eval scripts; analytics/Meta Pixel initialization uses same-origin /tracking.js.
+- Remaining gates are browser/runtime CSP acceptance, session-revocation end-to-end acceptance, Google Business Profile access, crawlability proof of concept, functional/migration acceptance and final release approval. Vercel remains disconnected.
