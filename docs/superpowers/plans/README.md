@@ -12,4 +12,4 @@ The master plan is [Layali CMS Expansion](2026-10-12-layali-cms-expansion.md).
 
 ## Approval boundary
 
-These are planning documents only. They do not authorise code implementation, production data migration, deployment or public cutover. The owner must review and approve the plan set first. Google sync work must stop if required API access is not verified. Rendering implementation must stop for owner review if the feasibility spike requires a broad architectural change.
+The owner has authorised implementation to begin on `feat/layali-managed-content-cms`. This does not authorise production data migration, production deployment or public cutover. Google sync work must stop if required API access is not verified. Rendering implementation must stop for owner review if the feasibility spike requires a broad architectural change.
