@@ -2,6 +2,8 @@ import { mergeConfig } from "vite";
 import { defineConfig } from "vitest/config";
 import viteConfig from "./vite.config";
 
+// Reuse application aliases and plugins so feasibility tests match the app build.
+
 export default mergeConfig(
   viteConfig,
   defineConfig({
