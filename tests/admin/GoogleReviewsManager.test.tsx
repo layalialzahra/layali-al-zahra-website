@@ -87,7 +87,7 @@ test("explicit unpublish persists after the list reloads", async () => {
   await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
   expect(request.mock.calls[1][1]?.method).toBe("PUT");
   expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toEqual({ ids: [review._id], action: "unpublish" });
-  expect(await screen.findByText("Unpublished")).toBeInTheDocument();
+  expect(await screen.findByText("Unpublished", { selector: "span.cms-status" })).toBeInTheDocument();
 });
 
 test("cancelled deletion never sends a delete request", async () => {
