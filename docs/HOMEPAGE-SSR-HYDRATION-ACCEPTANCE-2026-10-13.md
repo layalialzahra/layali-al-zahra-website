@@ -12,6 +12,7 @@ Verify local server rendering and client hydration for `/` and `/home`, includin
 - The homepage handler now passes the requested homepage alias (`/` or `/home`) to the server renderer rather than always forcing `/`. Both routes still render the same homepage; the static canonical URL remains `https://www.layalialzahra.com/`.
 - Expanded the built-server smoke test to exercise both paths, confirm homepage content exists in the initial HTML, check the hydration marker, assert exactly one canonical link and ensure the existing legacy review snapshot remains available when managed reviews are not enabled.
 - The managed-review smoke case checks published reviews render in input order and that unpublished and suppressed reviews do not appear in the HTML or serialized hydration data.
+- The smoke/hydration run also logs existing Motion warnings: `AnimatePresence` uses `mode="wait"` with multiple children, and Motion's `useLayoutEffect` warns during server rendering. The hydration regression reports no React hydration mismatch warning. The animation warning may affect transition behavior; changing carousel animation mode was left out to avoid an unrequested visual behavior change.
 - Added a jsdom React hydration regression test that checks for hydration mismatch warnings.
 - Added an API handler regression test for the `/home` alias path.
 
