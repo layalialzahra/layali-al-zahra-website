@@ -72,6 +72,7 @@ test("recurring and descriptive validity labels are preserved without inferred d
   });
   const descriptive = validateOfferInput({
     title: "Midday Offer", priceLabel: "AED 178.50", validityType: "label", validityLabel: "Midday Special",
+    validFrom: "2026-12-01", validUntil: "2026-12-31",
   });
   assert.equal(recurring.validityLabel, "Every Monday");
   assert.equal(descriptive.validityLabel, "Midday Special");
@@ -131,6 +132,15 @@ test("offer CRUD and publication preserve labels and expose only published recor
   await admin({ method: "PUT", query: { id: OFFER_ID }, headers: {}, body: { status: "published" } }, publish);
   assert.equal(publish.code, 200);
   assert.equal(publish.body.item.status, "published");
+
+  const changeValidity = response();
+  await admin({ method: "PUT", query: { id: OFFER_ID }, headers: {}, body: {
+    validityType: "recurring", validityLabel: "Every Monday",
+  } }, changeValidity);
+  assert.equal(changeValidity.code, 200);
+  assert.equal(changeValidity.body.item.validityLabel, "Every Monday");
+  assert.equal(changeValidity.body.item.validFrom, null);
+  assert.equal(changeValidity.body.item.validUntil, null);
 
   const remove = response();
   await admin({ method: "DELETE", query: { id: OFFER_ID }, headers: {} }, remove);

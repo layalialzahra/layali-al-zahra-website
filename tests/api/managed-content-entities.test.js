@@ -5,7 +5,8 @@ import { validateOfferInput, validatePackageInput, validateFaqInput, serializeMa
 test("recurring offer labels remain text, not dates", () => {
   const item = validateOfferInput({ title: "Monday Mani + Pedi", validityType: "recurring", validityLabel: "Every Monday", priceLabel: "AED 105" });
   assert.equal(item.validityLabel, "Every Monday");
-  assert.equal(item.validUntil, undefined);
+  assert.equal(item.validFrom, null);
+  assert.equal(item.validUntil, null);
 });
 
 test("package price labels stay as strings", () => {
