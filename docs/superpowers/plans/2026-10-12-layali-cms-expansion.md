@@ -20,6 +20,7 @@
 - Local review deletion must never modify Google and must not silently reappear on sync.
 - Do not change the public source of truth until migration and acceptance checks pass.
 - Do not claim a test, deployment, API access or live-state check unless it was actually performed.
+- **Owner-confirmed deployment hold (2026-10-12):** Vercel is disconnected and today's changes are not deployed. Do not reconnect Vercel or trigger deployments during implementation; preserve the daily free deployment allowance for the final controlled release after completion and explicit approval. Do not infer deployment from historical GitHub status metadata.
 - Avoid unrelated cleanup, especially tracked `node_modules/` and `build/`; minimise coherent commits and do not push feature implementation to `main` without release approval.
 - Repository is public; the owner has chosen to keep it public until project completion. Treat this as an accepted risk, never commit secrets, and do not change visibility without instruction.
 
@@ -44,9 +45,9 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 - [x] Owner authorised proceeding with the next planned task on 2026-10-12.
 - [x] Repository visibility state and owner decision recorded: remain public until project completion. The implementation branch is `feat/layali-managed-content-cms`; production deployment/cutover remains prohibited without verification and approval.
 - [x] Add and verify `npm test` in GitHub Actions (Node.js 20); tests and build passed on commit `bdc0fcb1b64b158b052390b5f2061a2ddd589267`.
-- [ ] Confirm Google Business Profile API/OAuth access before building live sync.
-- [ ] Decide review deletion suppression and source-edit/removal behavior before sync acceptance.
-- [ ] Validate the least invasive crawlable rendering approach against current Vite/Vercel deployment.
+- [ ] Verify Google Business Profile API/OAuth/location access before live sync acceptance. Provider-independent sync code exists; external API access remains an unresolved prerequisite.
+- [x] Decide review deletion suppression and source-edit/removal behavior: use durable `google_review_suppressions` keyed by `googleReviewId`; preserve local publication/order on sync; retain reviews missing from one completed sync for explicit admin review. Recorded in Notion decisions and implemented in the current branch. Live API acceptance remains open.
+- [ ] Validate the least invasive crawlable rendering approach against the current Vite configuration without reconnecting Vercel; use a local/test proof of concept first, then controlled staging only at the approved final verification window.
 - [ ] Owner explicitly approves migration/cutover after staging verification.
 
 ---
