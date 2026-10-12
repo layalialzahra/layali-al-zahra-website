@@ -668,7 +668,7 @@ Automated Offers management checks pass on code/test commit `526047628878e300791
 
 ## Short Task List Task 05 — Packages admin automated acceptance (2026-10-12)
 
-**Outcome:** Automated API/model/UI checks PASS on code/test commit [cc6603ffae487a827e98d81ed7d5b1f3ac89a548](https://github.com/layalialzahra/layali-al-zahra-website/commit/cc6603ffae487a827e98d81ed7d5b1f3ac89a548). Staging/runtime acceptance remains BLOCKED by Task 02; this does not close Core CMS Task 6 Steps 2–5 or authorise a migration or public-source cutover.
+**Outcome:** Automated API/model/UI checks PASS on code/test commit [cc6603ffae487a827e98d81ed7d5b1f3ac89a548](https://github.com/layalialzahra/layali-al-zahra-website/commit/cc6603ffae487a827e98d81ed7d5b1f3ac89a548). **Task 05 remains OPEN overall** because staging/runtime acceptance is BLOCKED by Task 02; this does not close Core CMS Task 6 Steps 2–5 or authorise a migration or public-source cutover.
 
 - Added package acceptance tests for CRUD, draft defaults, partial edits, category and exact price-label preservation, image URL/alt, included items, booking destination, ordering, publish/unpublish/delete, duplicate normalized slugs, invalid input and published-only public serialization.
 - Added Packages admin UI tests for saving a draft, image-upload response wiring, explicit publication transitions, visible API errors and delete confirmation.
