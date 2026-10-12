@@ -66,9 +66,9 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 - Vercel remains disconnected. Google API access, crawler-facing HTML, migration acceptance, responsive browser QA and final release approval remain pending.
 
 
-## Crawlability component POC — 2026-10-12
-- Component-level SSR test passes in [run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658): rendered HTML includes a published review and excludes a review marked unpublished.
-- The POC is not the final feature: no route-aware server entry, request handler, DB-backed initial HTML, hydration or crawler HTTP acceptance exists yet. Continue the SSR/hydration work on the feature branch only.
+## Historical crawlability component POC — 2026-10-12 (superseded by route-aware implementation below)
+- At this earlier checkpoint, the component-level SSR test passed in [run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658): rendered HTML included a published review and excluded a review marked unpublished.
+- This was only a component POC at that point. The route-aware server entry, request handler, initial HTML and hydration were implemented later as recorded in the subsequent section. Deployed crawler HTTP acceptance remains open.
 
 
 ## Route-aware homepage SSR implementation — 2026-10-12
