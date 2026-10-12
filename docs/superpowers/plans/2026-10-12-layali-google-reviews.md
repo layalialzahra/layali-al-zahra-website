@@ -179,4 +179,4 @@ Keep Task 15 unchecked until the owner-authorised non-production target and live
 
 - Initial UI regression CI found that failed initial list loads also rendered the misleading “No synced Google reviews yet” empty state. Fixed the manager to clear stale rows/selection on list-load failure and show “Unable to load Google reviews” with a retry action. Empty filtered results now have a separate message.
 - Corrected a UI test selector that matched both the publication filter option and row status.
-- Updated evidence: `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`. CI for the fixes is pending; no deployed browser/runtime acceptance.
+- Updated evidence: `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`. Build verification [38321584041](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321584041) passed on `d6170e93e67d5950f46a4eb3a116dbafc10c77aa` (126 Node tests, 37 Vitest tests, application build). No deployed browser/runtime acceptance.
