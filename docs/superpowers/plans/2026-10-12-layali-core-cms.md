@@ -127,19 +127,19 @@
 - The JavaScript snapshot modules preserve current literal values and ordering exactly by moving the existing arrays without JSON conversion. They export plain data and are not runtime-editable CMS content. Leave the curated homepage showcase arrays untouched in this task; connect them to canonical managed records only during the later cutover task.
 - Migration script reads `MONGODB_URI` and optional `MONGODB_DB_NAME`, is idempotent, and supports dry-run and explicit apply modes. It must not print connection strings.
 
-- [ ] **Step 1: Write snapshot/migration tests**
+- [x] **Step 1: Write snapshot/migration tests**
   - Verify expected source record counts, required fields, preserved price/validity labels, image paths, booking URLs, FAQ page keys and sort order.
   - Verify dry-run performs no writes and a second apply does not create duplicates.
-- [ ] **Step 2: Run tests and confirm failure**
+- [x] **Step 2: Run tests and confirm failure**
   - Run: `npm test -- tests/scripts/migrate-managed-content.test.js`
   - Expected: FAIL until snapshots and migration helper exist.
-- [ ] **Step 3: Extract source data without changing rendering**
+- [x] **Step 3: Extract source data without changing rendering**
   - Move literal data arrays/FAQ content into JSON snapshots and import them back into the existing page components.
   - Keep component markup, styling, booking actions and data ordering unchanged.
-- [ ] **Step 4: Implement dry-run/apply migration**
+- [x] **Step 4: Implement dry-run/apply migration**
   - Use stable slugs as migration keys; update/insert only records owned by this migration.
   - Require an explicit apply flag; report counts and validation failures without secret output.
-- [ ] **Step 5: Run migration tests and build**
+- [x] **Step 5: Run migration tests and build**
   - Run: `npm test -- tests/scripts/migrate-managed-content.test.js && npm run build`
   - Expected: tests pass; public pages still render the same static data.
 
