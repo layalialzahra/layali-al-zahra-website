@@ -693,3 +693,10 @@ Latest Task 06 test-only follow-up: commit `09debf63f90ae32f5fc449cb29dcb8ccb9f7
 - Existing auth tests cover missing/mismatched Origin, production HTTPS scheme pinning, malformed cookies, signed session validity, session-version mismatch after password change and deleted/missing admin records.
 - No additional confirmed application vulnerability was found in this review, so no auth or API implementation change was justified. CI execution for the new test commit is pending evidence; no test/build pass is claimed yet.
 - No live/staging or production runtime test occurred. Task 02 still blocks live acceptance because an authorised, production-isolated non-production environment/database is not verified. Vercel remains disconnected.
+
+
+### Task 07 final CI evidence — 2026-10-12
+- Build verification [run 38276501223](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38276501223) passed on tested feature-branch HEAD `59e33fce4d76311c60ed864981b533f3f3d5b8d1`: dependency installation, `npm audit --audit-level=high` (0 vulnerabilities), `npm test` (97 Node tests passed, 0 failed; 29 Vitest tests passed across 7 files), client build, SSR build and homepage SSR smoke test.
+- Historical secret scan [run 38276501407](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38276501407) passed on the same HEAD: 482 reachable commits / approximately 117.39 MB scanned with 0 Gitleaks findings; 118 reachable binary blobs / 170,446,401 bytes examined with 0 printable-string findings. Binary scanning is heuristic and does not semantically inspect compressed/encrypted payloads.
+- The temporary draft CI PR [#3](https://github.com/layalialzahra/layali-al-zahra-website/pull/3) was closed unmerged after collecting the runs. No merge, `main` push, Vercel reconnect or deployment occurred.
+- **Automated Task 07 acceptance: PASS.** Runtime security acceptance remains open: Task 02 has not established an authorised production-isolated test environment; live MongoDB session revocation and deployed auth/origin behavior were not tested. No new application logic vulnerability was confirmed, so no auth/API code fix was warranted.
