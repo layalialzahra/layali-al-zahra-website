@@ -40,19 +40,16 @@
 **Interfaces:**
 - Produces: `npm test` for a one-shot test run using Node.js built-in `node:test` (Node 20 in CI). No dependency or lockfile changes are needed for initial API/model unit tests.
 
-- [ ] **Step 1: Add a smoke test for the test command**
+- [x] **Step 1: Add a smoke test for the test command**
   - Create `tests/setup.test.js` with a single assertion that verifies the test runner is configured.
-- [ ] **Step 2: Run the test command and confirm it fails before configuration**
-  - Run: `npm test`
-  - Expected: fails because no test script/test runner is configured.
+- [x] **Step 2: Confirm no test script existed before configuration**
+  - Confirm `package.json` has no existing test script before configuration (verified by source inspection).
 - [ ] **Step 3: Add the smallest compatible test dependencies and config**
   - Add `"test": "node --test"`; do not change the existing build command or add dependencies for the smoke test.
-- [ ] **Step 4: Run the test command**
-  - Run: `npm test`
-  - Expected: smoke test passes.
-- [ ] **Step 5: Run the production build**
-  - Run: `npm run build`
-  - Expected: successful build with no change to production output behavior.
+- [x] **Step 4: Run the test command**
+  - Verify `npm test` in GitHub Actions on the implementation branch. Expected: smoke test passes.
+- [x] **Step 5: Run the production build**
+  - Verify the existing `npm run build` step in the same GitHub Actions run. Expected: successful build with no change to production output behavior.
 
 ### Task 2: Define dedicated validation and persistence helpers
 
@@ -65,21 +62,21 @@
 - Collection names: `services`, `offers`, `packages`, `faqs`.
 - Common status values: `draft | published`; sort order is a finite number.
 
-- [ ] **Step 1: Write failing validation tests**
+- [x] **Step 1: Write failing validation tests**
   - Test required titles, slug normalization/uniqueness inputs, partial update behavior, finite sort order, safe URL fields, optional image fields, and published/draft states.
   - Test offer validity variants preserve `validityLabel` such as “Every Monday” separately from optional ISO date values.
   - Test prices remain display strings, including “AED 99.75” and “From”.
-- [ ] **Step 2: Run the focused tests**
+- [x] **Step 2: Run the focused tests**
   - Run: `npm test -- tests/api/managed-content.test.js`
   - Expected: FAIL because validators are not implemented.
-- [ ] **Step 3: Implement the smallest purpose-specific validators and serializers**
+- [x] **Step 3: Implement the smallest purpose-specific validators and serializers**
   - Reject unknown statuses and invalid dates/URLs where applicable.
   - For partial updates, validate only supplied fields and never replace omitted fields with defaults.
   - Keep subservices and FAQ lists ordered and validate array entry shape.
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
   - Run: `npm test -- tests/api/managed-content.test.js`
   - Expected: PASS.
-- [ ] **Step 5: Commit the isolated model/validation change**
+- [x] **Step 5: Commit the isolated model/validation change**
   - Commit message: `feat: add managed content validation`.
 
 ### Task 3: Add protected admin CRUD and public read handlers
