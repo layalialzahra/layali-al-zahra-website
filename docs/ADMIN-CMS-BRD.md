@@ -543,3 +543,8 @@ This section is the current status for the separate managed Services, Offers, Pa
 ### 2026-10-12 — Secret scan workflow syntax correction
 - The initial Build verification attempt after wiring Gitleaks failed before starting a job because the command quoting was invalid YAML. Corrected the Gitleaks run command in both workflow files to use a block scalar.
 - The full-history scan result remains pending; no clean-scan claim is made.
+
+
+### 2026-10-12 — Gitleaks output made safely triageable
+- Initial all-history scan processed 352 commits / approximately 117 MB and exited with code 1, but the connector-visible log did not provide usable finding metadata. No clean-scan claim is valid.
+- Updated both workflows to emit a redacted JSON report and print only rule IDs, file paths, line numbers and abbreviated commit IDs. The next run is required for safe triage; keep this gate open.

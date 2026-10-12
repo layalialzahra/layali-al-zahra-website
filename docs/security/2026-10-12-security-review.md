@@ -84,3 +84,9 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 ### Secret scan workflow syntax correction — 2026-10-12
 - The first Build verification run after adding Gitleaks failed before creating a job; inspection found the shell command was incorrectly quoted as a YAML scalar. Corrected both workflow definitions to use a block scalar for the command.
 - The all-history scan has **not yet completed**. Wait for the corrected Build verification run and inspect only redacted findings. Keep the history/binary secret-review gate open.
+
+
+### Gitleaks result reporting correction — 2026-10-12
+- The first completed all-history scan processed 352 commits and approximately 117 MB, then exited with code 1. The available step log did not expose usable finding metadata, so this cannot be treated as a clean scan and does not yet establish whether the exit was caused by findings or another scanner condition.
+- Updated both workflow definitions to write a redacted JSON report and print only finding count, rule ID, file path, line number and abbreviated commit ID. Secret/match fields are never printed by the summary.
+- The next run must be triaged using only that safe summary. Keep the historical secret-review gate open until the cause is understood and any findings are addressed or documented as verified false positives.

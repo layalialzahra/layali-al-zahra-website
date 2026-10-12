@@ -112,3 +112,6 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 
 
 - **Secret scan workflow correction:** the first Build verification attempt after wiring Gitleaks failed before job execution due to invalid YAML command quoting. Corrected both workflow files to use a block scalar. The all-history scan result is still pending.
+
+
+- **Gitleaks first-run disposition:** the scan processed 352 commits / approximately 117 MB and exited with code 1, but the available log did not expose usable finding metadata. Treat this as **not clean / unresolved**, not as proof of a secret. Both workflow definitions now emit a redacted report summary containing only rule ID, file path, line and abbreviated commit. The next run must identify and triage the cause.
