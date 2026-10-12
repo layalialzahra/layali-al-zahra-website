@@ -63,7 +63,7 @@ test("legacy admin/public routes retain publication gates and stable public URLs
   assert.ok(detail.includes("/api/content?type=") && detail.includes("&slug="));
   assert.ok(detail.includes("'beauty-tips'"));
   assert.ok(adminEditor.includes("/api/admin/upload"));
-  assert.ok(adminEditor.includes("status:'scheduled'"));
+  assert.ok(adminEditor.includes('value="scheduled"'));
 });
 
 test("image upload regression suite remains part of the repository test command", async () => {
