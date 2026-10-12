@@ -21,7 +21,7 @@ The owner has authorised implementation on `feat/layali-managed-content-cms`, no
 - [Build verification 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed dependency audit, tests and build.
 - [Historical secret scan 38255367338](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367338) passed: 364 commits / ~117.18 MB with zero text findings; 118 reachable binary blobs with printable strings / 170,446,401 bytes with zero findings.
 - Password changes now revoke prior admin sessions via a server-checked session version. script-src no longer allows unsafe inline/eval scripts; analytics/Meta Pixel initialization uses same-origin /tracking.js.
-- Remaining gates are browser/runtime CSP acceptance, session-revocation end-to-end acceptance, Google Business Profile access, crawlability proof of concept, functional/migration acceptance and final release approval. Vercel remains disconnected.
+- Remaining gates are browser/runtime CSP and session-revocation acceptance, Google Business Profile API/OAuth/location access, functional/migration acceptance, deployed rewrite/function packaging, crawler-facing HTTP HTML acceptance and final release approval. Route-aware SSR/hydration is implemented locally; Vercel remains disconnected.
 
 ## Latest verified checkpoint — 2026-10-12
 
