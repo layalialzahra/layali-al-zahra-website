@@ -174,3 +174,9 @@ Keep Task 15 unchecked until the owner-authorised non-production target and live
 - Expanded `tests/admin/GoogleReviewsManager.test.tsx` for rating/publication filters, search submission, explicit unpublish persistence, delete-confirmation cancellation, loading, list/action/sync errors and unavailable credentials. Existing coverage includes selection without publication, explicit publish and local-only delete confirmation.
 - Added `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`.
 - CI result pending confirmation. Tests are component/API-fixture coverage, not deployed browser or live database acceptance. Google API/OAuth/location and authorised isolated staging remain unverified; no live provider sync or deployment.
+
+### Task 18 test follow-up — 2026-10-13
+
+- Initial UI regression CI found that failed initial list loads also rendered the misleading “No synced Google reviews yet” empty state. Fixed the manager to clear stale rows/selection on list-load failure and show “Unable to load Google reviews” with a retry action. Empty filtered results now have a separate message.
+- Corrected a UI test selector that matched both the publication filter option and row status.
+- Updated evidence: `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`. CI for the fixes is pending; no deployed browser/runtime acceptance.
