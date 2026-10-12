@@ -102,7 +102,9 @@ export function createHomepageRenderHandler(options = {}) {
     }
 
     try {
-      const markup = await renderPage("/", reviews);
+      const pathname = new URL(req.url || "/", "http://localhost").pathname;
+      const renderPath = pathname === "/home" ? "/home" : "/";
+      const markup = await renderPage(renderPath, reviews);
       const initialReviewsAttribute = Array.isArray(reviews)
         ? ` data-initial-reviews="${escapeAttribute(JSON.stringify(reviews))}"`
         : "";
