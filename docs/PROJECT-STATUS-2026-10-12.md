@@ -22,7 +22,7 @@
 - Legacy content snapshots and an idempotent migration utility with dry-run and explicit apply modes exist. No production migration was performed for this expansion.
 - Dedicated admin UI exists for Services, Offers, Packages and FAQs.
 - Google Reviews models, local review management and manual sync code exist. Live sync remains gated on verified Business Profile API approval, OAuth and location access.
-- Route-aware homepage SSR/hydration is implemented locally and covered by CI/build smoke tests; deployed Vercel rewrite/function packaging and crawler-facing HTTP HTML acceptance are not complete. Task 19 main-branch comparison confirms the generic render-exception path returns an empty-root shell with HTTP 200: browsers can mount the legacy client app, but initial HTML remains empty. The approved spec does not define the required fallback. Owner decision is required before implementation; see `docs/HOMEPAGE-SSR-FALLBACK-DECISION-2026-10-13.md`. Managed-review lookup failure remains intentionally fail-closed and is separate.
+- Route-aware homepage SSR/hydration is implemented locally. Task 19 now returns HTTP 500 with a plain-text error and `Cache-Control: no-store` when generic homepage SSR throws, instead of returning an empty-root shell with HTTP 200. No separate fallback homepage was added. Managed-review lookup failure remains intentionally fail-closed and is separately tested. Fresh CI for this change is pending; deployed Vercel rewrite/function packaging and crawler-facing HTTP acceptance remain unverified.
 - The feature tree contains 12 deployable API route entrypoints, matching the intended Vercel Hobby target. This is a tree count, not deployed runtime proof.
 - GitHub Actions [38246829295](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38246829295) passed dependency installation, `npm audit --audit-level=high`, tests and build. Earlier run [38245387331](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38245387331) failed at dependency audit. CI is not staging or production acceptance.
 - No Vercel reconnection, deployment, production migration, public cutover or `main` change occurred in this audit.
@@ -52,7 +52,7 @@ Current status: script-src no longer permits unsafe-inline or unsafe-eval; track
 ## Next work in order
 
 1. **Next approved task — Core CMS Task 6: Stage verification and core CMS acceptance gate.** Automated checks have passed at the audited HEAD, so record that evidence; do not close the task while safe staging CRUD/auth/origin/upload/public-read checks, real staging migration comparison and owner acceptance remain incomplete.
-2. **Resolve the SSR generic-render fallback gap.** The current catch path returns an HTML shell with an empty root and HTTP 200 on a generic render exception. Define/implement an approved useful fallback in a later implementation task, with regression tests. Keep this distinct from managed-review lookup failure, which intentionally fails closed to an empty review list when managed mode is enabled.
+2. **Verify Task 19 SSR error handling.** Confirm fresh CI passes for the HTTP 500 render-exception behavior. Keep this distinct from managed-review lookup failure, which intentionally fails closed to an empty review list when managed mode is enabled.
 3. **Google Reviews acceptance:** verify Business Profile API approval, OAuth and location access; then perform controlled sync/publish/unpublish/delete/failure-preservation checks. These external prerequisites remain unverified.
 4. **Crawlability and release readiness:** verify actual Vercel rewrite/function packaging and crawler-facing HTTP HTML, browser/responsive behavior, environment/proxy/security behavior, migration/rollback evidence and owner acceptance only in the approved final verification window. Vercel remains disconnected.
 5. **Documentation and final release:** keep BRD, plans, GitHub issue and Notion aligned. No deployment, production migration/cutover, `main` push or visibility change without explicit approval.
@@ -409,3 +409,11 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 ### Task 18 UI error-state fix — 2026-10-13
 - Fixed a confirmed UI defect: failed list loading could show “No synced Google reviews yet” alongside an error, which confused failure with an empty dataset. The UI now clears stale rows/selection, shows a dedicated load-error state and retry action, and distinguishes filtered no-results.
 - Updated regression coverage and acceptance report. Build verification [38321584041](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321584041) passed on `d6170e93e67d5950f46a4eb3a116dbafc10c77aa`: 126 Node tests, 37 Vitest tests and application build. No deployed browser/runtime acceptance. No live API, production write or deployment.
+
+
+## Task 19 implementation update — 2026-10-13
+
+- Owner selected Option B: generic homepage server-rendering exceptions return HTTP 500 rather than an empty-root HTTP 200 or a separately maintained fallback homepage.
+- The handler logs the render error and returns plain-text `Homepage unavailable` with `Cache-Control: no-store`. HEAD responses have no body.
+- Regression test added for the 500 response. Managed-review lookup failure remains separately tested and unchanged.
+- Fresh GitHub Actions validation is pending. Vercel remains disconnected; no deployment, production write, cutover or `main` change occurred.
