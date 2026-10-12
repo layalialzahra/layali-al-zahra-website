@@ -742,3 +742,14 @@ Latest Task 06 test-only follow-up: commit `09debf63f90ae32f5fc449cb29dcb8ccb9f7
 - Full reconciliation: [`docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md`](https://github.com/layalialzahra/layali-al-zahra-website/blob/feat/layali-managed-content-cms/docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md).
 - Build verification [38281562425](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281562425) passed on tested code/test commit [acc1accdb15c93ae43df285dd28179b0d606c671](https://github.com/layalialzahra/layali-al-zahra-website/commit/acc1accdb15c93ae43df285dd28179b0d606c671): 0 dependency vulnerabilities; 120 Node tests passed, 29 Vitest tests across 7 files passed, client/SSR builds and homepage SSR smoke test passed.
 - This verifies the generated source projection only, not database contents or an applied migration. No database connection/write, migration, deployment or public-source switch occurred. Task 02 remains blocked; Vercel remains disconnected. Temporary CI PR [#8](https://github.com/layalialzahra/layali-al-zahra-website/pull/8) was closed unmerged.
+
+
+## Core CMS acceptance decision — 2026-10-12
+
+**HOLD. Managed public content must remain disabled and the public content source must not change.** The evidence reconciliation for Tasks 03–12 is recorded in [Core CMS Acceptance Summary](./CORE-CMS-ACCEPTANCE-SUMMARY-2026-10-12.md).
+
+Automated test/build evidence exists for the recorded Services, Offers, security, uploads, public-read and legacy-regression changes. Task 11's comparison of 56 generated source records passed with zero discrepancies. These results do not establish live staging behavior. Task 05 remains open for real persistence/Blob acceptance; Task 06 has tests and integrated-suite evidence but no staging acceptance; Task 12 remains blocked because no owner-authorised production-isolated staging database has been verified. Real migration counts/field integrity, repeat-run idempotency and rollback/recovery are unverified.
+
+No additional confirmed Task 03–12 application defect is established by the available evidence. Fixed defects are listed in the acceptance summary. Separate release-readiness issues remain: generic SSR exceptions can return empty-root HTML with HTTP 200, and live proxy/browser security, deployed crawler HTML and responsive acceptance are not verified.
+
+**Required before acceptance:** verify Task 02's authorised staging target and isolation; complete Task 12 with evidence; run end-to-end staging acceptance across CRUD, publication, security, uploads and public reads; then obtain explicit written owner acceptance. Task 13 remains open until that owner decision is recorded. This documentation is not approval. No production migration, deployment or public source cutover occurred.
