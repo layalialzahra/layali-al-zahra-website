@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
   import { Gift } from 'lucide-react';
   import { Button } from './ui/button';
 
-  import { legacyPackagesData as packagesData } from '../data/legacy-packages.js';
+  import { legacyPackagesData } from '../data/legacy-packages.js';
+import { loadPublicPackages, loadPublicFaqs } from '../data/managed-content-public.js';
 import { legacyFaqs } from '../data/legacy-faqs.js';
 
-  const categories = [...new Set(packagesData.map(p => p.category))];
+    type PackageDisplay = (typeof legacyPackagesData)[number] & { bookingUrl?: string };
 
   export default function PackagesPage() {
+    const [packagesData, setPackagesData] = useState<PackageDisplay[]>(legacyPackagesData);
+    const [faqs, setFaqs] = useState(legacyFaqs.packages);
+    const categories = [...new Set(packagesData.map(p => p.category))];
+
+    useEffect(() => {
+      let active = true;
+      void Promise.all([loadPublicPackages(), loadPublicFaqs("packages")]).then(([packages, loadedFaqs]) => {
+        if (!active) return;
+        setPackagesData(packages as PackageDisplay[]);
+        setFaqs(loadedFaqs as typeof legacyFaqs.packages);
+      });
+      return () => { active = false; };
+    }, []);
+
     return (
       <div className="min-h-screen pt-8 pb-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
         <div className="container mx-auto px-4">
@@ -35,7 +50,7 @@ import { legacyFaqs } from '../data/legacy-faqs.js';
                       <h3 className="text-rose-900 mb-3 text-base font-semibold">{pkg.title}</h3>
                       <p className="text-gray-600 mb-4 text-sm">{pkg.description}</p>
                       <Button
-                        onClick={() => window.open('https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services', '_blank')}
+                        onClick={() => window.open(pkg.bookingUrl || 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services', '_blank', 'noopener,noreferrer')}
                         className="w-full bg-rose-200 text-rose-900 hover:bg-amber-400 hover:text-white shadow-md"
                       >
                         Book Now
@@ -67,7 +82,7 @@ import { legacyFaqs } from '../data/legacy-faqs.js';
               <p className="text-gray-600">Everything about our beauty packages at Layali Al Zahra, Al Barsha Dubai</p>
             </div>
             <div className="space-y-3">
-              {legacyFaqs.packages.map((faq, i) => (
+              {faqs.map((faq, i) => (
                 <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
                   <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
                     <span>{faq.q}</span>

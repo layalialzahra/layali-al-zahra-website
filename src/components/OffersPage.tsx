@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
   import { Sparkles } from 'lucide-react';
   import { Button } from './ui/button';
 
-  import { legacyOffersData as offersData } from '../data/legacy-offers.js';
+  import { legacyOffersData } from '../data/legacy-offers.js';
+  import { loadPublicOffers, loadPublicFaqs } from '../data/managed-content-public.js';
 import { legacyFaqs } from '../data/legacy-faqs.js';
 
+  type OfferDisplay = (typeof legacyOffersData)[number] & { bookingUrl?: string };
+
   export default function OffersPage() {
+    const [offersData, setOffersData] = useState<OfferDisplay[]>(legacyOffersData);
+    const [faqs, setFaqs] = useState(legacyFaqs.offers);
+
+    useEffect(() => {
+      let active = true;
+      void Promise.all([loadPublicOffers(), loadPublicFaqs("offers")]).then(([offers, loadedFaqs]) => {
+        if (!active) return;
+        setOffersData(offers as OfferDisplay[]);
+        setFaqs(loadedFaqs as typeof legacyFaqs.offers);
+      });
+      return () => { active = false; };
+    }, []);
+
     return (
       <div className="min-h-screen pt-8 pb-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
         <div className="container mx-auto px-4">
@@ -31,7 +47,7 @@ import { legacyFaqs } from '../data/legacy-faqs.js';
                   <p className="text-gray-600 mb-4">{offer.description}</p>
                   <p className="text-amber-600 text-sm mb-4">{offer.validUntil}</p>
                   <Button
-                    onClick={() => window.open('https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services', '_blank')}
+                    onClick={() => window.open(offer.bookingUrl || 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services', '_blank', 'noopener,noreferrer')}
                     className="w-full bg-rose-200 text-rose-900 hover:bg-amber-400 hover:text-white shadow-md"
                   >
                     Book Now
@@ -59,7 +75,7 @@ import { legacyFaqs } from '../data/legacy-faqs.js';
               <p className="text-gray-600">Common questions about our special offers and promotions in Dubai</p>
             </div>
             <div className="space-y-3">
-              {legacyFaqs.offers.map((faq, i) => (
+              {faqs.map((faq, i) => (
                 <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
                   <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
                     <span>{faq.q}</span>
