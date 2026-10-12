@@ -400,4 +400,4 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 
 ## Google Reviews Task 17 — sync failure preservation — 2026-10-13
 - Added regression fixtures for provider HTTP failure, timeout-class exception, incomplete final page and malformed response. Assertions cover HTTP 502, zero review bulk writes and preservation of both local records and the published subset.
-- CI pending. This is mocked-provider evidence, not a live Google test; authorised API access and isolated runtime remain unverified. Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`.
+- Build verification [38321074011](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321074011) and historical secret scan [38321073947](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321073947) passed on the test commit. This is mocked-provider evidence, not a live Google test; authorised API access and isolated runtime remain unverified. Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`.
