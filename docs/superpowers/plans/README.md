@@ -22,3 +22,12 @@ The owner has authorised implementation on `feat/layali-managed-content-cms`, no
 - [Historical secret scan 38255367338](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367338) passed: 364 commits / ~117.18 MB with zero text findings; 118 reachable binary blobs with printable strings / 170,446,401 bytes with zero findings.
 - Password changes now revoke prior admin sessions via a server-checked session version. script-src no longer allows unsafe inline/eval scripts; analytics/Meta Pixel initialization uses same-origin /tracking.js.
 - Remaining gates are browser/runtime CSP acceptance, session-revocation end-to-end acceptance, Google Business Profile access, crawlability proof of concept, functional/migration acceptance and final release approval. Vercel remains disconnected.
+
+## Latest verified checkpoint — 2026-10-12
+
+- Audited branch `feat/layali-managed-content-cms` was identical to HEAD `046c4b7e4b5a7629fc860538b6d37b0e3b969e48` before this documentation commit.
+- [Build verification 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) passed dependency installation, high-severity audit, tests and build.
+- [Historical secret scan 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) passed text/history and binary printable-string scan steps; recorded output: 413 commits / ~117.24 MB, zero text findings, 118 binary blobs / 170,446,401 bytes, zero findings.
+- Route-aware SSR/hydration is implemented locally and passes CI, but Vercel routing/function packaging and crawler-facing HTTP acceptance remain unverified. Generic render exception fallback still returns a shell with empty `#root` and HTTP 200; this gap is open. Managed review-source failure is a separate intentional fail-closed behavior.
+- **Sequence note:** SSR implementation preceded completion of Core CMS Task 6 and live Google Reviews acceptance. This is a documented plan-sequence deviation, not acceptance of those upstream gates.
+- **Next task:** Core CMS plan Task 6 — Stage verification and core CMS acceptance. Keep staging/runtime/owner-acceptance checkboxes open until evidence exists.
