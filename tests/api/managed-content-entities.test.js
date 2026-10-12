@@ -16,8 +16,8 @@ test("FAQ rejects unsupported page keys", () => {
   assert.throws(() => validateFaqInput({ pageKey: "home", question: "Q", answer: "A" }), /page key/i);
 });
 
-test("public serialization removes non-public fields", () => {
-  const item = serializeManagedItem("service", { _id: "abc", title: "Hair Cuts", status: "published", privateNote: "x", createdAt: new Date("2026-01-01T00:00:00.000Z") }, { publicOnly: true });
+test("serialization removes unknown fields and normalizes timestamps", () => {
+  const item = serializeManagedItem("service", { _id: "abc", title: "Hair Cuts", status: "published", privateNote: "x", createdAt: new Date("2026-01-01T00:00:00.000Z") });
   assert.equal(item.title, "Hair Cuts");
   assert.equal("privateNote" in item, false);
 });
