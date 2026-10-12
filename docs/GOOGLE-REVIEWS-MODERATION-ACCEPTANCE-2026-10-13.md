@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-13  
 **Repository/branch:** `layalialzahra/layali-al-zahra-website` / `feat/layali-managed-content-cms`  
-**Status:** OPEN — automated regression added; CI result and authorised runtime acceptance pending.
+**Status:** OPEN — automated regression added and CI-passed; authorised runtime acceptance pending.
 
 ## Scope checked
 
@@ -26,6 +26,6 @@ Existing UI tests separately assert that selecting a review does not issue a wri
 
 ## Result and limits
 
-This is provider-independent automated route-level coverage, not a live Google sync or deployed browser acceptance. The regression test has been committed, but the corresponding CI result must be checked before claiming test execution passed. Live staging persistence remains unavailable/unverified under the existing environment hold. No production database, Google API, Vercel deployment, public review source or live data was touched.
+This is provider-independent automated route-level coverage, not a live Google sync or deployed browser acceptance. Build verification passed on commit `5872de79017b2cbb2d175ce445e4ca337f7ee6cd`: dependency install, dependency audit, test suite and application build all passed ([run 38320839858](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38320839858)). Live staging persistence remains unavailable/unverified under the existing environment hold. No production database, Google API, Vercel deployment, public review source or live data was touched.
 
 No confirmed production defect was found in the inspected moderation paths, so no runtime behavior was changed. Task 16 remains open until CI evidence is confirmed and the applicable staging/runtime acceptance gate is available.
