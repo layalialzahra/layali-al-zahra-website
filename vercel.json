@@ -4,6 +4,10 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/api/render-home"
+    },
+    {
       "source": "/admin",
       "destination": "/"
     },
@@ -78,5 +82,13 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/[...path].js": {
+      "includeFiles": [
+        "dist/index.html",
+        "server-dist/**"
+      ]
+    }
+  }
 }

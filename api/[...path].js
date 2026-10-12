@@ -1,4 +1,5 @@
 import { createManagedContentHandler } from "./_lib/managed-content-routes.js";
+import { createHomepageRenderHandler } from "./_lib/homepage-renderer.js";
 import {
   createGoogleReviewsAdminHandler,
   createGoogleReviewsPublicHandler,
@@ -30,6 +31,7 @@ export function createApiRouterHandler(options = {}) {
   const createManaged = options.createManagedContentHandler || createManagedContentHandler;
   const createReviewsAdmin = options.createGoogleReviewsAdminHandler || createGoogleReviewsAdminHandler;
   const createReviewsPublic = options.createGoogleReviewsPublicHandler || createGoogleReviewsPublicHandler;
+  const createHomepage = options.createHomepageRenderHandler || createHomepageRenderHandler;
   const routes = new Map([
     ["services", createManaged("service")],
     ["offers", createManaged("offer")],
@@ -42,6 +44,7 @@ export function createApiRouterHandler(options = {}) {
     ["admin/google-reviews", createReviewsAdmin()],
     ["admin/google-reviews-sync", options.createGoogleReviewsSyncHandler ? options.createGoogleReviewsSyncHandler() : createGoogleReviewsSyncHandler()],
     ["published-google-reviews", createReviewsPublic()],
+    ["render-home", options.createHomepageRenderHandler ? options.createHomepageRenderHandler() : createHomepage()],
   ]);
 
   return async function apiRouter(req, res) {

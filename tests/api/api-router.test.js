@@ -8,6 +8,7 @@ function response() {
     status(code) { this.code = code; return this; },
     json(body) { this.body = body; return this; },
     setHeader(name, value) { this.headers[name] = value; },
+    send(body) { this.body = body; return this; },
   };
 }
 
@@ -38,6 +39,7 @@ function setup() {
     createGoogleReviewsAdminHandler: reviewsAdmin,
     createGoogleReviewsPublicHandler: reviewsPublic,
     createGoogleReviewsSyncHandler: reviewsSync,
+    createHomepageRenderHandler: () => async (_req, res) => { calls.push({ kind: "homepage" }); return res.status(200).send("SSR home"); },
     healthHandler: health,
   }) };
 }
@@ -84,4 +86,14 @@ test("unknown and legacy diagnostic routes return 404 without invoking a handler
     assert.equal(res.body.success, false);
     assert.deepEqual(calls, []);
   }
+});
+
+
+test("dispatches the SSR homepage through the existing catch-all function", async () => {
+  const { handler, calls } = setup();
+  const res = response();
+  await handler({ method: "GET", query: { path: ["render-home"] }, headers: {} }, res);
+  assert.equal(res.code, 200);
+  assert.equal(res.body, "SSR home");
+  assert.deepEqual(calls, [{ kind: "homepage" }]);
 });
