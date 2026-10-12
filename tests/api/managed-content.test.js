@@ -11,3 +11,23 @@ test("preserves service display prices", () => {
   assert.equal(item.slug, "hair-cuts");
   assert.equal(item.subservices[0].price, "AED 99.75");
 });
+
+
+test("rejects null and blank service sort orders instead of silently converting them to zero", () => {
+  assert.throws(
+    () => validateServiceInput({ title: "Hair Cuts", sortOrder: null }),
+    /sort order/i,
+  );
+  assert.throws(
+    () => validateServiceInput({ title: "Hair Cuts", sortOrder: "" }),
+    /sort order/i,
+  );
+});
+
+test("accepts finite numeric service ordering values", () => {
+  assert.equal(validateServiceInput({ title: "Hair Cuts", sortOrder: 2.5 }).sortOrder, 2.5);
+  assert.throws(
+    () => validateServiceInput({ title: "Hair Cuts", sortOrder: Number.POSITIVE_INFINITY }),
+    /sort order/i,
+  );
+});
