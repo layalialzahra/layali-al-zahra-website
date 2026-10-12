@@ -23,7 +23,7 @@ test("cross-origin admin writes are rejected before database access", async () =
 });
 
 test("unsupported admin methods return 405 with allowed methods", async () => {
-  const handler = createManagedContentHandler("service", { admin: true, requireAdmin: () => ({ username: "admin" }) });
+  const handler = createManagedContentHandler("service", { admin: true, requireAdmin: () => ({ username: "admin" }), sameOrigin: () => true });
   const res = response();
   await handler({ method: "PATCH", headers: {}, query: {} }, res);
   assert.equal(res.code, 405);
