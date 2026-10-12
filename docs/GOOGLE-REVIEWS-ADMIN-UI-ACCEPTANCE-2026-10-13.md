@@ -1,7 +1,7 @@
 # Task 18 — Google Reviews admin UI acceptance
 
 **Date:** 2026-10-13  
-**Status:** UI regression coverage added; confirmed error-state defect fixed; latest CI pending confirmation and runtime acceptance remains open.
+**Status:** Automated checks PASS; confirmed error-state defect fixed; authorised runtime/browser acceptance remains open.
 
 ## Automated UI cases added
 
@@ -33,7 +33,7 @@ The first CI run exposed two test failures. One assertion matched both the filte
 
 ## Results and limits
 
-- CI for the corrected component and tests is pending confirmation.
+- Build verification [38321584041](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321584041) passed on `d6170e93e67d5950f46a4eb3a116dbafc10c77aa`: dependency install, dependency audit, full tests and build. The run reports 126 Node tests and 37 Vitest tests passing, including 11 Google Reviews manager UI tests.
 - These are automated component/API-fixture tests, not deployed browser acceptance or live database persistence proof.
 - Google Business Profile API/OAuth/location access and an authorised isolated staging target remain unverified. No provider-level sync was performed.
 - No production data, live Google source, Vercel deployment or public review cutover was touched.
