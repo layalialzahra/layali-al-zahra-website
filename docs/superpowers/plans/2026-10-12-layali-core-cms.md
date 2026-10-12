@@ -331,3 +331,12 @@ Full evidence, risk assessment and the unblock checklist: [docs/ENVIRONMENT-VERI
 - Full reconciliation: [`docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md`](https://github.com/layalialzahra/layali-al-zahra-website/blob/feat/layali-managed-content-cms/docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md).
 - Build verification [38281562425](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281562425) passed on tested code/test commit [acc1accdb15c93ae43df285dd28179b0d606c671](https://github.com/layalialzahra/layali-al-zahra-website/commit/acc1accdb15c93ae43df285dd28179b0d606c671): 0 dependency vulnerabilities; 120 Node tests passed, 29 Vitest tests across 7 files passed, client/SSR builds and homepage SSR smoke test passed.
 - This verifies the generated source projection only, not database contents or an applied migration. No database connection/write, migration, deployment or public-source switch occurred. Task 02 remains blocked; Vercel remains disconnected. Temporary CI PR [#8](https://github.com/layalialzahra/layali-al-zahra-website/pull/8) was closed unmerged.
+
+
+## Task 12 — staging migration execution status (2026-10-12)
+
+**OPEN / BLOCKED by Task 02.** No authorised production-isolated non-production database has been verified, so the migration was not run. No DB connection/write, rollback attempt, production access, deployment or public-source cutover occurred.
+
+Task 11 verified the generated projection against 56 authoritative source records with zero discrepancies; it did not verify database state. Unit-test dry-run and repeat-apply coverage is not staging evidence. Record counts/field integrity after apply, real repeat-run idempotency and rollback/recovery are all **NOT RUN**.
+
+Do not check off Task 12. Resume only after Task 02 documents owner authorisation, target identity and production isolation. Then capture pre-migration state, apply only to staging, verify counts (15 Services, 5 Offers, 23 Packages, 13 FAQs) and exact fields, rerun for idempotency, and exercise rollback/recovery. Detailed blocker: [docs/MIGRATION-STAGING-BLOCKER-2026-10-12.md](../../MIGRATION-STAGING-BLOCKER-2026-10-12.md).
