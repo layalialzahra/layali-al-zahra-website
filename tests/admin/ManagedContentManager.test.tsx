@@ -54,3 +54,20 @@ test("published records can be unpublished and then locally deleted", async () =
   await waitFor(() => expect(request).toHaveBeenCalledTimes(5));
   expect(request.mock.calls[3][1]?.method).toBe("DELETE");
 });
+
+test("admin navigation opens the Services manager without replacing the Content Library", async () => {
+  const request = vi.mocked(fetch);
+  request.mockImplementation(async (input) => {
+    const url = String(input);
+    if (url === "/api/admin/auth") return response({ success: true, authenticated: true, admin: { username: "Tester" } });
+    if (url.startsWith("/api/admin/content")) return response({ success: true, items: [], total: 0 });
+    if (url.startsWith("/api/admin/services")) return response({ success: true, items: [] });
+    return response({ success: true, items: [], total: 0 });
+  });
+  const { default: AdminPage } = await import("../../src/components/AdminPage");
+  render(<AdminPage />);
+  await screen.findByText("Welcome back.");
+  await userEvent.click(screen.getByRole("button", { name: /services/i }));
+  await screen.findByText("No services yet");
+  expect(screen.getByRole("button", { name: /content library/i })).toBeInTheDocument();
+});
