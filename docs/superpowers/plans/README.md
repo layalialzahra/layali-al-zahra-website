@@ -73,3 +73,12 @@ Image-upload automated acceptance passed on tested commit [a9c5469e94d0c8b18006c
 - Added all-four-endpoint tests for empty datasets, published-only reads, resource allowlists, FAQ page scoping and safe generic 503 behavior for DB connection/index/read failures. Fixed a confirmed nested-field exposure path in service subservices by allowlisting nested fields.
 - Historical scan [38280386362](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386362) passed: 501 reachable commits, zero text/history findings; 118 binary blobs with printable strings, zero findings.
 - Runtime acceptance remains blocked by Task 02; no live DB, deployment, migration or cutover. Vercel remains disconnected.
+
+
+## Task 10 — Existing Blog, Beauty Tips and News CMS regression checks (2026-10-12)
+
+- Automated regression tests added in `tests/api/legacy-content-regression.test.js` for legacy content types, partial edit preservation, schedule validation, sanitized article bodies, public-field privacy, stable listing/detail route contracts and retention of upload tests.
+- Source review found no confirmed application regression; no application logic changes were made.
+- Build verification [38281099834](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281099834) passed on tested commit [49292cebd8b3c495faaa748062d34ca8d74dbe8d](https://github.com/layalialzahra/layali-al-zahra-website/commit/49292cebd8b3c495faaa748062d34ca8d74dbe8d): 0 high-severity dependency vulnerabilities, 114 Node tests, 29 Vitest tests across 7 files, client/SSR builds and homepage SSR smoke test.
+- First CI run failed because the test imported MongoDB helpers before setting a test-only URI; the harness was corrected and the final run passed.
+- Runtime/staging acceptance remains open because Task 02 has no verified authorised isolated non-production target. No real Blob upload, live DB, migration, deployment or public-source cutover occurred. Vercel remains disconnected.
