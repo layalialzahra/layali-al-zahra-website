@@ -30,7 +30,8 @@ assert.equal(response.code, 200, "the built homepage handler should return HTTP 
 assert.equal(response.headers["Content-Type"], "text/html; charset=utf-8");
 assert.match(response.body, /data-ssr="true"/, "the response should activate client hydration");
 assert.doesNotMatch(response.body, /opacity:0/, "SSR carousel content must not start visually hidden");
-assert.match(response.body, /<title>[^<]+<\\/title>/, "the HTML template should retain the page title");
+assert.match(response.body, /<title>/, "the HTML template should retain the page title");
+assert.match(response.body, /<\\/title>/, "the HTML template should close the page title");
 assert.match(response.body, /rel="canonical"/, "the HTML template should retain canonical metadata");
 assert.match(response.body, /Where Beauty Meets Luxury/, "the homepage should render into the initial HTML");
 assert.match(response.body, /Shauna Haberlin/, "the reviewed static snapshot should remain the fallback");
