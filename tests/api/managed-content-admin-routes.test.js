@@ -10,6 +10,8 @@ function database(initial = []) {
     createIndex: async () => "ok",
     findOne: async (filter) => docs.find((doc) => matches(doc, filter)) || null,
     insertOne: async (doc) => { doc._id = "aaaaaaaaaaaaaaaaaaaaaaaa"; docs.push(doc); return { insertedId: doc._id }; },
+    find: (filter) => { const items = docs.filter((doc) => matches(doc, filter)); return { sort() { return { skip(offset) { return { limit(limit) { return { toArray: async () => items.slice(offset, offset + limit) }; } }; } }; } }; },
+    countDocuments: async (filter) => docs.filter((doc) => matches(doc, filter)).length,
     findOneAndUpdate: async (filter, update) => { const doc = docs.find((item) => matches(item, filter)); Object.assign(doc, update.$set); return doc; },
     deleteOne: async (filter) => { const index = docs.findIndex((doc) => matches(doc, filter)); if (index >= 0) docs.splice(index, 1); return { deletedCount: index >= 0 ? 1 : 0 }; },
   };
@@ -34,4 +36,15 @@ test("admin partial update preserves fields not supplied", async () => {
   assert.equal(res.code, 200);
   assert.equal(res.body.item.title, "Hair Cuts");
   assert.equal(res.body.item.description, "Updated");
+});
+
+test("admin list supports pagination and total count", async () => {
+  const store = database([{ _id: "1", title: "A", slug: "a", status: "draft", sortOrder: 1 }, { _id: "2", title: "B", slug: "b", status: "published", sortOrder: 2 }]);
+  const handler = createManagedContentHandler("service", { admin: true, requireAdmin: () => ({ username: "admin" }), sameOrigin: () => true, getDb: async () => store.db });
+  const res = response();
+  await handler({ method: "GET", query: { page: "1", limit: "1" }, headers: {} }, res);
+  assert.equal(res.code, 200);
+  assert.equal(res.body.items.length, 1);
+  assert.equal(res.body.total, 2);
+  assert.equal(res.body.pages, 2);
 });
