@@ -144,7 +144,9 @@ export function sameOrigin(req) {
   if (!origin) return ["GET", "HEAD", "OPTIONS"].includes(method);
   const host = req.headers?.host;
   const forwardedProtocol = String(req.headers?.["x-forwarded-proto"] || "").split(",")[0].trim();
-  const protocol = forwardedProtocol || (process.env.NODE_ENV === "production" ? "https" : "http");
+  // Vercel production requests are HTTPS. Do not let a client-influenced
+  // forwarded-protocol header weaken the expected origin scheme in production.
+  const protocol = process.env.NODE_ENV === "production" ? "https" : (forwardedProtocol || "http");
   return Boolean(host) && origin === `${protocol}://${host}`;
 }
 export async function adminExists() {
