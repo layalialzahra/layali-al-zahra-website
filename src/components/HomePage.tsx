@@ -317,7 +317,7 @@ import React, { useState, useEffect } from 'react';
         <h2 className="font-tangerine text-5xl md:text-7xl text-rose-900 text-center mb-12">{title}</h2>
         <div className="relative max-w-6xl mx-auto">
           <div className={`grid gap-6 ${itemsToShow === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
               {Array.from({ length: itemsToShow }).map((_, offset) => {
                 const index = (currentIndex + offset) % items.length;
                 const item = items[index];
