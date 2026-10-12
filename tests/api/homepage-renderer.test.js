@@ -60,3 +60,26 @@ test("SSR homepage rejects state-changing methods", async () => {
   assert.equal(res.code, 405);
   assert.equal(res.headers.Allow, "GET, HEAD");
 });
+
+
+test("suppressed local reviews are excluded from server-rendered homepage content", async () => {
+  const res = response();
+  let renderedReviews = [];
+  const handler = createHomepageRenderHandler({
+    readTemplate: async () => '<!doctype html><html><body><div id="root"></div></body></html>',
+    getPublishedReviews: async () => [
+      { googleReviewId: "suppressed", title: "Suppressed reviewer", initials: "SR", description: "deleted review", rating: 5, isPublished: true },
+      { googleReviewId: "visible", title: "Visible reviewer", initials: "VR", description: "approved review", rating: 5, isPublished: true },
+    ],
+    getSuppressedReviewIds: async () => ["suppressed"],
+    renderPage: async (_pathname, reviews) => {
+      renderedReviews = reviews;
+      return "<main>Homepage</main>";
+    },
+    logger: { error() {} },
+  });
+
+  await handler({ method: "GET" }, res);
+  assert.equal(res.code, 200);
+  assert.deepEqual(renderedReviews.map((review) => review.title), ["Visible reviewer"]);
+});
