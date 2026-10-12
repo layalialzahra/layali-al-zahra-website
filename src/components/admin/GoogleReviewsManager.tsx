@@ -50,6 +50,8 @@ export default function GoogleReviewsManager() {
       if (typeof data.syncMessage === "string") setSyncMessage(data.syncMessage);
       setSelectedIds([]);
     } catch (err) {
+      setItems([]);
+      setSelectedIds([]);
       setError(err instanceof Error ? err.message : "Unable to load Google reviews.");
     } finally {
       setLoading(false);
