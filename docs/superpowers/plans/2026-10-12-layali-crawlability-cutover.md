@@ -145,3 +145,13 @@
 - [ ] Live MongoDB ordering/query behavior and deployed Vercel rewrite/crawler response remain outside this local task and are not verified while Vercel is disconnected.
 
 Acceptance record: [Homepage SSR and Hydration Acceptance](../../HOMEPAGE-SSR-HYDRATION-ACCEPTANCE-2026-10-13.md).
+
+
+### Task 21 — Services and FAQ integration gate — 2026-10-13
+
+- [ ] **BLOCKED: do not implement or test integration until Core CMS acceptance is explicitly recorded.**
+- Core CMS Task 13 remains HOLD/OPEN. No owner-authorised production-isolated staging DB is verified; Task 12 staging migration, real DB counts/field integrity, repeat-run idempotency and rollback/recovery are NOT RUN. End-to-end staging CRUD/auth/upload/public-read checks and explicit written owner acceptance remain outstanding.
+- Existing automated Services/FAQ tests and CI are not a substitute for the prerequisite acceptance gate.
+- Stopped before application-code changes, feature-flag changes or new integration tests. Managed public content remains disabled; legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
+- Blocker record: [Services and FAQ Integration Blocker](../../SERVICES-FAQ-INTEGRATION-BLOCKER-2026-10-13.md).
+- Resume only after Core CMS acceptance is explicitly recorded. Then verify published managed reads, legacy fallback, design preservation and booking/contact behavior under the approved feature flag.
