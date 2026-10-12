@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import GoogleReviewsManager from "../../src/components/admin/GoogleReviewsManager";
 
-function response(data: unknown) { return { ok: true, status: 200, json: async () => data } as Response; }
+function response(data: unknown, ok = true, status = 200) { return { ok, status, json: async () => data } as Response; }
 beforeEach(() => vi.stubGlobal("fetch", vi.fn()));
 const review = { _id: "aaaaaaaaaaaaaaaaaaaaaaaa", googleReviewId: "g-1", authorName: "A Reviewer", rating: 5, reviewText: "Great service", isPublished: false, sortOrder: 0, sourceCreatedAt: "2026-09-01T10:00:00.000Z" };
 
