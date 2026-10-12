@@ -12,7 +12,7 @@ async function loadItems(endpoint: string, fallback: any[], transform: (item: an
     const response = await fetchImpl(endpoint, { method: "GET", cache: "no-store" });
     if (!response.ok) return fallback;
     const data = await response.json();
-    if (!data?.success || !Array.isArray(data.items) || data.items.length === 0) return fallback;
+    if (!data?.success || !Array.isArray(data.items)) return fallback;
     return data.items.map(transform);
   } catch {
     return fallback;

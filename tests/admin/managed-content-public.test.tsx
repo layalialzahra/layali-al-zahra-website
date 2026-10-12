@@ -28,8 +28,14 @@ describe("public managed-content fallback and mapping", () => {
     expect(result[0].subservices[0].price).toBe("AED 99.75");
   });
 
-  it("falls back to legacy offers and packages when the published CMS collection is empty", async () => {
+  it("returns no public offers or packages when all records are intentionally unpublished", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse([]));
+    expect(await loadPublicOffers(true, fetchImpl as typeof fetch)).toEqual([]);
+    expect(await loadPublicPackages(true, fetchImpl as typeof fetch)).toEqual([]);
+  });
+
+  it("falls back to the legacy snapshots when the public CMS API fails", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse([], false));
     expect(await loadPublicOffers(true, fetchImpl as typeof fetch)).toBe(legacyOffersData);
     expect(await loadPublicPackages(true, fetchImpl as typeof fetch)).toBe(legacyPackagesData);
   });

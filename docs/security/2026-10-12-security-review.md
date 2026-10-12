@@ -10,7 +10,7 @@ Scope: repository source, serverless API handlers, admin authentication, content
 - **Public diagnostics:** the catch-all no longer exposes the legacy `/api/test` collection-listing diagnostic. The public database health endpoint no longer returns the database name.
 - **Stored HTML / XSS exposure:** blog/news/tip body content is sanitized with an allowlist HTML sanitizer, including when existing database records are serialized. Public content serialization now uses an explicit field allowlist instead of spreading every stored field.
 - **CI write permissions:** build/test jobs use read-only repository permissions; dependency-lock updates run in a separate job with only the permission required to update the lockfile.
-- **Dependency audit:** the first `npm audit --audit-level=high` reported 10 vulnerabilities (1 moderate, 7 high, 2 critical) in the locked dependency tree. The branch upgrades Vite/Vitest and runs compatible audit fixes; final status is pending the resulting CI audit and lockfile verification.
+- **Dependency audit:** the initial audit reported 10 vulnerabilities (1 moderate, 7 high, 2 critical). Vite was updated to 6.4.4, Vitest to 4.1.11, compatible transitive fixes were applied and the regenerated lockfile was committed. The latest clean CI run used `npm ci`; `npm audit --audit-level=high` reported `found 0 vulnerabilities`, and tests/build passed.
 
 ## Remaining risks / follow-up
 - **Repository visibility:** GitHub repository is public by owner decision until project completion. Public source visibility is not itself a server compromise, but secrets must never be committed. Repository privacy is deferred to the final stage as requested.
