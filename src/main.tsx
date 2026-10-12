@@ -18,14 +18,16 @@ function readInitialReviews(element: HTMLElement): HomePageReview[] | undefined 
   }
 }
 
+const isServerRendered = root.dataset.ssr === "true";
 const app = (
   <App
     initialPathname={window.location.pathname}
     initialReviews={readInitialReviews(root)}
+    initialSSR={isServerRendered}
   />
 );
 
-if (root.dataset.ssr === "true" && root.hasChildNodes()) {
+if (isServerRendered && root.hasChildNodes()) {
   hydrateRoot(root, app);
 } else {
   createRoot(root).render(app);
