@@ -55,7 +55,7 @@ function database(initialReviews = [], initialSuppressions = []) {
             if (update.$set) Object.assign(existing, update.$set);
             modifiedCount += 1;
           } else if (operation.updateOne.upsert) {
-            docs.push({ ...filter, ...update.$setOnInsert, ...update.$set });
+            docs.push({ _id: "cccccccccccccccccccccccc", ...filter, ...update.$setOnInsert, ...update.$set });
             upsertedCount += 1;
           }
         }
