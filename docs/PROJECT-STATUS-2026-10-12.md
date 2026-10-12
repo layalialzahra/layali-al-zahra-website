@@ -209,3 +209,17 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - The latest verified feature-branch ref immediately before this status-only commit was `cb88b81bf4a50e19b9fdf00833af737c9fe28d28`; GitHub compare confirmed an identical ref. Compared with audited application baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`, this documentation reconciliation is 24 commits ahead, 0 behind, and the changed-file summary contains only documentation paths.
 - No combined status checks or GitHub Actions workflow runs were returned for `cb88b81bf4a50e19b9fdf00833af737c9fe28d28`. The latest successful Build verification and history/binary scan remain runs [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) and [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) on code baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`; do not infer CI success for this or any later documentation commit. The historical Vercel failure status is not deployment evidence. Owner-confirmed: Vercel is disconnected and current changes are undeployed.
 - This status-report edit is documentation-only. Its resulting commit is not claimed CI-verified; check the branch ref for the latest resulting SHA. Next task remains Short Task List Task 02 (confirm a safe authorised non-production environment), followed by Core CMS Task 6 Steps 2–5 once the environment is confirmed.
+
+
+## Task 02 — non-production environment verification outcome (2026-10-12)
+
+**Outcome: BLOCKED.** Repository and project-record review did not establish a currently authorised, available and production-isolated staging environment/database. See [the full environment verification record](ENVIRONMENT-VERIFICATION-2026-10-12.md).
+
+- `.env.example` contains a placeholder MongoDB URI and defaults `MONGODB_DB_NAME` to `layalialzahra`; it does not define an identified staging database.
+- `api/_lib/mongodb.js` uses `MONGODB_URI` and defaults the database name to `layalialzahra`; it does not enforce Preview/staging isolation from production.
+- The historical BRD mentions a previously healthy Vercel staging admin service and environment variables in both Production and Preview, but does not prove current project identity, active availability or a distinct staging database. The Production/Preview variable overlap must be verified, not assumed safe.
+- Available connected access did not expose current Vercel environment settings or MongoDB Atlas database/user/network configuration. No secret values were accessed or recorded.
+- No runtime acceptance, upload, migration, deployment or production test was run. Vercel remains disconnected by owner instruction.
+- **Unblock requirement:** owner-authorise a specific non-production URL/project and provide redacted evidence of its database identity, dedicated staging credentials/permissions, production write isolation and (for upload tests) isolated Blob configuration. Keep all secret values out of Notion/GitHub.
+
+Environment discovery is documented, but Core CMS acceptance remains blocked. Do not treat production or an unverified Preview environment as staging.
