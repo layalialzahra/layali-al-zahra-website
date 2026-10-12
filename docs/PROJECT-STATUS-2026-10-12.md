@@ -396,4 +396,4 @@ Environment discovery is documented, but Core CMS acceptance remains blocked. Do
 ## Google Reviews Task 16 — moderation lifecycle — 2026-10-13
 - Added route-level regression coverage for local deletion + suppression + subsequent sync, default-unpublished import, explicit publish, and preservation of existing publication/order.
 - Evidence: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
-- CI result pending confirmation; live staging/runtime acceptance remains blocked by the existing environment hold. Task 16 stays open. No Google API call, production database write or deployment occurred.
+- Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]); dependency install, audit, tests and build passed. Live staging/runtime acceptance remains blocked by the existing environment hold. Task 16 stays open. No Google API call, production database write or deployment occurred.
