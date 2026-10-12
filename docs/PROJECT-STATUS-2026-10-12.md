@@ -103,3 +103,9 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 
 - Added `.github/workflows/secret-scan.yml` using Gitleaks `v8.30.1`, full Git history/ref checkout and redacted output. First scan result is pending; do not mark the historical/text/binary secret-review gate complete before review and triage.
 - This is a GitHub Actions security check, not a Vercel deployment.
+
+
+## Secret scan CI wiring — 2026-10-12
+
+- The standalone secret-scan workflow did not appear in the observed Actions run list after addition on the feature branch. Wired pinned Gitleaks `v8.30.1` into the existing Build verification workflow with full-history checkout and redacted output, so the next feature-branch run can execute it.
+- First result is pending; do not claim a clean history scan until the Gitleaks step completes and any findings are triaged.

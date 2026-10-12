@@ -533,3 +533,8 @@ This section is the current status for the separate managed Services, Offers, Pa
 - Added `.github/workflows/secret-scan.yml` using pinned Gitleaks `v8.30.1`, full Git history/ref checkout and redacted scan output.
 - The initial scan is pending. Keep the secret-review gate open until the run completes and any findings are triaged. No secret values should be copied into docs or issues.
 - This workflow runs in GitHub Actions only; Vercel remains disconnected.
+
+
+### 2026-10-12 — Wire secret scan into established CI
+- The new standalone workflow did not appear in the observed Actions run list after being added on the feature branch. Added the pinned, redacted all-reachable-history Gitleaks scan to the existing Build verification workflow and changed checkout to full history so this branch's push reliably exercises the scan.
+- The scan result remains pending. CI may fail on a finding or scanner/configuration issue; review only redacted output and do not copy secret values into documentation.
