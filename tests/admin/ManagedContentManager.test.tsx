@@ -71,3 +71,57 @@ test("admin navigation opens the Services manager without replacing the Content 
   await screen.findByText("No services yet");
   expect(screen.getByRole("button", { name: /content library/i })).toBeInTheDocument();
 });
+
+
+test("editing a service saves the changed title and numeric display order without losing draft intent", async () => {
+  const request = vi.mocked(fetch);
+  const service = { _id: "service-1", title: "Hair Cuts", slug: "hair-cuts", description: "Classic cuts", status: "published", sortOrder: 8, subservices: [] };
+  const updated = { ...service, title: "Hair Styling", status: "draft", sortOrder: 2 };
+  request.mockResolvedValueOnce(response({ success: true, items: [service] }))
+    .mockResolvedValueOnce(response({ success: true, item: updated }))
+    .mockResolvedValueOnce(response({ success: true, items: [updated] }));
+  render(<ServicesManager />);
+  await screen.findByText("Hair Cuts");
+  await userEvent.click(screen.getByRole("button", { name: /edit hair cuts/i }));
+  const title = screen.getByLabelText("Title");
+  await userEvent.clear(title);
+  await userEvent.type(title, "Hair Styling");
+  const order = screen.getByLabelText("Display order");
+  await userEvent.clear(order);
+  await userEvent.type(order, "2");
+  await userEvent.click(screen.getByRole("button", { name: /save draft/i }));
+  await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
+  expect(request.mock.calls[1][0]).toBe("/api/admin/services?id=service-1");
+  expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toMatchObject({
+    title: "Hair Styling", status: "draft", sortOrder: 2,
+  });
+});
+
+test("shows the API duplicate-slug validation message and keeps the editor open", async () => {
+  const request = vi.mocked(fetch);
+  request.mockResolvedValueOnce(response({ success: true, items: [] }))
+    .mockResolvedValueOnce(response({ success: false, message: "An item with this slug already exists" }));
+  render(<ServicesManager />);
+  await screen.findByText("No services yet");
+  await userEvent.click(screen.getByRole("button", { name: /add service/i }));
+  await userEvent.type(screen.getByLabelText("Title"), "Hair Cuts");
+  await userEvent.type(screen.getByLabelText("URL slug"), "hair-cuts");
+  await userEvent.click(screen.getByRole("button", { name: /save draft/i }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(/slug already exists/i);
+  expect(screen.getByRole("heading", { name: "Add Service" })).toBeInTheDocument();
+  expect(request).toHaveBeenCalledTimes(2);
+});
+
+test("creating a service as a draft uses the explicit Save Draft action", async () => {
+  const request = vi.mocked(fetch);
+  request.mockResolvedValueOnce(response({ success: true, items: [] }))
+    .mockResolvedValueOnce(response({ success: true, item: { _id: "draft-1", title: "Hair Spa", status: "draft" } }))
+    .mockResolvedValueOnce(response({ success: true, items: [{ _id: "draft-1", title: "Hair Spa", status: "draft" }] }));
+  render(<ServicesManager />);
+  await screen.findByText("No services yet");
+  await userEvent.click(screen.getByRole("button", { name: /add service/i }));
+  await userEvent.type(screen.getByLabelText("Title"), "Hair Spa");
+  await userEvent.click(screen.getByRole("button", { name: /save draft/i }));
+  await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
+  expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toMatchObject({ title: "Hair Spa", status: "draft" });
+});
