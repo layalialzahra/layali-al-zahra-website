@@ -117,7 +117,7 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - The binary-history step examined 118 reachable binary blobs containing printable strings, totaling 170,446,401 bytes, and reported zero findings.
 - This is a successful heuristic scan of reachable Git history and printable binary strings. It does not semantically inspect compressed/encrypted payloads, unreachable Git objects, external systems or deployed environment values.
 - Standard Build verification [38253553795](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553795) passed dependency audit, tests and build on the same commit.
-- Remaining Priority 2 items: verify proxy trust for `x-forwarded-for`, decide/implement session revocation semantics, and plan stricter CSP removal of `unsafe-inline`/`unsafe-eval` with browser/runtime acceptance.
+- At this historical checkpoint, remaining Priority 2 items were proxy trust, session revocation and stricter CSP. Session-version revocation and `script-src` hardening were implemented later and are documented in the latest verified implementation checkpoint below; actual proxy-chain and browser/runtime acceptance remain open.
 
 
 ### Latest scan and proxy-header assessment — 2026-10-12
