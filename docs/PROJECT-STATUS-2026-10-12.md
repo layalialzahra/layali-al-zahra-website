@@ -86,3 +86,11 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - BRD change-log commit: `b3abd690e65859929c23d7b40e23f4ebbc1d3491`.
 - GitHub Actions run [38251638974](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251638974) passed dependency installation, high-severity dependency audit, tests and build on tested commit `6769ae39e4e9d504932e1354505ed81dd90ab41d`. This verifies CI only, not deployed behavior. The separate `x-forwarded-for` client-IP trust review, session revocation, CSP validation and complete historical/text/binary secret scan remain open.
 - No Vercel deployment or live/staging verification was initiated.
+
+
+## CSP compatibility follow-up — 2026-10-12
+
+- Source review found the existing inline Meta Pixel bootstrap loads `https://connect.facebook.net/en_US/fbevents.js`, but the prior CSP did not explicitly allow that script origin or `https://www.facebook.com` in image/connect sources. Runtime blocking was not directly observed.
+- Added the required Meta Pixel/Facebook origins to the relevant CSP directives in `vercel.json` and added `tests/api/csp-config.test.js` to guard the allowlist.
+- This does not remove `unsafe-inline` or `unsafe-eval`; a stricter policy still requires a separate tested change.
+- Browser/runtime verification is pending the approved final release window. Vercel remains disconnected.

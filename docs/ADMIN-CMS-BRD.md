@@ -521,3 +521,9 @@ This section is the current status for the separate managed Services, Offers, Pa
 - Added a regression test in `tests/api/auth-security.test.js` for a spoofed forwarded-protocol header.
 - Commits: implementation `5bee062445dc9e852ebf4eca820f28073d943584`; test `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
 - GitHub Actions run [38251638974](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251638974) passed dependency installation, high-severity dependency audit, tests and build on the tested commit. This is CI evidence only, not live/staging verification. Vercel remains disconnected and no deployment was triggered.
+
+
+### 2026-10-12 — CSP compatibility for existing Meta Pixel
+- Added explicit CSP allowlist entries for the existing Meta Pixel script and Facebook beacon origins in `vercel.json`.
+- Added `tests/api/csp-config.test.js` to assert the required origins remain allowlisted.
+- This is source/configuration coverage only. Browser/runtime behavior is pending the final controlled release window. `unsafe-inline`/`unsafe-eval` hardening remains open.

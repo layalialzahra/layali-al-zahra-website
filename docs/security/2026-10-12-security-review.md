@@ -58,3 +58,9 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - Code commit: `5bee062445dc9e852ebf4eca820f28073d943584`.
 - Test commit: `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
 - GitHub Actions run [38251638974](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251638974) passed dependency installation, high-severity dependency audit, tests and build on commit `6769ae39e4e9d504932e1354505ed81dd90ab41d`. This verifies the regression test and source build in CI only; it is not live/staging verification. No Vercel deployment or production test occurred.
+
+
+### CSP allowlist compatibility follow-up — 2026-10-12
+- The existing inline Meta Pixel bootstrap loads `https://connect.facebook.net/en_US/fbevents.js`, but the previous CSP did not explicitly allow that script origin, and did not allow `https://www.facebook.com` in image/connect sources. This was a source/configuration finding; no browser runtime was available to confirm the actual blocked requests.
+- Updated `vercel.json` to allow the existing Pixel script origin in `script-src`, and the Facebook beacon origin in `img-src` and `connect-src`. Added `tests/api/csp-config.test.js` to prevent these required allowlist entries from being removed accidentally.
+- This does **not** resolve the separate use of `unsafe-inline` and `unsafe-eval`. A nonce/hash or external-script migration still requires a separately tested CSP change. No deployment/runtime confirmation is claimed.
