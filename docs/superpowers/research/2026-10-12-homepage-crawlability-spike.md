@@ -25,10 +25,8 @@ Do not change the public root route or claim crawlable review text yet. The safe
 - Services, offers, packages and FAQs can optionally read the new public APIs behind `VITE_MANAGED_CONTENT_ENABLED`; the default remains `false`, and the legacy content snapshots are the fallback.
 - No public cutover, Vercel configuration change or production deployment was performed.
 
-## Component-level proof-of-concept result — 2026-10-12
-- Added a server-rendering test using React's `renderToString` on the homepage component. It verifies that the component emits review text into HTML and that a supplied review marked unpublished is omitted while published text remains.
-- The POC and full build/test/audit passed in [Build verification run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658). The reachable-history scan passed in [run 38256652699](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652699): 371 commits / ~117.20 MB, zero text findings; 118 binary blobs / 170,446,401 bytes, zero findings.
-- This is **component-level only**. There is no route-aware server entry, SSR request handler, database fetch into initial HTML, hydration path or live crawler response test yet. The component still uses the existing hard-coded reviews as its fallback.
-
-## Status
-Source-level options assessed and component-level SSR feasibility test passed. Full route-aware SSR/hydration remains pending; no ranking benefit is claimed.
+## Route-aware SSR implementation result — 2026-10-12
+- Added `src/entry-server.tsx`, initial-path/review props on the app, a client hydration path, and a homepage renderer in the existing API catch-all function. The root and /home rewrites use that existing function, so the Hobby function-entrypoint count does not increase.
+- The handler injects only published reviews, applies the durable suppression list, strips internal review IDs from hydration props and HTML-escapes the serialized data. Managed reviews remain disabled by default; when the flag is enabled, an empty or failed source does not restore legacy reviews.
+- Build verification [38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839) passed tests, dependency audit, client build, SSR build and the built-server smoke test. Historical scan [38259645791](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645791) passed with zero text and binary printable-string findings.
+- This is **local/CI evidence only**. Vercel is disconnected; actual deployed rewrites/function packaging, live database access and crawler HTTP output remain unverified. No ranking benefit is claimed.

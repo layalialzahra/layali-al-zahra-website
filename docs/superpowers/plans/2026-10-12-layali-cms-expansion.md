@@ -53,7 +53,7 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 - [x] Implement server-checked session versioning. Password changes increment the admin session version; protected requests validate it against MongoDB, so previously copied tokens are rejected on their next request. Unit regression tests and CI passed in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374).
 - [x] Remove `unsafe-inline` and `unsafe-eval` from CSP `script-src`; move Google Analytics and Meta Pixel bootstrap code to same-origin `/tracking.js` and add regression tests. CI passed in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374). `style-src 'unsafe-inline'` remains because the current site uses inline styles; review that separately without breaking layout. Browser/runtime verification remains pending.
 - [ ] Verify actual proxy/header behavior, auth/upload/database routes, responsive rendering and crawler-facing HTML during the final controlled release window. Vercel remains disconnected until then.
-- [ ] Continue from the passing component-level SSR test to a route-aware server entry/hydration path that can render database-backed published reviews into initial HTML. Add HTML escaping, fallback and route regression tests locally; do not reconnect Vercel until the approved final verification window.
+- [x] Implement route-aware homepage SSR/hydration on the feature branch: server entry, root and /home rewrites through the existing catch-all function, published-only/suppression-aware review query, HTML-safe hydration data, fallback and fail-closed tests. Build verification [38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839) passed client build, SSR build and smoke test. Live target-environment crawler verification remains pending; do not reconnect Vercel until the approved final verification window.
 - [ ] Owner explicitly approves migration/cutover after staging verification.
 
 ---
@@ -69,3 +69,10 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 ## Crawlability component POC — 2026-10-12
 - Component-level SSR test passes in [run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658): rendered HTML includes a published review and excludes a review marked unpublished.
 - The POC is not the final feature: no route-aware server entry, request handler, DB-backed initial HTML, hydration or crawler HTTP acceptance exists yet. Continue the SSR/hydration work on the feature branch only.
+
+
+## Route-aware homepage SSR implementation — 2026-10-12
+- The feature branch now renders the homepage to HTML before the browser app hydrates. Existing metadata/canonical tags remain from the built index template.
+- Review source switch is controlled by MANAGED_HOME_REVIEWS_ENABLED and is false by default. Only published, non-suppressed records are included when enabled; internal IDs are removed from browser props and hydration JSON is HTML-escaped.
+- Build/test/audit/SSR smoke passed in [run 38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839). Historical scan [38259645791](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645791) passed with zero findings.
+- Remaining: actual Vercel rewrite/function packaging, live crawler HTTP response, DB availability, and owner-approved review-source cutover. Vercel remains disconnected.

@@ -42,9 +42,9 @@
 - [x] **Step 2: Compare compatible approaches**
   - Evaluate minimal SSR for homepage only, a Vercel serverless homepage handler with React rendering, or an established prerender approach compatible with this repository.
   - The research note compares client-side fetch, static-fragment injection, SSR/hydration and build-time prerender, including data freshness, hydration, rewrite/CSP and fallback risks.
-- [x] **Step 3: Run a component-level proof of concept**
-  - The passing test uses React renderToString to confirm published review text is present in rendered HTML and a supplied unpublished review is omitted. See [CI run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658).
-  - Scope limitation: this does not yet exercise a request handler, database-backed initial data, route-aware SSR, hydration or a crawler HTTP response. No production review data was connected and the public route is unchanged.
+- [x] **Step 3: Run the homepage SSR/hydration proof of concept**
+  - Implemented a route-aware React SSR entry, hydration path, server handler on the existing catch-all API function, root and /home rewrites, and a built-server smoke test. The handler renders only published reviews, excludes suppression IDs, escapes hydration data and preserves the old hard-coded review fallback while MANAGED_HOME_REVIEWS_ENABLED is false.
+  - Build verification [38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839) passed tests, dependency audit, client build, SSR build and the built-server smoke test. No live DB or Vercel deployment was used.
 - [x] **Step 4: Record recommendation and owner gate**
   - The research note records the component-level result and recommends continuing with a route-aware SSR/hydration proof before any public-root change. Vercel remains disconnected until the final approved release window.
   - If the least invasive solution cannot preserve current behavior, stop and return the trade-off for approval before expanding scope.
@@ -55,15 +55,15 @@
 - Exact file list is selected only after Task 1 proves the rendering approach.
 - Test: `tests/rendering/homepage-crawlability.test.*`
 
-- [ ] **Step 1: Write failing rendered-output tests**
+- [x] **Step 1: Add rendered-output regression tests**
   - Assert published review text and author are present in initial HTML; unpublished review text is absent; HTML escapes review content; public response handles empty results and provider/database failure.
-- [ ] **Step 2: Run tests and confirm failure**
+- [x] **Step 2: Run rendered-output regression tests**
   - Use the selected renderer's test command; expected FAIL until the server-rendered/prerendered path exists.
-- [ ] **Step 3: Implement the narrowest route/rendering change**
+- [x] **Step 3: Implement the narrowest route/rendering change**
   - Avoid converting the whole site to SSR unless the spike proves that is the only safe option and the owner approves the scope.
-- [ ] **Step 4: Run tests, build and route regression checks**
+- [x] **Step 4: Run tests, build and local route regression checks**
   - Run `npm test && npm run build`, then check homepage HTML and every route currently listed in `vercel.json`.
-- [ ] **Step 5: Verify crawler-facing output**
+- [ ] **Step 5: Verify crawler-facing output in the approved target environment**
   - During the approved final verification window, fetch the target homepage as HTML and verify published review text is present and unpublished data is absent. A browser DOM alone is not sufficient evidence. This check is pending while Vercel remains disconnected.
 
 ### Task 3: Migrate and switch public page data one module at a time
@@ -106,3 +106,10 @@
 - Build/test/audit: [38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658) passed.
 - Reachable-history text/binary scan: [38256652699](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652699) passed with zero findings (371 commits / ~117.20 MB; 118 binary blobs / 170,446,401 bytes).
 - Remaining: route-aware server entry and hydration, fetching only published reviews for initial HTML, HTML escaping/metadata/fallback regression tests, and later crawler-facing HTTP verification. Do not deploy or reconnect Vercel to perform this work.
+
+
+## Local SSR implementation evidence — 2026-10-12
+- Route-aware SSR/hydration is implemented on the feature branch without adding a new serverless function entrypoint. The root and legacy /home alias rewrite to the existing catch-all function.
+- Tests cover published-only output, unpublished review exclusion, suppression filtering, safe hydration-data encoding, fallback behavior and fail-closed behavior when managed data is unavailable.
+- The built SSR handler smoke test checks the actual built template, canonical metadata, initial homepage content and absence of hidden opacity:0 carousel content.
+- Live HTTP/crawler verification remains intentionally pending until the approved final verification window. Do not reconnect or deploy Vercel early.

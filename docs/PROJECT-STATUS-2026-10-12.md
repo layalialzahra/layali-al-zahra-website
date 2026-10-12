@@ -37,7 +37,7 @@
 | CRUD/auth/uploads/public API | Not accepted end-to-end | Test auth, same-origin rejection, validation, upload limits/signatures, draft exclusion, error/fallback behavior |
 | Migration | Dry-run/count/display-value/idempotency unit tests pass | Real staging source/target comparison remains pending; no production apply |
 | Google Reviews | Provider-independent logic, route and UI tests pass; live access blocked | Verify API/OAuth/location prerequisites and controlled sync/failure-preservation acceptance |
-| Crawlability | Research plus component-level SSR proof passed in CI | Route-aware SSR/hydration, DB-backed initial HTML and crawler HTTP acceptance remain pending |
+| Crawlability | Route-aware homepage SSR/hydration implemented; tests, SSR build and local smoke passed | Actual Vercel rewrite/function packaging and crawler HTTP acceptance remain pending; review source flag defaults off |
 | Responsive QA | Pending | Browser checks on public/admin desktop and mobile layouts |
 | Rollback/cutover | Pending, not authorised | Document rollback, acceptance evidence and explicit owner approval |
 | Vercel release | Deferred | Reconnect only after completion for one controlled final release |
@@ -53,7 +53,7 @@ Current status: script-src no longer permits unsafe-inline or unsafe-eval; track
 
 1. **Priority 2 — Security:** complete historical/binary secret review, targeted security tests, CSP plan, proxy-header trust review and session-revocation assessment.
 2. **Priority 3 — Functional acceptance:** test CRUD, auth/origin failures, uploads, published-only reads, Blog/Beauty Tips/News regressions, migration dry-run/count/repeatability and fallback behavior.
-3. **Priority 4 — Google Reviews/crawlability:** verify external prerequisites, sync failure safety and suppression; complete the narrow crawlability proof of concept and HTML-level acceptance.
+3. **Priority 4 — Google Reviews/crawlability:** verify external API prerequisites and sync safety; route-aware SSR is implemented locally. Validate deployed rewrite/function packaging and crawler-facing HTML only during the approved final verification window.
 4. **Priority 5 — Release readiness:** reconcile plan checklists, responsive browser QA, route inventory, environment checklist, rollback evidence and owner acceptance. Vercel stays disconnected until project completion.
 5. **Other pending:** keep BRD, Superpowers plans, security review and Notion aligned; decide repository privacy only at final stage.
 
@@ -175,3 +175,10 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Added a component-level server-rendering proof test. [Build verification 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658) passed audit, tests and build. Rendered HTML contains supplied published review text and excludes a supplied unpublished review. Existing hard-coded reviews remain the fallback.
 - [Historical scan 38256652699](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652699) passed: 371 commits / ~117.20 MB with zero text findings; 118 binary blobs / 170,446,401 bytes with zero findings.
 - Remaining: route-aware SSR/hydration, database-backed published-review HTML, crawler HTTP acceptance, real staging migration comparison, Google API access, responsive browser QA and final release approval. Vercel remains disconnected.
+
+
+## Route-aware homepage SSR status — 2026-10-12
+- Implemented route-aware homepage SSR/hydration in the existing catch-all API function. Root and /home rewrite to the handler; no extra function entrypoint was added.
+- Only published, non-suppressed Google reviews can be rendered when MANAGED_HOME_REVIEWS_ENABLED is explicitly true. The flag defaults false; current hard-coded reviews remain the fallback until owner-approved cutover. Managed-mode lookup failure does not restore legacy reviews.
+- Build verification [38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839) passed dependency audit, tests, client build, SSR build and the built-server smoke test. Historical scan [38259645791](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645791) passed with zero text and binary printable-string findings.
+- Live Vercel routing/function packaging, database credentials, Google Business Profile access and crawler HTTP response remain unverified. Vercel remains disconnected; no production change occurred.
