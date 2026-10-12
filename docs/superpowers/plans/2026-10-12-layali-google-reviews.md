@@ -168,3 +168,9 @@ Keep Task 15 unchecked until the owner-authorised non-production target and live
 - Extended `tests/api/google-reviews-sync.test.js` with mock fault cases for provider HTTP failure, timeout-class exception, incomplete final count and malformed page shape. Each asserts HTTP 502, no review bulk write, unchanged full local fixture and unchanged published subset.
 - Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`.
 - These are automated mocked-provider tests, not provider-level/live Google tests. Build verification [38321074011](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321074011) and historical secret scan [38321073947](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321073947) passed on the test commit. Authorised Google API access and isolated runtime remain unverified. MongoDB write-phase partial failure remains a separate risk.
+
+## Task 18 — Google Reviews admin UI acceptance — 2026-10-13
+
+- Expanded `tests/admin/GoogleReviewsManager.test.tsx` for rating/publication filters, search submission, explicit unpublish persistence, delete-confirmation cancellation, loading, list/action/sync errors and unavailable credentials. Existing coverage includes selection without publication, explicit publish and local-only delete confirmation.
+- Added `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`.
+- CI result pending confirmation. Tests are component/API-fixture coverage, not deployed browser or live database acceptance. Google API/OAuth/location and authorised isolated staging remain unverified; no live provider sync or deployment.
