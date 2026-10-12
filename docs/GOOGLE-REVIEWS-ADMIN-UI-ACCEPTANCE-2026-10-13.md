@@ -37,4 +37,4 @@ The first CI run exposed two test failures. One assertion matched both the filte
 - These are automated component/API-fixture tests, not deployed browser acceptance or live database persistence proof.
 - Google Business Profile API/OAuth/location access and an authorised isolated staging target remain unverified. No provider-level sync was performed.
 - No production data, live Google source, Vercel deployment or public review cutover was touched.
-- Task 18 remains open until CI results are confirmed and the authorised runtime persistence/acceptance gate is available.
+- CI results are confirmed. Task 18 remains open until the authorised runtime persistence and deployed-browser acceptance gate is available.
