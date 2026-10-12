@@ -76,3 +76,12 @@ Do not begin a downstream plan until its dependency and the relevant open decisi
 - Review source switch is controlled by MANAGED_HOME_REVIEWS_ENABLED and is false by default. Only published, non-suppressed records are included when enabled; internal IDs are removed from browser props and hydration JSON is HTML-escaped.
 - Build/test/audit/SSR smoke passed in [run 38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839). Historical scan [38259645791](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645791) passed with zero findings.
 - Remaining: actual Vercel rewrite/function packaging, live crawler HTTP response, DB availability, and owner-approved review-source cutover. Vercel remains disconnected.
+
+## Documentation reconciliation checkpoint — 2026-10-12
+
+- Audited HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`; the branch ref compared identical.
+- Latest Build verification [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) passed dependency install, `npm audit --audit-level=high`, tests and build. Latest historical scan [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) passed text/history and binary printable-string scan steps.
+- **Plan-sequence deviation recorded:** route-aware SSR implementation proceeded before Core CMS Task 6 and live Google Reviews staging acceptance were complete. The code remains undeployed; this does not close any upstream acceptance gate.
+- **Open SSR fallback gap:** generic homepage-render exceptions currently return the original HTML shell with empty `#root` and HTTP 200. This does not satisfy a useful static fallback expectation. Managed review lookup failure in managed mode separately fails closed to an empty review set by design.
+- **Next approved task:** Core CMS Task 6 — stage verification and core CMS acceptance gate. The automated-check step is supported by run 38259999486; safe staging CRUD/auth/origin/upload/public-read checks, real staging migration comparison and owner acceptance remain open.
+- No Vercel reconnect/deployment, production migration/cutover or `main` push is authorized by this plan update.
