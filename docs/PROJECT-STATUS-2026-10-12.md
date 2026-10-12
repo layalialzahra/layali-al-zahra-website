@@ -32,8 +32,8 @@
 | Workstream | State | Remaining proof |
 |---|---|---|
 | Core CMS implementation | Implemented in branch | End-to-end controlled acceptance |
-| CI, tests, dependency audit, build | Latest observed run passed | Rerun after code changes |
-| Security | Source-reviewed; residual risks remain | CSP `unsafe-inline`/`unsafe-eval`; trusted-proxy IP assumptions; stateless-session revocation; full historical/binary secret review |
+| CI, tests, dependency audit, build | [Run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed after security changes | Rerun after future code changes |
+| Security | Targeted code fixes and CI checks passed | style-src inline allowance, actual proxy chain and browser/runtime acceptance remain open; session revocation and script-CSP changes implemented; reachable history/binary-string scan passed |
 | CRUD/auth/uploads/public API | Not accepted end-to-end | Test auth, same-origin rejection, validation, upload limits/signatures, draft exclusion, error/fallback behavior |
 | Migration | Not verified | Dry-run, source-to-schema mapping, count/content comparison and repeatability; no production apply |
 | Google Reviews | Code exists; live access blocked | Verify API/OAuth/location prerequisites and test failure-preservation/suppression in controlled conditions |
@@ -47,7 +47,7 @@
 
 Source review found scrypt password hashing, HMAC-signed eight-hour HttpOnly/SameSite=Lax sessions (Secure in production), same-origin checks for state-changing requests, login lockout logic, 4 MB upload limits with MIME/signature matching, protected admin CRUD, published-only public reads, allowlisted serializers and Google sync pagination validation before local writes.
 
-Residual risks: CSP allows `unsafe-inline` and `unsafe-eval`; login throttling trusts the first `x-forwarded-for` value pending proxy trust verification; sessions are stateless and a copied token may remain valid until expiry after password change. Live environment configuration and complete historical/binary secret review are unverified. This was a source review, not a penetration test or live acceptance.
+Current status: script-src no longer permits unsafe-inline or unsafe-eval; tracking bootstraps load from same-origin /tracking.js. style-src unsafe-inline remains for existing inline styles. Password changes now increment a server-checked session version so old copied tokens are rejected on subsequent protected requests. Vercel documentation supports the forwarded-IP approach for direct Vercel traffic, but the live proxy chain remains unverified. Reachable text and printable binary-string scans passed with zero findings. Live environment configuration and browser/runtime behavior remain unverified. This is CI/source evidence, not a penetration test or live acceptance.
 
 ## Next work in order
 
@@ -159,3 +159,12 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Latest scan [38253958356](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958356) reported 359 commits / ~117.17 MB with zero text findings and 118 binary blobs / 170,446,401 bytes with zero findings.
 - Build verification [38253958446](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958446) passed audit, tests and build.
 - Remaining: session revocation decision, stricter CSP, final proxy/runtime acceptance, functional acceptance, crawlability and Google API prerequisites. Vercel remains disconnected.
+
+
+## Updated security and CI checkpoint — 2026-10-12
+
+- Build verification [38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed dependency audit, tests and build after the session-revocation and CSP script changes.
+- Historical secret scan [38255367338](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367338) passed: 364 commits / ~117.18 MB reachable history, zero text findings; 118 binary blobs containing printable strings / 170,446,401 bytes, zero findings. This is heuristic scanning and does not inspect compressed/encrypted payloads semantically.
+- Session versioning is implemented and covered by regression tests. Password changes invalidate previous copied sessions on the next protected request.
+- script-src has no unsafe-inline/unsafe-eval; tracking initialization is externalized. style-src unsafe-inline remains and requires separate layout-safe hardening. No browser/runtime test was performed.
+- Google Business Profile access, crawlability proof of concept, migration dry-run/repeatability, responsive browser QA and final release approval remain pending. Vercel stays disconnected.
