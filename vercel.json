@@ -53,7 +53,7 @@
     },
     {
       "source": "/home",
-      "destination": "/"
+      "destination": "/api/render-home"
     }
   ],
   "headers": [
