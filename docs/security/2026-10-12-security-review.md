@@ -104,3 +104,9 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - This closes the current Gitleaks text/history scan for reachable refs included by the full-history checkout. It does **not** prove secrets never existed in unreachable history or external systems, and it does not replace a dedicated binary-blob scan.
 - The combined Build verification attempt at [38252703914](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38252703914) failed during Gitleaks installation and skipped the build/test steps. To avoid coupling build reliability to scanner installation, Gitleaks now runs in the separate `.github/workflows/secret-scan.yml`; Build verification remains responsible for dependency audit, tests and build.
 - Binary-blob inspection, `x-forwarded-for` trust, session revocation and strict CSP hardening remain open.
+
+
+### Binary-blob review automation — 2026-10-12
+- Added `scripts/scan-binary-history.py` and a step in the dedicated secret-scan workflow. It enumerates reachable Git objects, extracts printable strings from binary blobs and runs Gitleaks against those strings.
+- The script prints only finding count, rule ID, source path, line and abbreviated blob ID; it does not print secret/match fields. It is heuristic and cannot inspect compressed/encrypted content semantically.
+- First binary scan result is pending. Keep the binary-blob gate open until the workflow completes and findings, if any, are triaged.

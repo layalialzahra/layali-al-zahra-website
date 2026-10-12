@@ -129,3 +129,9 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Standalone run [38252703895](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38252703895) passed after the documented Web3Forms access-key allowlist: 354 commits scanned, approximately 117.15 MB, 0 findings.
 - Scope is reachable Git history/text scanning from a full-history checkout. Binary-blob inspection remains open; do not generalize this to “no secrets ever existed.”
 - Removed duplicate Gitleaks installation from Build verification after that combined run failed during scanner installation and skipped audit/tests/build. The dedicated historical scan workflow remains; the standard build workflow is restored to dependency audit, tests and build.
+
+
+## Binary history scan — 2026-10-12
+
+- Added `scripts/scan-binary-history.py` to inspect printable strings from binary blobs reachable in Git history and run Gitleaks over the extracted strings.
+- Output is limited to redacted finding metadata. The scan is heuristic; compressed/encrypted payloads are not semantically inspected. First run pending; keep the binary review gate open until result and triage.
