@@ -276,12 +276,13 @@ import React, { useState, useEffect } from 'react';
     },
   ];
 
-  interface HomePageReview {
+  export interface HomePageReview {
     title: string;
     initials: string;
     description: string;
     image?: string;
     isPublished?: boolean;
+    rating?: number | null;
   }
 
   interface HomePageProps {
@@ -303,7 +304,7 @@ import React, { useState, useEffect } from 'react';
     const handlePrev = () => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
 
     const getVisibleItems = () => (typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 3);
-    const [itemsToShow, setItemsToShow] = useState(getVisibleItems());
+    const [itemsToShow, setItemsToShow] = useState(3);
 
     useEffect(() => {
       const handleResize = () => setItemsToShow(getVisibleItems());
@@ -338,7 +339,7 @@ import React, { useState, useEffect } from 'react';
                           <div>
                             <h4 className="text-gray-900">{item.title}</h4>
                             <div className="flex text-amber-500">
-                              {'★★★★★'.split('').map((star, i) => <span key={i}>{star}</span>)}
+                              {Array.from({ length: Number.isInteger(item.rating) ? Math.max(0, Math.min(5, item.rating)) : item.rating === null ? 0 : 5 }, (_, i) => <span key={i}>★</span>)}
                             </div>
                           </div>
                         </div>

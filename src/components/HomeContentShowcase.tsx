@@ -15,7 +15,7 @@ const configs: Record<ContentType, { title: string; subtitle: string; path: stri
 
 function ContentCarousel({ type, items, onNavigate }: { type: ContentType; items: Item[]; onNavigate: (page: string) => void }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsToShow, setItemsToShow] = useState(typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 3);
+  const [itemsToShow, setItemsToShow] = useState(3);
   const config = configs[type]; const Icon = config.icon;
   useEffect(() => { const onResize = () => setItemsToShow(window.innerWidth < 768 ? 1 : 3); window.addEventListener('resize', onResize); return () => window.removeEventListener('resize', onResize); }, []);
   useEffect(() => { if (items.length < 2) return; const interval = setInterval(() => setCurrentIndex(prev => (prev + 1) % items.length), 4000); return () => clearInterval(interval); }, [items.length]);
