@@ -129,10 +129,10 @@ export function isSessionVersionCurrent(session, admin) {
   const tokenVersion = Number.isInteger(session.sessionVersion) ? session.sessionVersion : 0;
   return currentVersion === tokenVersion;
 }
-export async function getValidSession(req) {
+export async function getValidSession(req, lookupAdmin = findAdmin) {
   const session = getSession(req);
   if (!session) return null;
-  const admin = await findAdmin(session.username);
+  const admin = await lookupAdmin(session.username);
   return isSessionVersionCurrent(session, admin) ? session : null;
 }
 export function setSession(res, admin) {
