@@ -57,4 +57,4 @@ Vercel remains disconnected by owner instruction and today's feature-branch chan
 - Added a regression test in `tests/api/auth-security.test.js` proving a forwarded-protocol value of `http` cannot make an HTTP Origin acceptable in production, while the matching HTTPS Origin is accepted.
 - Code commit: `5bee062445dc9e852ebf4eca820f28073d943584`.
 - Test commit: `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
-- CI has been triggered by the feature-branch commits; the result must be checked before treating this change as verified. No Vercel deployment or production test occurred.
+- GitHub Actions run [38251638974](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251638974) passed dependency installation, high-severity dependency audit, tests and build on commit `6769ae39e4e9d504932e1354505ed81dd90ab41d`. This verifies the regression test and source build in CI only; it is not live/staging verification. No Vercel deployment or production test occurred.

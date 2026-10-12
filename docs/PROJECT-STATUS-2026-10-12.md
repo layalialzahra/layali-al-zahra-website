@@ -84,5 +84,5 @@ Update the Notion hub, decisions, stages, agents and log for meaningful verified
 - Test commit: `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
 - Security review documentation commit: `e3725f807f2f7bc91fc2a007cbdc30c6835ca12b`.
 - BRD change-log commit: `b3abd690e65859929c23d7b40e23f4ebbc1d3491`.
-- This source-level hardening is not accepted until GitHub Actions passes. The separate `x-forwarded-for` client-IP trust review, session revocation, CSP validation and complete historical/text/binary secret scan remain open.
+- GitHub Actions run [38251638974](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251638974) passed dependency installation, high-severity dependency audit, tests and build on tested commit `6769ae39e4e9d504932e1354505ed81dd90ab41d`. This verifies CI only, not deployed behavior. The separate `x-forwarded-for` client-IP trust review, session revocation, CSP validation and complete historical/text/binary secret scan remain open.
 - No Vercel deployment or live/staging verification was initiated.

@@ -520,4 +520,4 @@ This section is the current status for the separate managed Services, Offers, Pa
 - Hardened `api/_lib/auth.js` so production same-origin validation pins the expected protocol to HTTPS rather than trusting `x-forwarded-proto` for the scheme decision.
 - Added a regression test in `tests/api/auth-security.test.js` for a spoofed forwarded-protocol header.
 - Commits: implementation `5bee062445dc9e852ebf4eca820f28073d943584`; test `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
-- GitHub Actions verification is pending; this is not live/staging verification. Vercel remains disconnected and no deployment was triggered.
+- GitHub Actions run [38251638974](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251638974) passed dependency installation, high-severity dependency audit, tests and build on the tested commit. This is CI evidence only, not live/staging verification. Vercel remains disconnected and no deployment was triggered.
