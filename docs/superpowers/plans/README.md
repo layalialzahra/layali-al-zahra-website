@@ -110,3 +110,9 @@ Latest branch HEAD `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438` passed Build verif
 ## Short Task List Task 15 — controlled Google Reviews sync (2026-10-13)
 
 **OPEN / BLOCKED.** No live sync attempted because Google Business Profile API approval/enablement, OAuth grant/scope, live credential presence and verified-location access remain unverified. Source review confirms pagination/count/duplicate-token validation before sync writes and existing unit coverage for complete multi-page and incomplete-page fixtures; this is not live acceptance. Real page/count/data-integrity checks and runtime preservation of existing records remain NOT RUN. MongoDB bulk writes may partially apply if the database write itself fails; that risk requires a separate fix/test. See [Task 15 blocker report](../../GOOGLE-REVIEWS-CONTROLLED-SYNC-BLOCKER-2026-10-13.md). Vercel remains disconnected and no successful live sync is claimed.
+
+## Short Task List Task 16 — review moderation — 2026-10-13
+
+- Added route-level lifecycle regression `tests/api/google-reviews-moderation-e2e.test.js` for local deletion/suppression across sync, default-unpublished imports, explicit publish and preservation of existing publication/order.
+- Acceptance record: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
+- CI is running; do not claim test execution until the run is checked. Runtime/staging acceptance remains open under Task 02's missing authorised isolated environment. No Google API call, production write, deployment or public-source cutover.
