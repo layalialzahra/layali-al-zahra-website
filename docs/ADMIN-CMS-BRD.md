@@ -676,3 +676,10 @@ Automated Offers management checks pass on code/test commit `526047628878e300791
 - Build verification [38273001219](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001219) passed install, `npm audit --audit-level=high` (0 vulnerabilities), 87 Node tests, 27 Vitest tests across 6 files, client build, SSR build and homepage SSR smoke test.
 - Historical scan [38273001202](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001202) passed: 463 reachable commits / ~117.35 MB, zero Gitleaks findings; 118 reachable binary blobs / 170,446,401 bytes, zero findings.
 - No authorised isolated staging database has been verified, so actual MongoDB persistence, real Blob upload/storage, staging CRUD/auth/origin/public-read checks and migration comparison remain unverified. No live writes, upload, migration, deployment or public content-source change occurred. Vercel remains disconnected.
+
+
+## Expansion acceptance checkpoint — Short Task List Task 06 (2026-10-12)
+
+FAQ acceptance coverage has been added for create/update/delete, default draft state, order, publish/unpublish transitions, page association validation and reassignment, published-only reads, per-page isolation, invalid/missing page-key handling and admin UI filtering/error feedback. Source review found the FAQ validator and route enforce explicit valid page keys and filter public responses by both published status and requested page. No application logic change was justified by the inspected source.
+
+The test commits are `83b248c2480c0859911c58bbcf940bf0fe8dcbea` and `e0efd65cac369ff242b3093753c5e1a9ac209da3`. The available GitHub status/workflow query returned no check result for these commits; test execution and build success remain unverified and must not be claimed. Runtime acceptance remains blocked by Task 02: no authorised, production-isolated non-production database is verified. No production data, deployment, migration or public content source was changed; Vercel remains disconnected. Task 06 remains open pending evidence.
