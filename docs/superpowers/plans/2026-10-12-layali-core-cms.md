@@ -194,3 +194,9 @@
 - Audited HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. Build/test/audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486).
 - Task 6 Step 1 is verified by CI and marked complete. Steps 2–5 remain unchecked: no controlled staging CRUD/auth/origin/upload/public-read acceptance, real staging DB comparison, owner acceptance or BRD acceptance record has been produced by this audit.
 - The owner-confirmed Vercel hold prevents using a new Vercel deployment for this task. Do not treat CI success as staging or production evidence. Core CMS acceptance remains open.
+
+## Task 01 — status reconciliation (2026-10-12)
+
+- Verified `feat/layali-managed-content-cms` at `dbd22794c87a7f6cd80003e32c4713d1463d8b34` before this docs-only update; compared with audited implementation baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`, the branch is 15 commits ahead and 0 behind, with documentation-only changes.
+- Core Task 6 Step 1 (dependency installation, high-severity audit, `npm test`, `npm run build`) passed in [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) on `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`; historical text/binary scan [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) also passed on that baseline. No Actions runs were returned for `dbd22794c87a7f6cd80003e32c4713d1463d8b34`; the only status was a Vercel failure context to a generic configuration URL, not evidence of a deployment.
+- **Next:** Short Task List Task 02 must establish an authorised non-production environment/database without reconnecting Vercel. Then continue Task 6 Steps 2–5. Staging CRUD/auth/origin/upload/public-read checks, real staging migration comparison and explicit owner acceptance remain open. No production migration/cutover is authorised.
