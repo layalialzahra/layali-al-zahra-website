@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, FilePlus2, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 
 type ResourceType = "service" | "offer" | "package" | "faq";
-type FieldType = "text" | "textarea" | "number" | "url" | "date" | "select" | "image" | "subservices" | "list";
+type FieldType = "text" | "textarea" | "number" | "url" | "date" | "select" | "category-select" | "image" | "subservices" | "list";
 type FieldOption = { label: string; value: string };
 type Field = { key: string; label: string; type?: FieldType; required?: boolean; options?: FieldOption[] };
 type RecordData = Record<string, any>;
@@ -17,7 +17,7 @@ const configs: Record<ResourceType, { title: string; singular: string; empty: st
     title: "Services", singular: "Service", empty: "No services yet", endpoint: "/api/admin/services",
     fields: [
       { key: "title", label: "Title", required: true }, { key: "slug", label: "URL slug" },
-      { key: "description", label: "Description", type: "textarea" }, { key: "category", label: "Category" },
+      { key: "description", label: "Description", type: "textarea" }, { key: "category", label: "Category", type: "category-select" },
       { key: "imageUrl", label: "Image", type: "image" }, { key: "imageAlt", label: "Image alt text" },
       { key: "subservices", label: "Subservices", type: "subservices" }, { key: "sortOrder", label: "Display order", type: "number" },
       { key: "seoTitle", label: "SEO title" }, { key: "metaDescription", label: "Meta description", type: "textarea" },
@@ -88,6 +88,10 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   const [success, setSuccess] = useState("");
   const [search, setSearch] = useState("");
   const [faqPage, setFaqPage] = useState("services");
+  const [serviceCategories, setServiceCategories] = useState<{ id: string | null; name: string }[]>([]);
+  const [categoryName, setCategoryName] = useState("");
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [categoryBusy, setCategoryBusy] = useState(false);
 
   const loadRecords = useCallback(async () => {
     setLoading(true);
@@ -105,6 +109,39 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   }, [config.endpoint, faqPage, type]);
 
   useEffect(() => { void loadRecords(); }, [loadRecords]);
+
+  const loadServiceCategories = useCallback(async () => {
+    try {
+      const data = await readResponse(await fetch("/api/admin/service-categories", { credentials: "include" }));
+      setServiceCategories(Array.isArray(data.items) ? data.items : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to load service categories.");
+    }
+  }, []);
+  useEffect(() => { if (type === "service") void loadServiceCategories(); }, [type, loadServiceCategories]);
+
+  const saveCategory = async () => {
+    setCategoryBusy(true); setError(""); setSuccess("");
+    try {
+      const method = editingCategory ? "PUT" : "POST";
+      const body = editingCategory ? { oldName: editingCategory, name: categoryName } : { name: categoryName };
+      await readResponse(await fetch("/api/admin/service-categories", { method, credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
+      setSuccess(editingCategory ? "Service category updated." : "Service category added.");
+      setCategoryName(""); setEditingCategory(null);
+      await Promise.all([loadServiceCategories(), loadRecords()]);
+    } catch (err) { setError(err instanceof Error ? err.message : "Unable to save service category."); }
+    finally { setCategoryBusy(false); }
+  };
+  const deleteCategory = async (name: string) => {
+    if (!window.confirm(`Delete the service category "${name}"? Categories assigned to services cannot be deleted.`)) return;
+    setCategoryBusy(true); setError(""); setSuccess("");
+    try {
+      await readResponse(await fetch("/api/admin/service-categories", { method: "DELETE", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ oldName: name }) }));
+      setSuccess("Service category deleted.");
+      await loadServiceCategories();
+    } catch (err) { setError(err instanceof Error ? err.message : "Unable to delete service category."); }
+    finally { setCategoryBusy(false); }
+  };
 
   const importExistingWebsiteContent = async () => {
     if (!window.confirm("Import the existing Services, Offers, Packages and FAQs into the live CMS database? Missing records will be added. Existing CMS edits will be preserved.")) return;
@@ -272,6 +309,9 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
       const value = Array.isArray(form[field.key]) ? form[field.key].join("\n") : String(form[field.key] || "");
       return <label className="managed-field" key={field.key} htmlFor={id}><span>{field.label}</span><textarea id={id} rows={4} value={value} onChange={(event) => setField(field.key, event.target.value.split("\n"))}/></label>;
     }
+    if (field.type === "category-select") {
+      return <label className="managed-field" key={field.key} htmlFor={id}><span>{field.label}</span><select id={id} value={form[field.key] || ""} onChange={(event) => setField(field.key, event.target.value)}><option value="">Select a category</option>{serviceCategories.map((category) => <option key={category.name} value={category.name}>{category.name}</option>)}</select></label>;
+    }
     if (field.type === "select") {
       return <label className="managed-field" key={field.key} htmlFor={id}><span>{field.label}</span><select id={id} required={field.required} value={form[field.key] || ""} onChange={(event) => setField(field.key, event.target.value)}>
         {(field.options || []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -291,6 +331,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
+    {type === "service" && <section className="managed-editor service-category-manager" aria-label="Service categories"><div className="managed-editor-head"><div><h2>Service categories</h2><p>Add, rename or delete categories separately from individual services.</p></div></div><div className="managed-subservice-row"><label className="managed-field"><span>{editingCategory ? "Rename category" : "New category"}</span><input value={categoryName} maxLength={120} onChange={(event) => setCategoryName(event.target.value)} placeholder="Category name"/></label><button type="button" className="cms-primary-button" disabled={categoryBusy || !categoryName.trim()} onClick={() => void saveCategory()}>{editingCategory ? "Save category" : "Add category"}</button>{editingCategory && <button type="button" className="cms-secondary-button" disabled={categoryBusy} onClick={() => { setEditingCategory(null); setCategoryName(""); }}>Cancel</button>}</div><div className="managed-record-list">{serviceCategories.map((category) => <div className="managed-record" key={category.name}><div className="managed-record-main"><strong>{category.name}</strong></div><div className="managed-record-actions"><button type="button" className="managed-icon-button" disabled={categoryBusy} onClick={() => { setEditingCategory(category.name); setCategoryName(category.name); }}>Edit category</button><button type="button" className="managed-icon-button danger" disabled={categoryBusy} onClick={() => void deleteCategory(category.name)}>Delete category</button></div></div>)}</div></section>}
     {type === "faq" && <label className="managed-filter"><span>Filter FAQs by page</span><select aria-label="FAQ page" value={faqPage} onChange={(event) => setFaqPage(event.target.value)}>{pageOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>}
     {formOpen && <form className="managed-editor" aria-label={`${config.singular} editor`} onSubmit={(event) => event.preventDefault()}>
       <div className="managed-editor-head"><div><h2>{editing ? `Edit ${config.singular}` : `Add ${config.singular}`}</h2><p>Save as a draft or explicitly publish when ready.</p></div>
