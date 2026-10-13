@@ -175,3 +175,13 @@ Acceptance record: [Homepage SSR and Hydration Acceptance](../../HOMEPAGE-SSR-HY
 - Stopped before application-code changes, feature-flag changes or new integration tests. Managed public content remains disabled; legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
 - Blocker record: [Packages and FAQ Integration Blocker](../../PACKAGES-FAQ-INTEGRATION-BLOCKER-2026-10-13.md).
 - Resume only after Core CMS acceptance is explicitly recorded. Then verify published packages, pricing, categories/filters, images, booking destinations, published FAQs, legacy fallback, and existing presentation/booking/contact behavior.
+
+
+### Task 24 — Homepage showcase-to-record mapping gate — 2026-10-13
+
+- [ ] **BLOCKED: do not implement mapping changes or accept mapping behavior until Core CMS acceptance is explicitly recorded.**
+- Task 13 remains HOLD/OPEN. No owner-authorised production-isolated staging DB is verified; staging migration, database counts/field integrity, repeat-run idempotency, rollback/recovery and end-to-end CMS staging acceptance remain outstanding.
+- No application code, mapping behavior, feature flag or test was changed under Task 24. Existing CI is not evidence of live canonical-record integrity.
+- Managed public content remains disabled; legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
+- Blocker record: [Homepage Showcase Mapping Blocker](../../HOMEPAGE-SHOWCASE-MAPPING-BLOCKER-2026-10-13.md).
+- After explicit Core CMS acceptance, verify canonical Service/Offer/Package references; preserve curated selection, order, card design and booking destinations; test missing, invalid and unpublished records plus safe fallback; add regression tests and record CI evidence.
