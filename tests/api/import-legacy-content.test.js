@@ -55,7 +55,7 @@ test("legacy import requires explicit confirmation", async () => {
   assert.equal(called, false);
 });
 
-test("legacy import reports added records without claiming public cutover", async () => {
+test("legacy import reports inserted record counts", async () => {
   const calls = [];
   const handler = createLegacyImportHandler({
     requireAdminFn: admin, sameOriginFn: () => true,
