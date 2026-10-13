@@ -102,15 +102,17 @@ export async function migrateManagedContent({
         return {
           updateOne: {
             filter: recordFilter(name, record),
-            update: { $set: { ...fields, updatedAt: now }, $setOnInsert: { createdAt: now } },
+            // Seed only missing records. Never replace content an admin has edited,
+            // unpublished or reordered on a previous run.
+            update: { $setOnInsert: { ...fields, createdAt: now, updatedAt: now } },
             upsert: true,
           },
         };
       });
       const result = await collection.bulkWrite(operations, { ordered: false });
       results[name] = {
-        upserted: result.upsertedCount || 0,
-        matched: result.matchedCount || 0,
+        inserted: result.upsertedCount || 0,
+        alreadyPresent: result.matchedCount || 0,
         modified: result.modifiedCount || 0,
       };
     }
