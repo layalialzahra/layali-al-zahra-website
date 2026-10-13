@@ -185,3 +185,13 @@ Acceptance record: [Homepage SSR and Hydration Acceptance](../../HOMEPAGE-SSR-HY
 - Managed public content remains disabled; legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
 - Blocker record: [Homepage Showcase Mapping Blocker](../../HOMEPAGE-SHOWCASE-MAPPING-BLOCKER-2026-10-13.md).
 - After explicit Core CMS acceptance, verify canonical Service/Offer/Package references; preserve curated selection, order, card design and booking destinations; test missing, invalid and unpublished records plus safe fallback; add regression tests and record CI evidence.
+
+
+### Task 25 — Deployed crawlability acceptance gate — 2026-10-13
+
+- [ ] **OPEN / BLOCKED:** verify only during an explicitly owner-approved release window and environment.
+- No approval naming the release window/target or safe deployed access is evidenced. Vercel remains disconnected; do not reconnect or deploy under the existing hold.
+- Not run: deployed rewrites/function packaging; HTTP initial HTML/status/headers for `/` and `/home`; title/description/canonical metadata; published-only review output and draft/suppressed exclusion.
+- Local SSR smoke/CI does not establish deployed HTTP behavior. No deployment, production write/migration, public-source switch or `main` change occurred.
+- Blocker/evidence checklist: [Task 25 deployed crawlability blocker](../../DEPLOYED-CRAWLABILITY-ACCEPTANCE-BLOCKER-2026-10-13.md).
+- Resume only with explicit owner approval and environment access; record deployed commit/deployment ID, route/function evidence, raw responses, metadata/canonicals and published-only review output. Leave unchecked until evidence is captured.
