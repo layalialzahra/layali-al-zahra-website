@@ -2,7 +2,7 @@ import { createManagedContentHandler } from "./_lib/managed-content-routes.js";
 import { requireAdmin, sameOrigin } from "./_lib/auth.js";
 import { getDb } from "./_lib/mongodb.js";
 import { migrateManagedContent, buildManagedContentRecords } from "../scripts/migrate-managed-content.js";
-import { createLegacyImportHandler } from "./admin/import-legacy-content.js";
+import { createLegacyImportHandler } from "./_lib/import-legacy-content.js";
 import { createHomepageRenderHandler } from "./_lib/homepage-renderer.js";
 import {
   createGoogleReviewsAdminHandler,
