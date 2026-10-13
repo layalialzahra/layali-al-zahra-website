@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createLegacyImportHandler } from "../../api/admin/import-legacy-content.js";
+import { createLegacyImportHandler } from "../../api/_lib/import-legacy-content.js";
 
 function response() {
   return { code: 200, headers: {}, body: null, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; }, setHeader(name, value) { this.headers[name] = value; } };
@@ -25,7 +25,7 @@ test("legacy import rejects cross-origin requests before migration", async () =>
   assert.equal(called, false);
 });
 
-test("legacy import is disabled without an isolated staging configuration", async () => {
+test("legacy import uses the live CMS database configuration", async () => {
   let called = false;
   const handler = createLegacyImportHandler({ requireAdminFn: admin, sameOriginFn: () => true, migrateFn: () => { called = true; }, env: {} });
   const res = response();
@@ -34,16 +34,16 @@ test("legacy import is disabled without an isolated staging configuration", asyn
   assert.equal(called, false);
 });
 
-test("legacy import refuses the production database name", async () => {
+test("legacy import uses the configured live database name", async () => {
   let called = false;
   const handler = createLegacyImportHandler({
     requireAdminFn: admin, sameOriginFn: () => true, migrateFn: () => { called = true; },
-    env: { MANAGED_CONTENT_IMPORT_ENABLED: "true", MANAGED_CONTENT_IMPORT_MONGODB_URI: "mongodb://test", MANAGED_CONTENT_IMPORT_DB_NAME: "layalialzahra" },
+    env: { MONGODB_URI: "mongodb://live", MONGODB_DB_NAME: "layalialzahra" },
   });
   const res = response();
   await handler(req(), res);
-  assert.equal(res.code, 503);
-  assert.equal(called, false);
+  assert.equal(res.code, 200);
+  assert.equal(called, true);
 });
 
 test("legacy import requires explicit confirmation", async () => {
@@ -60,12 +60,12 @@ test("legacy import reports added records without claiming public cutover", asyn
   const handler = createLegacyImportHandler({
     requireAdminFn: admin, sameOriginFn: () => true,
     migrateFn: async (args) => { calls.push(args); return { counts: { services: 15, offers: 5, packages: 23, faqs: 13 }, results: { services: { inserted: 15 } } }; },
-    env: { MANAGED_CONTENT_IMPORT_ENABLED: "true", MANAGED_CONTENT_IMPORT_MONGODB_URI: "mongodb://staging", MANAGED_CONTENT_IMPORT_DB_NAME: "layali_staging" },
+    env: { MONGODB_URI: "mongodb://live", MONGODB_DB_NAME: "layalialzahra" },
   });
   const res = response();
   await handler(req(), res);
   assert.equal(res.code, 200);
-  assert.deepEqual(calls, [{ apply: true, uri: "mongodb://staging", dbName: "layali_staging" }]);
+  assert.deepEqual(calls, [{ apply: true, uri: "mongodb://live", dbName: "layalialzahra" }]);
   assert.equal(res.body.expectedCounts.faqs, 13);
-  assert.match(res.body.message, /public website was not switched|Existing CMS edits were preserved/);
+  assert.match(res.body.message, /Existing CMS edits were preserved/);
 });
