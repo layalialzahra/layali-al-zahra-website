@@ -88,30 +88,23 @@ test("suppressed local reviews are excluded from server-rendered homepage conten
 });
 
 
-test("managed review mode fails closed instead of restoring legacy reviews on lookup failure", async () => {
-  const previous = process.env.MANAGED_HOME_REVIEWS_ENABLED;
-  process.env.MANAGED_HOME_REVIEWS_ENABLED = "true";
+test("homepage review lookup failure fails closed without restoring hardcoded reviews", async () => {
   let renderedReviews;
-  try {
-    const res = response();
-    const handler = createHomepageRenderHandler({
-      readTemplate: async () => '<!doctype html><html><body><div id="root"></div></body></html>',
-      getPublishedReviews: async () => { throw new Error("database unavailable"); },
-      renderPage: async (_pathname, reviews) => {
-        renderedReviews = reviews;
-        return "<main>Managed mode</main>";
-      },
-      logger: { error() {} },
-    });
-    await handler({ method: "GET" }, res);
-    assert.equal(res.code, 200);
-    assert.deepEqual(renderedReviews, []);
-    assert.match(res.body, /data-initial-reviews="\[\]"/);
-    assert.doesNotMatch(res.body, /Shauna Haberlin/);
-  } finally {
-    if (previous === undefined) delete process.env.MANAGED_HOME_REVIEWS_ENABLED;
-    else process.env.MANAGED_HOME_REVIEWS_ENABLED = previous;
-  }
+  const res = response();
+  const handler = createHomepageRenderHandler({
+    readTemplate: async () => '<!doctype html><html><body><div id="root"></div></body></html>',
+    getPublishedReviews: async () => { throw new Error("database unavailable"); },
+    renderPage: async (_pathname, reviews) => {
+      renderedReviews = reviews;
+      return "<main>Homepage</main>";
+    },
+    logger: { error() {} },
+  });
+  await handler({ method: "GET" }, res);
+  assert.equal(res.code, 200);
+  assert.deepEqual(renderedReviews, []);
+  assert.match(res.body, /data-initial-reviews="\[\]"/);
+  assert.doesNotMatch(res.body, /Shauna Haberlin/);
 });
 
 
