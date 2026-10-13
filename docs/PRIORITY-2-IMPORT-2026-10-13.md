@@ -11,6 +11,7 @@
 - The endpoint requires an authenticated admin, same-origin request, explicit confirmation, an enable flag, a dedicated staging MongoDB URI and a separate staging database name. It refuses to run when the staging configuration is absent or the database name is the production default.
 - Updated the button confirmation and result message. Importing does not switch the public website to managed content.
 - Updated the idempotency test to verify 56 records are not duplicated and admin edits remain unchanged on a repeat run.
+- Fixed a related public-content fallback bug: when managed content is enabled and an API response is successfully empty (for example, all records are drafts), the site now keeps the empty result instead of restoring the legacy records. Updated the runtime-flag test to match the intended status check.
 - Added endpoint tests for authentication, cross-origin rejection, explicit confirmation, disabled/misconfigured staging, production database refusal and successful staging-handler invocation.
 
 ## Source counts
@@ -37,3 +38,5 @@ The source reconciliation record reports zero discrepancies across the 56 legacy
 - `84b4028f2f08adb9e2b4e452fb36a8df6fbc1c14` — connect CMS import button to the safe endpoint
 - `8a525bf930b9689d9bfd7e0e9aae37d5bd35ed0e` — make endpoint testable and preserve staging-only gate
 - `a752e080ef6e75858b5126354d63fc0e195b7ef8` — add endpoint regression tests
+- `59e0b5c89b8fae1ba1a29b9a41352ed9706ac25a` — preserve intentionally empty managed content
+- `aae2b06fe941abfe822e9578ecd4b3472dc0d2d9` — align runtime-flag regression test
