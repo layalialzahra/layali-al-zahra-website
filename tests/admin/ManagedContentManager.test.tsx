@@ -147,7 +147,7 @@ test("service categories have separate add and rename controls", async () => {
   await userEvent.click(screen.getByRole("button", { name: "Add category" }));
   await screen.findByText("Nails");
   expect(request).toHaveBeenCalledWith("/api/admin/service-categories", expect.objectContaining({ method: "POST" }));
-  await userEvent.click(screen.getByRole("button", { name: "Edit category" }).first());
+  await userEvent.click(screen.getAllByRole("button", { name: "Edit category" })[0]);
   const input = screen.getByPlaceholderText("Category name");
   await userEvent.clear(input);
   await userEvent.type(input, "Hair & Styling");
