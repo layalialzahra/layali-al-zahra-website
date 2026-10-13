@@ -41,7 +41,7 @@ export default function App({ initialPathname, initialReviews, initialSSR = fals
     const style = document.createElement('style');
     style.setAttribute('data-admin-cleanup', 'true');
     style.textContent = `
-      .cms-migration { display: none !important; }
+      .cms-migration { display: block; }
       a[href*="wa.me" i], a[href*="whatsapp" i], iframe[src*="whatsapp" i],
       [id*="whatsapp" i], [class*="whatsapp" i], [aria-label*="whatsapp" i],
       [title*="whatsapp" i], [class*="joinchat" i], [class*="eapps-whatsapp" i],
