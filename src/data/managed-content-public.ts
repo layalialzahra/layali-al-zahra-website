@@ -7,12 +7,21 @@ const BOOKING_URL = "https://store.zylu.co/business/layali-al-zahra-beauty-salon
 const managedContentEnabled = import.meta.env.VITE_MANAGED_CONTENT_ENABLED === "true";
 
 async function loadItems(endpoint: string, fallback: any[], transform: (item: any) => any, enabled = managedContentEnabled, fetchImpl: typeof fetch = globalThis.fetch): Promise<any[]> {
-  if (!enabled || typeof fetchImpl !== "function") return fallback;
+  if (typeof fetchImpl !== "function") return fallback;
   try {
+    let useManagedContent = enabled;
+    if (!useManagedContent) {
+      const statusResponse = await fetchImpl("/api/managed-content-status", { method: "GET", cache: "no-store" });
+      if (statusResponse.ok) {
+        const status = await statusResponse.json();
+        useManagedContent = status?.success === true && status?.enabled === true;
+      }
+    }
+    if (!useManagedContent) return fallback;
     const response = await fetchImpl(endpoint, { method: "GET", cache: "no-store" });
     if (!response.ok) return fallback;
     const data = await response.json();
-    if (!data?.success || !Array.isArray(data.items)) return fallback;
+    if (!data?.success || !Array.isArray(data.items) || data.items.length === 0) return fallback;
     return data.items.map(transform);
   } catch {
     return fallback;
