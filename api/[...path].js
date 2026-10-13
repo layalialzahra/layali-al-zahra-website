@@ -1,4 +1,5 @@
 import { createManagedContentHandler } from "./_lib/managed-content-routes.js";
+import { createServiceCategoriesHandler } from "./_lib/service-categories-routes.js";
 import { requireAdmin, sameOrigin } from "./_lib/auth.js";
 import { getDb } from "./_lib/mongodb.js";
 import { migrateManagedContent, buildManagedContentRecords } from "../scripts/migrate-managed-content.js";
@@ -42,6 +43,7 @@ export function createApiRouterHandler(options = {}) {
     ["packages", createManaged("package")],
     ["faqs", createManaged("faq")],
     ["admin/services", createManaged("service", { admin: true })],
+    ["admin/service-categories", createServiceCategoriesHandler()],
     ["admin/offers", createManaged("offer", { admin: true })],
     ["admin/packages", createManaged("package", { admin: true })],
     ["admin/faqs", createManaged("faq", { admin: true })],
