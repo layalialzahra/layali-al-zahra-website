@@ -21,7 +21,10 @@ async function loadItems(endpoint: string, fallback: any[], transform: (item: an
     const response = await fetchImpl(endpoint, { method: "GET", cache: "no-store" });
     if (!response.ok) return fallback;
     const data = await response.json();
-    if (!data?.success || !Array.isArray(data.items) || data.items.length === 0) return fallback;
+    if (!data?.success || !Array.isArray(data.items)) return fallback;
+    // An empty successful CMS response is intentional (all records may be drafts).
+    // Do not resurrect legacy content when the managed source is enabled.
+    if (data.items.length === 0) return [];
     return data.items.map(transform);
   } catch {
     return fallback;
