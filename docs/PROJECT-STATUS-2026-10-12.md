@@ -444,3 +444,12 @@ Blocker record: [Services and FAQ Integration Blocker](./SERVICES-FAQ-INTEGRATIO
 Existing automated Offers/FAQ tests and CI do not satisfy this prerequisite. Stopped before code changes, feature-flag changes or new integration tests. Managed public content remains disabled and legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
 
 Blocker report: [Offers and FAQ Integration Blocker](./OFFERS-FAQ-INTEGRATION-BLOCKER-2026-10-13.md). Resume only after Core CMS acceptance is explicitly recorded; then verify published offers/pricing/validity, booking URLs, FAQ reads, legacy fallback and presentation/booking behavior.
+
+
+## Task 23 — Packages and FAQ integration — 2026-10-13
+
+**Status: BLOCKED; no implementation or new integration tests started.** Core CMS acceptance remains HOLD/OPEN under Task 13. No owner-authorised production-isolated staging database is verified. Task 12 migration application, real database counts/field integrity, repeat-run idempotency and rollback/recovery have NOT RUN. End-to-end staging CRUD/auth/upload/public-read checks, FAQ persistence/publication and explicit written owner acceptance remain outstanding.
+
+Existing automated Packages/FAQ tests and CI do not satisfy this prerequisite. Stopped before code changes, feature-flag changes or new integration tests. Managed public content remains disabled and legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
+
+Blocker report: [Packages and FAQ Integration Blocker](./PACKAGES-FAQ-INTEGRATION-BLOCKER-2026-10-13.md). Resume only after Core CMS acceptance is explicitly recorded; then verify published packages, pricing, categories/filters, images, booking destinations, FAQ reads, legacy fallback and presentation/booking behavior.
