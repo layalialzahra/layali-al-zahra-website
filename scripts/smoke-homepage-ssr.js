@@ -42,8 +42,8 @@ for (const pathname of ["/", "/home"]) {
   assert.equal((response.body.match(/rel="canonical"/g) || []).length, 1, "exactly one canonical link should remain");
   assert.match(response.body, /href="https:\/\/www\.layalialzahra\.com\/"[^>]*rel="canonical"|rel="canonical"[^>]*href="https:\/\/www\.layalialzahra\.com\/" /);
   assert.match(response.body, /Where Beauty Meets Luxury/, "the homepage should render into initial HTML");
-  assert.match(response.body, /Shauna Haberlin/, "legacy review snapshot should remain fallback when managed lookup fails while disabled");
-  assert.doesNotMatch(response.body, /data-initial-reviews=/, "fallback HTML should not claim a database review set");
+  assert.doesNotMatch(response.body, /Shauna Haberlin/, "a failed managed-review lookup must not restore the legacy hardcoded review snapshot");
+  assert.match(response.body, /data-initial-reviews="\\[\\]"/, "failed review lookup should hydrate with an empty published-review set");
 }
 
 const managedHandler = createHomepageRenderHandler({
@@ -72,4 +72,4 @@ for (const pathname of ["/", "/home"]) {
   assert.equal((response.body.match(/rel="canonical"/g) || []).length, 1);
 }
 
-console.log("Homepage SSR smoke passed for / and /home: initial HTML, hydration marker, canonical metadata, review publication/order/suppression and legacy fallback.");
+console.log("Homepage SSR smoke passed for / and /home: initial HTML, hydration marker, canonical metadata, fail-closed review lookup, publication/order and suppression.");
