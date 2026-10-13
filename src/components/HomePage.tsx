@@ -377,7 +377,7 @@ import React, { useState, useEffect } from 'react';
 
   export default function HomePage({ onNavigate, reviews, disableInitialAnimations = false }: HomePageProps) {
     const eligibleReviews = reviews?.filter((review) => review.isPublished !== false);
-    const reviewItems = reviews === undefined ? reviewsData : (eligibleReviews || []);
+    const reviewItems = eligibleReviews || [];
 
     return (
       <div className="min-h-screen">
