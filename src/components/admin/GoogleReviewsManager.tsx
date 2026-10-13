@@ -1,152 +1,178 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Check, Loader2, RefreshCw, Search, Trash2 } from "lucide-react";
+import { Check, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 
 type Review = {
   _id: string;
-  googleReviewId: string;
-  authorName: string | null;
-  rating: number | null;
+  authorName: string;
+  rating: number;
   reviewText: string;
-  sourceCreatedAt: string | null;
+  sourceCreatedAt: string;
   isPublished: boolean;
   sortOrder: number;
 };
+type ReviewForm = Omit<Review, "_id" | "isPublished">;
+const emptyForm: ReviewForm = { authorName: "", rating: 5, reviewText: "", sourceCreatedAt: "", sortOrder: 0 };
+
 async function readResponse(response: Response) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok || !data.success) throw new Error(data.message || "The request could not be completed.");
   return data;
 }
 function displayDate(value?: string | null) {
-  if (!value) return "Date unavailable";
+  if (!value) return "Date not set";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Date unavailable" : date.toLocaleDateString();
+  return Number.isNaN(date.getTime()) ? "Invalid date" : date.toLocaleDateString();
 }
 
 export default function GoogleReviewsManager() {
   const [items, setItems] = useState<Review[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [syncAvailable, setSyncAvailable] = useState(false);
-  const [syncMessage, setSyncMessage] = useState("Google Business Profile API access has not been verified. Sync is disabled.");
-  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [ratingFilter, setRatingFilter] = useState("");
   const [publicationFilter, setPublicationFilter] = useState("all");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<Review | null>(null);
+  const [form, setForm] = useState<ReviewForm>(emptyForm);
 
   const loadRecords = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const params = new URLSearchParams({ limit: "100" });
-      if (search) params.set("search", search);
-      if (ratingFilter) params.set("rating", ratingFilter);
-      if (publicationFilter !== "all") params.set("isPublished", publicationFilter);
-      const data = await readResponse(await fetch(`/api/admin/google-reviews?${params.toString()}`, { credentials: "include" }));
+      const data = await readResponse(await fetch("/api/admin/reviews?limit=100", { credentials: "include" }));
       setItems(Array.isArray(data.items) ? data.items : []);
-      setSyncAvailable(data.syncAvailable === true);
-      if (typeof data.syncMessage === "string") setSyncMessage(data.syncMessage);
-      setSelectedIds([]);
     } catch (err) {
       setItems([]);
-      setSelectedIds([]);
-      setError(err instanceof Error ? err.message : "Unable to load Google reviews.");
+      setError(err instanceof Error ? err.message : "Unable to load reviews.");
     } finally {
       setLoading(false);
     }
-  }, [publicationFilter, ratingFilter, search]);
-
+  }, []);
   useEffect(() => { void loadRecords(); }, [loadRecords]);
 
   const visibleItems = useMemo(() => {
-    const query = searchInput.trim().toLowerCase();
-    if (!query || search) return items;
-    return items.filter((item) => `${item.authorName || ""} ${item.reviewText || ""}`.toLowerCase().includes(query));
-  }, [items, search, searchInput]);
-  const selectedSet = new Set(selectedIds);
-  const allVisibleSelected = visibleItems.length > 0 && visibleItems.every((item) => selectedSet.has(item._id));
+    const query = search.trim().toLowerCase();
+    return items.filter((item) =>
+      (!query || `${item.authorName} ${item.reviewText}`.toLowerCase().includes(query)) &&
+      (!ratingFilter || String(item.rating) === ratingFilter) &&
+      (publicationFilter === "all" || String(item.isPublished) === publicationFilter)
+    );
+  }, [items, publicationFilter, ratingFilter, search]);
 
-  const toggleReview = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
-  const toggleAll = () => setSelectedIds((current) => allVisibleSelected
-    ? current.filter((id) => !visibleItems.some((item) => item._id === id))
-    : [...new Set([...current, ...visibleItems.map((item) => item._id)])]);
+  const openCreate = () => {
+    setEditing(null);
+    setForm({ ...emptyForm });
+    setFormOpen(true);
+    setError("");
+    setSuccess("");
+  };
+  const openEdit = (item: Review) => {
+    setEditing(item);
+    setForm({
+      authorName: item.authorName || "",
+      rating: item.rating || 5,
+      reviewText: item.reviewText || "",
+      sourceCreatedAt: String(item.sourceCreatedAt || "").slice(0, 10),
+      sortOrder: item.sortOrder ?? 0,
+    });
+    setFormOpen(true);
+    setError("");
+    setSuccess("");
+  };
+  const setField = <K extends keyof ReviewForm>(key: K, value: ReviewForm[K]) => setForm((current) => ({ ...current, [key]: value }));
 
-  const updateSelected = async (action: "publish" | "unpublish") => {
-    if (!selectedIds.length) return;
+  const save = async (isPublished: boolean) => {
     setBusy(true); setError(""); setSuccess("");
     try {
-      const data = await readResponse(await fetch("/api/admin/google-reviews", {
+      const payload = { ...form, rating: Number(form.rating), sortOrder: Number(form.sortOrder), isPublished };
+      const url = editing ? `/api/admin/reviews?id=${encodeURIComponent(editing._id)}` : "/api/admin/reviews";
+      const data = await readResponse(await fetch(url, {
+        method: editing ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }));
+      setSuccess(isPublished ? "Review saved and published." : "Review saved as draft.");
+      setFormOpen(false);
+      setEditing(null);
+      await loadRecords();
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to save review.");
+    } finally { setBusy(false); }
+  };
+
+  const setPublication = async (item: Review, action: "publish" | "unpublish") => {
+    setBusy(true); setError(""); setSuccess("");
+    try {
+      await readResponse(await fetch(`/api/admin/reviews?id=${encodeURIComponent(item._id)}`, {
         method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds, action }),
+        body: JSON.stringify({ action }),
       }));
-      setSuccess(action === "publish" ? `${data.updated} review(s) published.` : `${data.updated} review(s) unpublished.`);
+      setSuccess(action === "publish" ? "Review published." : "Review unpublished.");
       await loadRecords();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to update review publication.");
+      setError(err instanceof Error ? err.message : "Unable to change review publication.");
     } finally { setBusy(false); }
   };
 
-  const deleteSelected = async () => {
-    if (!selectedIds.length) return;
-    if (!window.confirm("Delete the selected reviews from the local copy? The original Google review will not be modified.")) return;
+  const deleteReview = async (item: Review) => {
+    if (!window.confirm(`Delete the review by ${item.authorName}? This cannot be undone.`)) return;
     setBusy(true); setError(""); setSuccess("");
     try {
-      const data = await readResponse(await fetch("/api/admin/google-reviews", {
-        method: "DELETE", credentials: "include", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds }),
-      }));
-      setSuccess(`${data.deleted} local review record(s) deleted.`);
+      await readResponse(await fetch(`/api/admin/reviews?id=${encodeURIComponent(item._id)}`, { method: "DELETE", credentials: "include" }));
+      setSuccess("Review deleted.");
       await loadRecords();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to delete local review records.");
-    } finally { setBusy(false); }
-  };
-
-  const syncReviews = async () => {
-    if (!syncAvailable) return;
-    setBusy(true); setError(""); setSuccess("");
-    try {
-      const data = await readResponse(await fetch("/api/admin/google-reviews-sync", { method: "POST", credentials: "include" }));
-      setSuccess(data.message || "Google reviews synced.");
-      await loadRecords();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Google review sync failed.");
+      setError(err instanceof Error ? err.message : "Unable to delete review.");
     } finally { setBusy(false); }
   };
 
   return <section className="managed-cms google-reviews-manager">
     <header className="managed-cms-head">
-      <div><span className="cms-kicker">REPUTATION MANAGEMENT</span><h1>Google Reviews</h1><p>Choose which synced Google reviews appear on the website. Selecting a review never publishes it by itself.</p></div>
-      <button type="button" className="cms-secondary-button" disabled={!syncAvailable || busy} onClick={() => void syncReviews()}><RefreshCw size={16}/> Sync from Google</button>
+      <div><span className="cms-kicker">REPUTATION MANAGEMENT</span><h1>Manual Reviews</h1><p>Add real client reviews, choose when they publish and control their display order.</p></div>
+      {!formOpen && <button type="button" className="cms-primary-button" onClick={openCreate}><Plus size={16}/> Add Review</button>}
     </header>
-    <div className="cms-alert info" role="status">{syncMessage}</div>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
-    <div className="google-review-filters">
-      <label className="managed-search"><Search size={16}/><input aria-label="Search reviews" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") setSearch(searchInput.trim()); }} placeholder="Search reviewer or review text…"/></label>
-      <button type="button" className="cms-secondary-button" onClick={() => setSearch(searchInput.trim())}>Search</button>
-      <label className="managed-filter"><span>Rating</span><select aria-label="Filter by rating" value={ratingFilter} onChange={(event) => setRatingFilter(event.target.value)}><option value="">All ratings</option>{[5,4,3,2,1].map((rating) => <option key={rating} value={String(rating)}>{rating} stars</option>)}</select></label>
-      <label className="managed-filter"><span>Publication</span><select aria-label="Filter by publication" value={publicationFilter} onChange={(event) => setPublicationFilter(event.target.value)}><option value="all">All reviews</option><option value="true">Published</option><option value="false">Unpublished</option></select></label>
-    </div>
-    <div className="google-review-actions">
-      <label className="google-review-select-all"><input type="checkbox" aria-label="Select all visible reviews" checked={allVisibleSelected} onChange={toggleAll} disabled={visibleItems.length === 0 || busy}/> Select all visible</label>
-      <span>{selectedIds.length} selected</span>
-      <div className="google-review-action-buttons">
-        <button type="button" className="cms-primary-button" disabled={!selectedIds.length || busy} onClick={() => void updateSelected("publish")}><Check size={15}/> Publish Selected Reviews</button>
-        <button type="button" className="cms-secondary-button" disabled={!selectedIds.length || busy} onClick={() => void updateSelected("unpublish")}>Unpublish Selected</button>
-        <button type="button" className="cms-secondary-button danger" disabled={!selectedIds.length || busy} onClick={() => void deleteSelected()}><Trash2 size={15}/> Delete Selected Synced Reviews</button>
+
+    {formOpen && <form className="managed-editor" aria-label="Review editor" onSubmit={(event) => event.preventDefault()}>
+      <div className="managed-editor-head"><div><h2>{editing ? "Edit Review" : "Add Review"}</h2><p>Only choose publish when the review is ready for the website.</p></div>
+        <button type="button" className="managed-icon-button" aria-label="Close editor" onClick={() => { setFormOpen(false); setEditing(null); }}><X size={18}/></button>
       </div>
+      <div className="managed-fields">
+        <label className="managed-field"><span>Reviewer name</span><input required maxLength={200} value={form.authorName} onChange={(event) => setField("authorName", event.target.value)}/></label>
+        <label className="managed-field"><span>Rating</span><select required value={String(form.rating)} onChange={(event) => setField("rating", Number(event.target.value))}>{[5,4,3,2,1].map((rating) => <option key={rating} value={rating}>{rating} {rating === 1 ? "star" : "stars"}</option>)}</select></label>
+        <label className="managed-field"><span>Review date</span><input required type="date" value={form.sourceCreatedAt} onChange={(event) => setField("sourceCreatedAt", event.target.value)}/></label>
+        <label className="managed-field"><span>Display order (lower appears first)</span><input required type="number" min="0" max="1000000" step="1" value={form.sortOrder} onChange={(event) => setField("sortOrder", Number(event.target.value))}/></label>
+        <label className="managed-field"><span>Review text</span><textarea required maxLength={5000} rows={5} value={form.reviewText} onChange={(event) => setField("reviewText", event.target.value)}/></label>
+      </div>
+      <div className="managed-editor-actions">
+        <button type="button" className="cms-secondary-button" disabled={busy} onClick={() => { setFormOpen(false); setEditing(null); }}>Cancel</button>
+        <button type="button" className="cms-secondary-button" disabled={busy} onClick={() => void save(false)}>{busy ? <Loader2 className="cms-spin" size={15}/> : null} Save Draft</button>
+        <button type="button" className="cms-primary-button" disabled={busy} onClick={() => void save(true)}>{busy ? <Loader2 className="cms-spin" size={15}/> : <Check size={16}/>} Save &amp; Publish</button>
+      </div>
+    </form>}
+
+    <div className="google-review-filters">
+      <label className="managed-search"><Search size={16}/><input aria-label="Search reviews" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search reviewer or review text…"/></label>
+      <label className="managed-filter"><span>Rating</span><select aria-label="Filter by rating" value={ratingFilter} onChange={(event) => setRatingFilter(event.target.value)}><option value="">All ratings</option>{[5,4,3,2,1].map((rating) => <option key={rating} value={String(rating)}>{rating} stars</option>)}</select></label>
+      <label className="managed-filter"><span>Publication</span><select aria-label="Filter by publication" value={publicationFilter} onChange={(event) => setPublicationFilter(event.target.value)}><option value="all">All reviews</option><option value="true">Published</option><option value="false">Drafts</option></select></label>
     </div>
-    {loading ? <div className="managed-empty"><Loader2 className="cms-spin" size={22}/><p>Loading Google reviews…</p></div> :
-      error && items.length === 0 ? <div className="managed-empty"><h2>Unable to load Google reviews</h2><p>The review list could not be loaded. Check the error above and retry.</p><button type="button" className="cms-secondary-button" onClick={() => void loadRecords()}>Retry loading reviews</button></div> :
-      visibleItems.length === 0 ? <div className="managed-empty"><h2>{search || searchInput.trim() || ratingFilter || publicationFilter !== "all" ? "No reviews match the current filters" : "No synced Google reviews yet"}</h2><p>{search || searchInput.trim() || ratingFilter || publicationFilter !== "all" ? "Change or clear the filters to see other reviews." : "Reviews will appear here after Google Business Profile access is verified and a sync completes."}</p></div> :
+    {loading ? <div className="managed-empty"><Loader2 className="cms-spin" size={22}/><p>Loading reviews…</p></div> :
+      error && items.length === 0 ? <div className="managed-empty"><h2>Unable to load reviews</h2><button type="button" className="cms-secondary-button" onClick={() => void loadRecords()}>Retry</button></div> :
+      visibleItems.length === 0 ? <div className="managed-empty"><h2>{items.length ? "No reviews match these filters" : "No reviews added yet"}</h2><p>Add a real client review to manage it here.</p></div> :
       <div className="google-review-list">{visibleItems.map((review) => <article className="google-review-record" key={review._id}>
-        <input type="checkbox" aria-label={`Select review by ${review.authorName || "reviewer name unavailable"}`} checked={selectedSet.has(review._id)} disabled={busy} onChange={() => toggleReview(review._id)}/>
         <div className="google-review-content">
-          <div className="google-review-meta"><strong>{review.authorName || "Reviewer name unavailable"}</strong><span>{review.rating ? `${review.rating}/5` : "Rating unavailable"}</span><span>{displayDate(review.sourceCreatedAt)}</span><span className={`cms-status ${review.isPublished ? "published" : "draft"}`}>{review.isPublished ? "Published" : "Unpublished"}</span></div>
-          <p>{review.reviewText || "No written review text was provided."}</p>
+          <div className="google-review-meta"><strong>{review.authorName}</strong><span>{"★".repeat(review.rating)} ({review.rating}/5)</span><span>{displayDate(review.sourceCreatedAt)}</span><span className={`cms-status ${review.isPublished ? "published" : "draft"}`}>{review.isPublished ? "Published" : "Draft"}</span><span>Order: {review.sortOrder}</span></div>
+          <p>{review.reviewText}</p>
+          <div className="managed-record-actions">
+            <button type="button" className="managed-icon-button" disabled={busy} onClick={() => openEdit(review)}><Pencil size={15}/> Edit</button>
+            <button type="button" className="managed-icon-button" disabled={busy} onClick={() => void setPublication(review, review.isPublished ? "unpublish" : "publish")}>{review.isPublished ? "Unpublish" : "Publish"}</button>
+            <button type="button" className="managed-icon-button danger" disabled={busy} onClick={() => void deleteReview(review)}><Trash2 size={15}/> Delete</button>
+          </div>
         </div>
       </article>)}</div>}
   </section>;
