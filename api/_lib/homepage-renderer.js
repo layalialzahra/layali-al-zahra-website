@@ -19,34 +19,23 @@ function initialsFor(name) {
 }
 
 async function loadPublishedHomeReviews() {
-  const [{ getDb }, { serializeGoogleReview }] = await Promise.all([
-    import("./mongodb.js"),
-    import("./google-reviews.js"),
-  ]);
+  const { getDb } = await import("./mongodb.js");
   const db = await getDb();
-  const suppressionRows = await db.collection("google_review_suppressions")
-    .find({}, { projection: { googleReviewId: 1, _id: 0 } })
-    .toArray();
-  const suppressedIds = suppressionRows
-    .map((row) => row.googleReviewId)
-    .filter((id) => typeof id === "string" && id);
-  const records = await db.collection("google_reviews")
-    .find({ isPublished: true, googleReviewId: { $nin: suppressedIds } })
+  const records = await db.collection("reviews")
+    .find({ isPublished: true })
     .sort({ sortOrder: 1, sourceCreatedAt: -1, _id: 1 })
     .limit(12)
     .toArray();
 
   return records.map((record) => {
-    const review = serializeGoogleReview(record, { publicOnly: true }) || {};
-    const title = typeof review.authorName === "string" && review.authorName.trim()
-      ? review.authorName.trim()
-      : "Google customer";
+    const title = typeof record.authorName === "string" && record.authorName.trim()
+      ? record.authorName.trim()
+      : "Client";
     return {
-      googleReviewId: typeof record.googleReviewId === "string" ? record.googleReviewId : "",
       title,
       initials: initialsFor(title),
-      description: typeof review.reviewText === "string" ? review.reviewText : "",
-      rating: Number.isInteger(review.rating) ? review.rating : null,
+      description: typeof record.reviewText === "string" ? record.reviewText : "",
+      rating: Number.isInteger(record.rating) ? record.rating : null,
       isPublished: true,
     };
   });
