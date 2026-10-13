@@ -26,19 +26,14 @@ function setup() {
     calls.push({ kind: "reviews-public" });
     return res.status(200).json({ route: "reviews-public" });
   };
-  const reviewsSync = () => async (_req, res) => {
-    calls.push({ kind: "reviews-sync" });
-    return res.status(200).json({ route: "reviews-sync" });
-  };
   const health = async (_req, res) => {
     calls.push({ kind: "health" });
     return res.status(200).json({ route: "health" });
   };
   return { calls, handler: createApiRouterHandler({
     createManagedContentHandler: managed,
-    createGoogleReviewsAdminHandler: reviewsAdmin,
+    createManualReviewsAdminHandler: reviewsAdmin,
     createGoogleReviewsPublicHandler: reviewsPublic,
-    createGoogleReviewsSyncHandler: reviewsSync,
     createHomepageRenderHandler: () => async (_req, res) => { calls.push({ kind: "homepage" }); return res.status(200).send("SSR home"); },
     healthHandler: health,
   }) };
@@ -65,8 +60,7 @@ test("dispatches each managed content route to the correct public/admin handler"
 
 test("dispatches review endpoints", async () => {
   for (const [path, expected] of [
-    [["admin", "google-reviews"], "reviews-admin"],
-    [["admin", "google-reviews-sync"], "reviews-sync"],
+    [["admin", "reviews"], "reviews-admin"],
     [["published-google-reviews"], "reviews-public"],
   ]) {
     const { handler, calls } = setup();
@@ -108,9 +102,8 @@ test("dispatches the homepage route to a server-rendered HTML handler", async ()
   };
   const handler = createApiRouterHandler({
     createManagedContentHandler: () => async (_req, res) => res.status(200).json({}),
-    createGoogleReviewsAdminHandler: () => async (_req, res) => res.status(200).json({}),
+    createManualReviewsAdminHandler: () => async (_req, res) => res.status(200).json({}),
     createGoogleReviewsPublicHandler: () => async (_req, res) => res.status(200).json({}),
-    createGoogleReviewsSyncHandler: () => async (_req, res) => res.status(200).json({}),
     createHomepageRenderHandler: homepage,
   });
   const res = response();
