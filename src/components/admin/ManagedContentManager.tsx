@@ -107,7 +107,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   useEffect(() => { void loadRecords(); }, [loadRecords]);
 
   const importExistingWebsiteContent = async () => {
-    if (!window.confirm("Import the existing Services, Offers, Packages and FAQs into the configured staging database? Existing CMS edits will be preserved. This will not change the public website.")) return;
+    if (!window.confirm("Import the existing Services, Offers, Packages and FAQs into the live CMS database? Missing records will be added. Existing CMS edits will be preserved.")) return;
     setImportingLegacy(true);
     setError("");
     setSuccess("");
@@ -122,7 +122,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
       if (!response.ok || !data.success) throw new Error(data.message || "Content import failed.");
       const results = data.results || {};
       const added = (key: string) => Number(results[key]?.inserted || 0);
-      setSuccess(`Staging import complete. New records added: Services ${added("services")}, Offers ${added("offers")}, Packages ${added("packages")}, FAQs ${added("faqs")}. Existing records were left unchanged. The public website was not switched.`);
+      setSuccess(`Live CMS import complete. New records added: Services ${added("services")}, Offers ${added("offers")}, Packages ${added("packages")}, FAQs ${added("faqs")}. Existing records were left unchanged.`);
       await loadRecords();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Content import failed.");
@@ -286,7 +286,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
 
   return <section className="managed-cms">
     <header className="managed-cms-head">
-      <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p>{type === "service" && <p>Importing copies missing legacy content into the configured staging database. It does not switch the public website.</p>}</div>
+      <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p>{type === "service" && <p>Import existing website content into the live CMS database. Existing records are preserved.</p>}</div>
       {!formOpen && <div className="managed-head-actions">{type === "service" && <button type="button" className="cms-secondary-button" disabled={importingLegacy} onClick={() => void importExistingWebsiteContent()}>{importingLegacy ? <Loader2 className="cms-spin" size={16}/> : <FilePlus2 size={16}/>} {importingLegacy ? "Importing content…" : "Import existing website content"}</button>}<button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
