@@ -6,9 +6,8 @@ import { migrateManagedContent, buildManagedContentRecords } from "../scripts/mi
 import { createLegacyImportHandler } from "./_lib/import-legacy-content.js";
 import { createHomepageRenderHandler } from "./_lib/homepage-renderer.js";
 import {
-  createGoogleReviewsAdminHandler,
+  createManualReviewsAdminHandler,
   createGoogleReviewsPublicHandler,
-  createGoogleReviewsSyncHandler,
 } from "./_lib/google-reviews-routes.js";
 
 function fail(res, status, message) {
@@ -34,7 +33,7 @@ function routeSegments(req) {
  */
 export function createApiRouterHandler(options = {}) {
   const createManaged = options.createManagedContentHandler || createManagedContentHandler;
-  const createReviewsAdmin = options.createGoogleReviewsAdminHandler || createGoogleReviewsAdminHandler;
+  const createReviewsAdmin = options.createManualReviewsAdminHandler || createManualReviewsAdminHandler;
   const createReviewsPublic = options.createGoogleReviewsPublicHandler || createGoogleReviewsPublicHandler;
   const createHomepage = options.createHomepageRenderHandler || createHomepageRenderHandler;
   const routes = new Map([
@@ -48,8 +47,7 @@ export function createApiRouterHandler(options = {}) {
     ["admin/packages", createManaged("package", { admin: true })],
     ["admin/faqs", createManaged("faq", { admin: true })],
     ["admin/import-legacy-content", createLegacyImportHandler()],
-    ["admin/google-reviews", createReviewsAdmin()],
-    ["admin/google-reviews-sync", options.createGoogleReviewsSyncHandler ? options.createGoogleReviewsSyncHandler() : createGoogleReviewsSyncHandler()],
+    ["admin/reviews", createReviewsAdmin()],
     ["published-google-reviews", createReviewsPublic()],
     ["managed-content-status", async (req, res) => {
       res.setHeader("Cache-Control", "no-store, max-age=0");
