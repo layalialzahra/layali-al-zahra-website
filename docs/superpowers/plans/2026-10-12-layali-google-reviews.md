@@ -1,0 +1,182 @@
+# Layali Al Zahra Google Reviews Sync and Publishing Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Let an admin manually sync reviews from the salon's Google Business Profile, choose reviews individually or in bulk, and explicitly publish, unpublish or delete local synced records.
+
+**Architecture:** Use a separate `google_reviews` collection and protected server-side sync handler. Sync/import, selection and publication are distinct operations. Preserve the current hard-coded homepage review carousel until the core CMS, API access and review behavior have passed staging acceptance and the owner approves cutover.
+
+**Tech Stack:** Vercel serverless API functions, MongoDB Atlas, existing admin auth, Google Business Profile API with OAuth 2.0 only after access is verified.
+
+**Spec:** `docs/superpowers/specs/2026-10-12-layali-cms-expansion-design.md`
+
+## Global Constraints
+
+- Do not assume Business Profile API approval, OAuth configuration, location access or Vercel credentials exist.
+- Sync is manual/on-demand for the first version; do not implement a recurring schedule.
+- Selecting reviews must not publish them; only an explicit Publish Selected Reviews action publishes.
+- Unpublish preserves the local record; delete affects only the local record and never the original Google review.
+- A sync failure must not clear or change the currently published review set.
+- Preserve existing publication choices and ordering for previously synced records.
+- Never log or expose OAuth tokens, refresh tokens, environment values or private credentials.
+
+## Review Focus
+
+1. An API timeout/permission error must preserve all previously synced and published records.
+2. A locally deleted review must not silently reappear on the next sync.
+3. A sync update must preserve local `isPublished` and `sortOrder` values.
+4. A review that Google edits or removes must not be silently deleted from the published homepage based on one incomplete sync.
+5. Selection changes must never change publication state until an explicit publish/unpublish action is submitted.
+
+---
+
+### Task 1: Verify external API prerequisites and decide sync edge policies
+
+**Files:**
+- Update: `docs/superpowers/specs/2026-10-12-layali-cms-expansion-design.md` only if owner-approved decisions change
+- Update: Notion `decisions.md` and `log.md`
+
+- [x] **Step 1: Inspect repository configuration and record the external-access gap**
+  - Checked `.env.example`, `api/_lib/google-reviews.js`, and the admin route. Expected variable names are present in the example, but values are placeholders/empty; this does not establish whether live deployment variables exist.
+  - The code checks non-empty values and the location-name shape only. It cannot prove API approval, OAuth grant validity, required scope or verified-location access.
+  - No secret values were accessed, no API request/token exchange was attempted, and Vercel remains disconnected. External prerequisites remain **UNVERIFIED/BLOCKED**. See [Task 14 prerequisite report](../../GOOGLE-BUSINESS-PROFILE-PREREQUISITES-2026-10-12.md).
+- [x] **Step 2: Confirm policy for removed/edited reviews and local deletion**
+  - **Decision recorded and implemented:** use durable suppression/tombstones keyed by `googleReviewId`; local deletion remains local and the review must not silently re-import. Source-owned fields may update while local publication/order are preserved. Reviews absent from one completed sync are retained for explicit admin review.
+- [x] **Step 3: Record verified result and owner decision**
+  - The policy decision is recorded in the project decision log and current branch. **Business Profile API approval, OAuth setup and location access are still unverified**; do not claim live sync acceptance or simulate a successful sync against real data.
+  - Until access is verified, restrict further verification to provider-independent tests and source review.
+
+### Task 2: Implement Google review schema and safe synchronization service
+
+**Files:**
+- Create: `api/_lib/google-reviews.js`
+- Test: `tests/api/google-reviews.test.js`
+
+**Interfaces:**
+- `normalizeGoogleReview(apiReview)` maps only documented API response fields into a local record.
+- `mergeSyncedReview(existing, incoming)` updates source-owned fields while preserving local `isPublished` and `sortOrder`.
+- Unique key: `googleReviewId`; source fields and timestamps must follow the verified official API response.
+- A sync operation reports inserted, updated, suppressed and failed counts without returning credentials.
+
+- [x] **Step 1: Unit test coverage exists**
+  - Test field mapping, absent optional fields, malformed records, stable IDs, publication/order preservation, suppression/tombstone behavior and source timestamp handling.
+- [x] **Step 2: Run the unit tests**
+  - The Google Reviews unit tests are included in the full npm test CI suite; the latest build verification passed.
+- [x] **Step 3: Implement pure mapping/merge helpers**
+  - Do not import undocumented properties; validate against actual API docs/response schema first.
+- [x] **Step 4: Run tests**
+  - Full CI test suite passed; see [Build verification run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374).
+
+### Task 3: Implement manual sync endpoint and review admin APIs
+
+**Files:**
+- Create: `api/admin/google-reviews.js`
+- Create: `api/admin/google-reviews-sync.js`
+- Test: `tests/api/google-reviews-routes.test.js`
+
+**Interfaces:**
+- Admin list supports search, rating filter, `isPublished`, pagination and stable ordering.
+- Explicit publish/unpublish operations accept selected local IDs and return updated records.
+- Delete removes local records only; suppression state must remain if chosen in Task 1.
+- Sync endpoint is a POST route protected by `requireAdmin` and `sameOrigin`, uses server-side OAuth and idempotent upsert, and does not publish newly imported records.
+
+- [x] **Step 1: Route test coverage exists**
+  - Cover unauthenticated requests, cross-origin writes, invalid IDs, partial bulk failure behavior, sync timeout/permission error, and ensure a failed sync does not alter published records.
+- [x] **Step 2: Run route tests**
+  - Route tests are included in the full npm test CI suite; the latest build verification passed.
+- [x] **Step 3: Implement protected handlers**
+  - Keep sync transaction/staging semantics safe: fetch and validate source results before mutating local records where possible; report partial provider failure explicitly.
+  - Preserve local state on provider errors.
+- [x] **Step 4: Run route tests**
+  - Run: `npm test -- tests/api/google-reviews-routes.test.js`
+  - Expected: PASS.
+- [x] **Step 5: Run all tests and build**
+  - Run: `npm test && npm run build`
+  - Expected: pass.
+
+### Task 4: Add review management UI
+
+**Files:**
+- Create: `src/components/admin/GoogleReviewsManager.tsx`
+- Modify: `src/components/AdminPage.tsx`, `src/components/admin.css`
+- Test: `tests/admin/GoogleReviewsManager.test.tsx`
+
+**Interfaces:**
+- Add Google Reviews navigation within authenticated admin.
+- Actions: Sync from Google; select individually or select all on the current page; Publish Selected Reviews; Unpublish Selected; Delete Selected Synced Reviews.
+
+- [x] **Step 1: UI test coverage exists**
+  - Verify selecting records does not publish, publish/unpublish require explicit actions, sync loading/error state is clear, and delete confirmation states that only local records are deleted.
+- [x] **Step 2: Run UI tests**
+  - The manager tests are included in the full npm test CI suite; the latest build verification passed.
+- [x] **Step 3: Implement the manager**
+  - Display author, rating, review text, source date and publication state only when available from verified source fields.
+  - Disable actions during in-flight operations and keep existing list state on sync failure.
+- [x] **Step 4: Run UI tests**
+  - Run: `npm test -- tests/admin/GoogleReviewsManager.test.tsx`
+  - Expected: PASS.
+
+### Task 5: Staging acceptance gate
+
+- [x] **Step 1:** Run `npm test && npm run build` — passed in [CI run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374).
+- [ ] **Step 2:** With verified test location/API access, perform a manual sync in staging and compare returned records with source reviews.
+- [ ] **Step 3:** Verify imported reviews remain unpublished, explicit bulk/individual publishing works, unpublishing preserves records, local deletion does not call Google mutation endpoints, and a failed sync preserves the last good published set.
+- [ ] **Step 4:** Confirm the homepage still uses the existing hard-coded reviews until separate cutover approval.
+- [ ] **Step 5:** Update Notion decisions/stages/log with actual evidence. Do not claim the integration is connected if access remains unavailable.
+
+---
+
+## Current acceptance status — 2026-10-12
+- Provider-independent mapping/merge logic, protected route handlers and the review manager are implemented. Unit, route and UI tests are present and the full test/build pipeline passed in [run 38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374).
+- Reachable-history security scan passed in [run 38255367338](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367338): 364 commits / ~117.18 MB with zero text findings; 118 binary blobs / 170,446,401 bytes of printable strings with zero findings.
+- **Still pending:** owner/account verification for Google Business Profile API approval, OAuth and location access; live sync comparison; staging validation of publish/unpublish/delete and failure-preservation; approved homepage cutover. The current homepage review carousel remains the fallback.
+- All session-protected routes now await server-side session-version validation. Password changes increment the admin session version, invalidating previously copied sessions on their next protected request. This change passed the full CI suite.
+- CSP script-src no longer permits unsafe inline/eval scripts. Google Analytics and Meta Pixel bootstrapping moved to same-origin /tracking.js; a configuration test checks for inline executable scripts. Browser/runtime confirmation remains pending.
+
+## Latest verification checkpoint — 2026-10-12
+
+- Current audited feature HEAD before this documentation commit: `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`.
+- Build/test/dependency audit passed in [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486); reachable history and binary printable-string scan passed in [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483).
+- Provider-independent mapping/merge, routes and admin UI remain implemented/tested. Business Profile API approval, OAuth and verified location access remain unverified; live sync, staging publish/unpublish/delete, and failure-preservation acceptance remain open.
+- This CI evidence does not change the staging acceptance checkboxes. Do not reconnect Vercel or claim live API success.
+
+## Task 01 status reconciliation (2026-10-12)
+
+- Provider-independent review mapping/merge, protected local review APIs, moderation UI and manual sync source are implemented and included in prior CI; they are not live API acceptance.
+- Current feature branch was verified at `dbd22794c87a7f6cd80003e32c4713d1463d8b34` before this documentation-only update. Build/test/audit and reachable-history/binary scan evidence [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) / [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) applies to code baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48` only; no CI is established for the docs-only HEAD. Vercel remains disconnected and its failure status is not deployment evidence.
+- Next ordered task is Short Task List Task 02 (safe non-production environment confirmation), then Core CMS Task 6 staging acceptance. Google Business Profile API approval, OAuth and verified location access remain unverified; live sync and moderation/failure-preservation acceptance remain open. Do not connect Vercel or claim live sync success.
+
+
+## Task 15 — controlled sync blocker checkpoint (2026-10-13)
+
+**Status: OPEN / BLOCKED. No live sync attempted.** Task 14's Google Business Profile API approval/enablement, OAuth grant/scope, live server-side credential presence and verified-location access remain unverified. No OAuth exchange, Google API call, database write or deployment was performed. See [Task 15 controlled sync blocker report](../../GOOGLE-REVIEWS-CONTROLLED-SYNC-BLOCKER-2026-10-13.md).
+
+Source review confirms that `fetchAllGoogleReviews` validates every page, reported total counts, duplicate IDs, page tokens and the final fetched count before returning data to the sync handler; the existing unit tests cover a multi-page fixture and an incomplete result. This is not live-sync acceptance. Record counts and field integrity against the real source, and runtime preservation of existing data on provider failure, remain NOT RUN. A separate risk remains: MongoDB `bulkWrite` is not atomic across documents, so a database-side write failure may apply only part of a batch; this must be tested and addressed before claiming complete write-failure atomicity.
+
+Keep Task 15 unchecked until the owner-authorised non-production target and live Google access are verified and controlled sync evidence is recorded. Vercel remains disconnected; no production source cutover is authorised.
+
+## Task 16 — moderation lifecycle regression — 2026-10-13
+
+- Added `tests/api/google-reviews-moderation-e2e.test.js`, exercising local deletion/suppression followed by sync, new-import draft state, explicit publish, and persistence of existing publication/order across another sync.
+- Source review confirms selection is client-only until explicit publish; sync preserves existing publication/order; local deletion creates a suppression record and does not call Google to delete the source review.
+- Existing UI tests cover selection without writes and the explicit publish action. Existing sync tests cover default-unpublished imports and merge preservation.
+- Evidence report: `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
+- Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38320839858)): dependency install, audit, tests and build. Authorised staging/runtime acceptance remains open. Task 16 remains open; no live API, production database or deployment was used.
+
+## Task 17 — sync failure preservation — 2026-10-13
+
+- Extended `tests/api/google-reviews-sync.test.js` with mock fault cases for provider HTTP failure, timeout-class exception, incomplete final count and malformed page shape. Each asserts HTTP 502, no review bulk write, unchanged full local fixture and unchanged published subset.
+- Evidence: `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`.
+- These are automated mocked-provider tests, not provider-level/live Google tests. Build verification [38321074011](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321074011) and historical secret scan [38321073947](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321073947) passed on the test commit. Authorised Google API access and isolated runtime remain unverified. MongoDB write-phase partial failure remains a separate risk.
+
+## Task 18 — Google Reviews admin UI acceptance — 2026-10-13
+
+- Expanded `tests/admin/GoogleReviewsManager.test.tsx` for rating/publication filters, search submission, explicit unpublish persistence, delete-confirmation cancellation, loading, list/action/sync errors and unavailable credentials. Existing coverage includes selection without publication, explicit publish and local-only delete confirmation.
+- Added `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`.
+- CI result pending confirmation. Tests are component/API-fixture coverage, not deployed browser or live database acceptance. Google API/OAuth/location and authorised isolated staging remain unverified; no live provider sync or deployment.
+
+### Task 18 test follow-up — 2026-10-13
+
+- Initial UI regression CI found that failed initial list loads also rendered the misleading “No synced Google reviews yet” empty state. Fixed the manager to clear stale rows/selection on list-load failure and show “Unable to load Google reviews” with a retry action. Empty filtered results now have a separate message.
+- Corrected a UI test selector that matched both the publication filter option and row status.
+- Updated evidence: `docs/GOOGLE-REVIEWS-ADMIN-UI-ACCEPTANCE-2026-10-13.md`. Build verification [38321584041](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321584041) passed on `d6170e93e67d5950f46a4eb3a116dbafc10c77aa` (126 Node tests, 37 Vitest tests, application build). No deployed browser/runtime acceptance.

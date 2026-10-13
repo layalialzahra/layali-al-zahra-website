@@ -1,8 +1,11 @@
 name: Build verification
 
+permissions:
+  contents: read
+
 on:
   push:
-    branches: [main]
+    branches: [main, feat/layali-managed-content-cms]
   pull_request:
     branches: [main]
 
@@ -18,6 +21,10 @@ jobs:
           node-version: 20
           cache: npm
       - name: Install dependencies
-        run: npm install --ignore-scripts --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+      - name: Run tests
+        run: npm test
       - name: Build application
         run: npm run build

@@ -5,6 +5,8 @@
 **Primary admin URL:** `https://layalialzahra.com/admin`  
 **Status:** 🟡 Implementation in progress
 
+> **Expansion reconciliation (2026-10-12):** This BRD contains historical stages from the original Blog/Beauty Tips/News CMS. Its older Stage 6+ “not started” labels are not the authoritative status of the separate CMS expansion. Current Services, Offers, Packages, FAQs, Google Reviews and homepage SSR progress is tracked in the approved `docs/superpowers/plans/` set and the dated checkpoint at the end of this BRD. Expansion source implementation/CI does not itself establish staging, live API, crawler HTTP or release acceptance.
+
 > **Change-control:** Every repository/code/configuration change must update this BRD in the same change. A stage is complete only when its applicable checklist and acceptance criteria are implemented and verified.
 
 ## 1. Purpose
@@ -497,3 +499,279 @@ Stage 4.1 is 🟢 Complete. The owner accepted the live routing/content/admin ex
 The comprehensive BRD version at commit `c95bbf465b5bced148ae066e3feefddb0e460f46` is the recovered historical baseline for the project record. The current file preserves that baseline and adds the Stage 4.1 correction/acceptance layer. Repository history remains available for exact historical comparison.
 
 **Rule going forward:** never delete historical stage detail to make a correction pass shorter. Update the relevant checklist/status and append a dated change-log entry instead.
+
+
+## 20. Current CMS expansion checkpoint — 2026-10-12
+
+This section is the current status for the separate managed Services, Offers, Packages, FAQs, Google Reviews and crawlability expansion. It does not rewrite or invalidate the historical deployment and acceptance notes above, which describe earlier work and environments.
+
+- **Repository/branch:** `layalialzahra/layali-al-zahra-website`, `feat/layali-managed-content-cms`. Continue work only on this branch. Do not push to `main`.
+- **Deployment hold:** the owner confirmed that Vercel is disconnected and today's feature-branch changes are not deployed. Do not reconnect Vercel or trigger deployments during implementation. Preserve the daily free deployment allowance for one controlled final release after the project is complete and the owner explicitly approves.
+- **Production safety:** no production migration, public content source-of-truth change, production cutover or repository visibility change is authorised by this checkpoint. Keep current public content as the fallback until migration and acceptance evidence pass.
+- **Current expansion implementation:** managed-content validation/serialization, protected admin CRUD and published-only public reads exist for Services, Offers, Packages and FAQs. Dedicated admin UI exists. Migration tooling supports dry-run and explicit apply; no production migration for this expansion has been performed.
+- **CI evidence:** latest relevant Build verification [38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed dependency installation, high-severity dependency audit, tests and build after session-version revocation and script-CSP hardening. This is CI evidence only, not staging or production acceptance.
+- **Security gate (updated 2026-10-12):** session-version revocation is implemented and regression-tested; password changes invalidate older copied sessions on the next protected request. CSP `script-src` no longer allows `unsafe-inline`/`unsafe-eval`; analytics bootstrap is externalized to same-origin `/tracking.js`. `style-src 'unsafe-inline'` remains for existing inline styles. Latest reachable text/binary-string scan passed with zero findings. Actual proxy chain, live environment configuration and deployed auth/upload behavior remain unverified.
+- **Google Reviews gate:** suppression keyed by `googleReviewId` is implemented; local publication/order are preserved on sync and reviews missing from one completed sync are retained for explicit review. Business Profile API approval, OAuth and location access remain unverified. New imports must remain unpublished and failed sync must preserve the last good published set.
+- **Crawlability gate (updated 2026-10-12):** route-aware homepage SSR/hydration is implemented on the feature branch, with published-only/suppression-aware review rendering and a disabled-by-default review-source flag. Build/test/audit and built-server smoke passed in [run 38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839). Actual Vercel rewrite/function packaging and crawler-facing HTTP acceptance remain pending.
+- **Required next order:** (1) Priority 2 security review and targeted tests, (2) Priority 3 functional acceptance and migration dry-run/count/repeatability, (3) Priority 4 Google Reviews prerequisites/safety and crawlability proof of concept, (4) Priority 5 responsive QA, release checklist, rollback evidence and owner acceptance. Only then consider the final controlled release.
+- **Evidence discipline:** distinguish source-reviewed, CI-passed, staging-verified and production-released. Do not mark tasks complete without evidence, expose secret values, or claim a deployment/API test that was not performed.
+
+
+
+### 2026-10-12 — Priority 2 origin scheme hardening
+- Hardened `api/_lib/auth.js` so production same-origin validation pins the expected protocol to HTTPS rather than trusting `x-forwarded-proto` for the scheme decision.
+- Added a regression test in `tests/api/auth-security.test.js` for a spoofed forwarded-protocol header.
+- Commits: implementation `5bee062445dc9e852ebf4eca820f28073d943584`; test `6769ae39e4e9d504932e1354505ed81dd90ab41d`.
+- GitHub Actions run [38251638974](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251638974) passed dependency installation, high-severity dependency audit, tests and build on the tested commit. This is CI evidence only, not live/staging verification. Vercel remains disconnected and no deployment was triggered.
+
+
+### 2026-10-12 — CSP compatibility for existing Meta Pixel
+- Added explicit CSP allowlist entries for the existing Meta Pixel script and Facebook beacon origins in `vercel.json`.
+- Added `tests/api/csp-config.test.js` to assert the required origins remain allowlisted.
+- GitHub Actions run [38251889567](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38251889567) passed dependency installation, high-severity dependency audit, tests (including the new CSP allowlist test) and build on commit `09c393494383bc39de8c82ea29c68d95b38679b1`. This is CI-only evidence. Browser/runtime behavior is pending the final controlled release window. `unsafe-inline`/`unsafe-eval` hardening remains open.
+
+
+### 2026-10-12 — All-history secret scan automation
+- Added `.github/workflows/secret-scan.yml` using pinned Gitleaks `v8.30.1`, full Git history/ref checkout and redacted scan output.
+- The initial scan is pending. Keep the secret-review gate open until the run completes and any findings are triaged. No secret values should be copied into docs or issues.
+- This workflow runs in GitHub Actions only; Vercel remains disconnected.
+
+
+### 2026-10-12 — Wire secret scan into established CI
+- The new standalone workflow did not appear in the observed Actions run list after being added on the feature branch. Added the pinned, redacted all-reachable-history Gitleaks scan to the existing Build verification workflow and changed checkout to full history so this branch's push reliably exercises the scan.
+- The scan result remains pending. CI may fail on a finding or scanner/configuration issue; review only redacted output and do not copy secret values into documentation.
+
+
+### 2026-10-12 — Secret scan workflow syntax correction
+- The initial Build verification attempt after wiring Gitleaks failed before starting a job because the command quoting was invalid YAML. Corrected the Gitleaks run command in both workflow files to use a block scalar.
+- The full-history scan result remains pending; no clean-scan claim is made.
+
+
+### 2026-10-12 — Gitleaks output made safely triageable
+- Initial all-history scan processed 352 commits / approximately 117 MB and exited with code 1, but the connector-visible log did not provide usable finding metadata. No clean-scan claim is valid.
+- Updated both workflows to emit a redacted JSON report and print only rule IDs, file paths, line numbers and abbreviated commit IDs. The next run is required for safe triage; keep this gate open.
+
+
+### 2026-10-12 — Triage Web3Forms Gitleaks finding
+- Gitleaks reported one `generic-api-key` match in `src/components/ContactPage.tsx`. The value was not printed.
+- Verified against the official Web3Forms FAQ/API reference that the client-side `access_key` is intentionally public by design, not a secret API key. Added a narrow `.gitleaks.toml` allowlist requiring both the exact file path and the `access_key` line pattern.
+- A corrected scan must pass before closing the text-history scan gate. Binary-blob review remains separate and open.
+
+
+### 2026-10-12 — Gitleaks all-history scan result
+- Standalone run [38252703895](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38252703895) passed after the narrow Web3Forms access-key allowlist: 354 commits and approximately 117.15 MB scanned; zero findings.
+- This closes the reachable text/history Gitleaks check only. Binary-blob inspection remains open.
+- Removed the duplicate Gitleaks installation from Build verification because its combined run failed during scanner installation and skipped tests/build. The dedicated secret-scan workflow remains in place; standard Build verification continues to run audit, tests and build.
+
+
+### 2026-10-12 — Binary history scan automation
+- Added a redacted binary-blob scan step to the dedicated secret-scan workflow. It extracts printable strings from reachable binary Git blobs and runs Gitleaks against them.
+- Only metadata is printed; no secret values should be copied to docs/issues. The scan is heuristic and does not inspect compressed/encrypted payloads semantically. First result pending.
+
+
+### 2026-10-12 — Binary-history scan completed
+- Historical secret scan [38253553830](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553830) passed. Gitleaks scanned 357 commits / approximately 117.16 MB of reachable history and reported zero findings after the documented public Web3Forms key allowlist.
+- The binary step examined 118 reachable binary blobs with printable strings (170,446,401 bytes) and reported zero findings.
+- Scope limitation: this is heuristic printable-string scanning, not semantic inspection of compressed/encrypted payloads, unreachable objects, external systems or production environment values.
+- Build verification [38253553795](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253553795) passed dependency audit, tests and build. Remaining security items are proxy-IP trust, session revocation and strict CSP hardening/runtime acceptance.
+
+
+### 2026-10-12 — Latest security scan and proxy review
+- Latest scan [38253765871](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253765871) passed: 358 commits / ~117.17 MB text/history scanned with zero findings after the documented public Web3Forms allowlist; 118 binary blobs with printable strings / 170,446,401 bytes scanned with zero findings.
+- Vercel's official request-header documentation states that Vercel overwrites `X-Forwarded-For` to prevent IP spoofing. The current rate-limit key is supported when requests reach Vercel directly, but the actual proxy chain remains unverified.
+- Remaining security gate: session revocation decision and stricter CSP design/runtime acceptance. No deployment or live test was performed.
+
+
+### 2026-10-12 — Latest security acceptance evidence
+- Historical scan [38253958356](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958356) passed: 359 commits / ~117.17 MB reachable history with zero text findings and 118 binary blobs with printable strings / 170,446,401 bytes with zero findings.
+- Standard Build verification [38253958446](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38253958446) passed audit, tests and build.
+- Vercel's request-header docs state that `X-Forwarded-For` is overwritten to prevent IP spoofing; direct-Vercel behavior is documented, but the live proxy chain is not verified.
+- Session revocation and stricter CSP removal of `unsafe-inline`/`unsafe-eval` remain open. No deployment or browser/runtime test occurred.
+
+
+### 2026-10-12 — Session revocation and script CSP hardening
+- Implemented server-checked session versioning in api/_lib/auth.js. Admin sessions include a version that is compared with the current MongoDB admin record on protected requests; password changes increment the version and revoke previously copied tokens. Added regression coverage for stale, current and legacy session versions.
+- Updated protected content, upload, migration, seed and Google Reviews routes to await session validation.
+- Moved Google Analytics and Meta Pixel bootstrap code from inline script blocks in index.html into same-origin public/tracking.js. Removed unsafe-inline and unsafe-eval from CSP script-src; added tests that reject those script allowances and executable inline scripts in index.html. style-src unsafe-inline remains because the site still uses inline styles.
+- Build verification [38255367374](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367374) passed dependency audit, tests and build. Historical secret scan [38255367338](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38255367338) passed with zero text/history and binary printable-string findings.
+- No production database, Vercel connection or deployment was used. Browser/runtime acceptance remains pending the final approved release window.
+
+
+### 2026-10-12 — Migration and crawlability acceptance tests
+- The existing migration tests assert 15 services, 5 offers, 23 packages and 13 FAQs (56 records total), preserve display labels, verify dry-run does not connect to MongoDB and confirm repeat apply does not duplicate records. These are mocked/unit-test results; no real staging or production DB migration was run.
+- Added a component-level SSR proof in `tests/rendering/homepage-crawlability-poc.test.tsx`. It confirms rendered HTML contains supplied published review text and excludes a supplied review marked unpublished, while the existing hard-coded reviews remain the default fallback.
+- CI build/test/audit passed in [run 38256652658](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652658); reachable-history scan passed in [run 38256652699](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38256652699) with zero text and binary printable-string findings.
+- This does not yet integrate SSR into a request handler, fetch database-backed reviews into initial HTML or prove crawler HTTP output. Vercel remains disconnected and no deployment or production migration occurred.
+
+
+### 2026-10-12 — Route-aware homepage SSR implementation
+- Added a server-rendered homepage entry and hydration path. The existing catch-all API function serves the rendered root and /home alias, avoiding an extra function entrypoint.
+- The handler keeps current hard-coded reviews as the default fallback. MANAGED_HOME_REVIEWS_ENABLED defaults to false; only when explicitly enabled does the homepage fetch published, non-suppressed reviews from MongoDB. A failed managed source fails closed to an empty review set.
+- Regression tests cover published/unpublished output, suppression filtering, safe hydration data, fallback and managed-mode failure. Build verification [38259645839](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645839) passed dependency audit, tests, client build, SSR build and smoke test. Historical scan [38259645791](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259645791) passed with zero text and binary printable-string findings.
+- No deployment or production DB access occurred. Actual Vercel routing and crawler HTTP response remain pending the approved final verification window.
+
+## Documentation reconciliation checkpoint — 2026-10-12
+
+- **Audited application/code HEAD before this documentation-only reconciliation:** `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. GitHub compare confirmed `feat/layali-managed-content-cms` was identical to this SHA before these edits.
+- **Build/test/audit:** [run 38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) completed successfully. Its job steps confirm dependency install, `npm audit --audit-level=high`, `npm test` and `npm run build` all passed.
+- **Reachable-history secret scan:** [run 38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) completed successfully, including text/history and binary printable-string scan steps. Recorded output reports 413 reachable commits / approximately 117.24 MB, zero text findings, and 118 binary blobs containing printable strings / 170,446,401 bytes with zero findings. This heuristic does not semantically inspect compressed/encrypted payloads, unreachable objects, external systems or deployed environment values.
+- **Vercel status boundary:** a GitHub status context named “Vercel” exists on the audited commit, but this is not deployment evidence. The owner-confirmed state remains that Vercel is disconnected and no current feature-branch changes are deployed. No deployment, production migration, cutover or `main` push was performed.
+- **Implementation versus acceptance:** core CMS, Google Reviews provider-independent logic and route-aware homepage SSR/hydration exist in source. CI does not establish staging/runtime acceptance. Core CMS Task 6 remains open because staging CRUD/auth/upload/public-read verification, real staging migration comparison and owner acceptance are not evidenced. Google Business Profile API/OAuth/location access and crawler-facing HTTP verification remain unverified.
+- **Confirmed SSR fallback gap:** a managed-review source lookup failure intentionally fails closed to an empty review list when managed reviews are enabled. Separately, a generic homepage-render exception returns the original HTML template with an empty `#root` and HTTP 200; that is not a useful crawlable fallback. Treat this as an open design/acceptance gap, not as a test failure that has been fixed.
+- **Plan-sequence deviation:** route-aware SSR implementation proceeded before Core CMS Task 6 and live Google Reviews staging acceptance gates were satisfied. The code remains local/CI-only and the public source switch defaults off; do not mark upstream acceptance complete or perform cutover.
+- **Next approved task:** Core CMS plan Task 6 — Stage verification and core CMS acceptance gate. Keep it open until required evidence is obtained in an owner-authorized safe environment. Do not start a downstream acceptance/cutover task or deploy as part of this documentation reconciliation.
+
+## Task 01 — current status reconciliation (2026-10-12)
+
+- Immediately before this documentation update, GitHub confirmed `feat/layali-managed-content-cms` at `dbd22794c87a7f6cd80003e32c4713d1463d8b34`. Compare against audited application baseline `046c4b7e4b5a7629fc860538b6d37b0e3b969e48` reports 15 commits ahead, 0 behind; the intervening commits modify documentation only. The implementation/code state remains the audited baseline, not a new code revision.
+- Build verification [38259999486](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999486) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build` on `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. Historical scan [38259999483](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38259999483) passed reachable text/history and binary printable-string scan steps on that same baseline (413 commits / approximately 117.24 MB; zero text findings; 118 binary blobs / 170,446,401 bytes; zero findings). These runs do not verify the later documentation commits.
+- On `dbd22794c87a7f6cd80003e32c4713d1463d8b34`, the combined-status query returned only a **Vercel: failure** context linking to generic Vercel project-configuration documentation; no GitHub Actions workflow runs were returned for that SHA. This is not build verification or proof of a deployment. The owner-confirmed state remains: Vercel is disconnected and the current branch changes are not deployed.
+- Implemented in source: dedicated Services/Offers/Packages/FAQs models, protected CRUD and published-only APIs, legacy snapshots and dry-run/apply migration utility, admin managers, provider-independent Google Reviews logic/UI/sync endpoint, session-version revocation, strict `script-src` with same-origin `/tracking.js`, and route-aware homepage SSR/hydration. Source/CI evidence is not staging or production acceptance.
+- Open blockers: no authorised safe staging environment/database has been evidenced; CRUD/auth/origin/upload/public-read runtime checks, real staging migration comparison and owner acceptance remain open; Google Business Profile API approval/OAuth/verified-location access and live sync remain unverified; generic SSR exceptions still return an empty-root HTML shell with HTTP 200; deployed routing/crawler HTML, responsive browser QA, live proxy-chain/runtime security checks, rollback and release approval remain open.
+- Ordered next action: **Short Task List Task 02 — Confirm a safe verification environment**. Do not reconnect/deploy Vercel to do so. Once an authorised non-production environment is established, continue **Core CMS plan Task 6, Steps 2–5**; Step 1 is evidenced only on `046c4b7e4b5a7629fc860538b6d37b0e3b969e48`. Keep all acceptance and release gates open until evidenced.
+- No production migration/cutover, `main` push, repository visibility change or deployment is authorised. Preserve the history above; this section supersedes earlier “current HEAD” statements for status purposes without rewriting historical entries.
+
+
+## Task 02 — environment verification (2026-10-12)
+
+**Outcome: BLOCKED — no currently authorised and isolated non-production database could be verified.** The full evidence and required unblock checklist are in [docs/ENVIRONMENT-VERIFICATION-2026-10-12.md](ENVIRONMENT-VERIFICATION-2026-10-12.md).
+
+The repository `.env.example` only provides a placeholder `MONGODB_URI` and defaults `MONGODB_DB_NAME` to the documented production database name `layalialzahra`. The MongoDB helper does not enforce environment isolation. Historical notes mention a previously healthy Vercel staging admin service and MongoDB/admin variables in Production and Preview, but do not establish a current active project, separate staging database, or production write isolation. Current provider-level Vercel/MongoDB configuration was not accessible through the connected tools. No credentials/secrets were accessed or copied.
+
+No CMS runtime tests, migration, upload, deployment or production writes were performed. Vercel remains disconnected. Before staging acceptance, obtain owner-authorised project/URL and verify a dedicated staging database/cluster, staging-only credentials and access boundaries, and isolated Blob configuration if uploads are tested. Do not put secret values in this BRD or GitHub. The historical staging reference is not sufficient evidence to call the environment safe.
+
+
+## Task 03 — Services management acceptance addendum (2026-10-12)
+
+**Automated checks: PASS on tested commit `0b97e33e4cfcaf16e9a985a7d570ea206fcdf3a1`. Live/staging acceptance: BLOCKED by Task 02 environment verification.**
+
+- Added focused API acceptance tests for create, default draft status, partial edits, display order, publish/unpublish, delete, invalid title/order, duplicate normalized slugs and published-only public ordering/serialization.
+- Added UI tests for explicit Save Draft, editing a service's title and order, and displaying the duplicate-slug error without closing the editor.
+- Fixed strict ordering validation: `null`, blank strings and booleans are rejected instead of coercing to zero. Finite numeric order values remain valid. The helper is shared by Services/Offers/Packages and FAQs.
+- GitHub Actions Build verification [run 38270049182](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049182) passed dependency installation, high-severity dependency audit, `npm test` and `npm run build` on the tested commit.
+- Historical secret scan [run 38270049237](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270049237) also passed the redacted Gitleaks history and binary-blob scan on the tested commit. This automated result does not replace authenticated runtime testing. Do not mark the wider Core CMS acceptance, migration or release gates complete. No live database changes, uploads, deployment, production migration or public content-source change were made. Vercel remains disconnected; obtain the Task 02 environment-isolation evidence before live acceptance.
+
+
+## Task 03 follow-up — duplicate slug on edit and final automated checks (2026-10-12)
+
+- Added an API regression test confirming a service cannot be edited to use another service's slug; the request returns HTTP 409 and neither record is overwritten.
+- Latest tested code/test commit: [`5bab4a5992315c529a708e48b6f07c2f6e596042`](https://github.com/layalialzahra/layali-al-zahra-website/commit/5bab4a5992315c529a708e48b6f07c2f6e596042).
+- Build verification [run 38270400681](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400681) passed dependency installation, `npm audit --audit-level=high`, `npm test` and `npm run build`.
+- Historical secret scan [run 38270400613](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38270400613) passed the redacted Gitleaks reachable-history scan and binary-blob scan.
+- These checks verify the feature-branch source only. Task 02 still blocks live/staging runtime acceptance; no database writes, uploads, migrations, deployment or public content-source changes were performed. Vercel remains disconnected.
+
+
+## CMS expansion checkpoint — Short Task List Task 04 (2026-10-12)
+
+Automated Offers management checks pass on code/test commit `526047628878e300791450700d6e3f43e7d1c2e0`; Build verification [38271554877](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38271554877) passed dependency install, `npm audit --audit-level=high` (0 vulnerabilities), 80 Node tests, 22 Vitest tests across 5 files, client/SSR build and homepage SSR smoke test. Added API/route and admin UI tests for CRUD, publication, display-price strings, recurring/descriptive validity labels and date-boundary validation. Fixed stale `validFrom`/`validUntil` values persisting when an offer changes to a non-date validity type. This is not staging/runtime acceptance: Task 02's safe non-production environment/database blocker remains open. No live database write, migration, deployment or public content-source cutover occurred; Vercel remains disconnected.
+
+
+## Short Task List Task 05 — Packages admin automated acceptance (2026-10-12)
+
+**Outcome:** Automated API/model/UI checks PASS on code/test commit [cc6603ffae487a827e98d81ed7d5b1f3ac89a548](https://github.com/layalialzahra/layali-al-zahra-website/commit/cc6603ffae487a827e98d81ed7d5b1f3ac89a548). **Task 05 remains OPEN overall** because staging/runtime acceptance is BLOCKED by Task 02; this does not close Core CMS Task 6 Steps 2–5 or authorise a migration or public-source cutover.
+
+- Added package acceptance tests for CRUD, draft defaults, partial edits, category and exact price-label preservation, image URL/alt, included items, booking destination, ordering, publish/unpublish/delete, duplicate normalized slugs, invalid input and published-only public serialization.
+- Added Packages admin UI tests for saving a draft, image-upload response wiring, explicit publication transitions, visible API errors and delete confirmation.
+- Fixed `api/_lib/managed-content-routes.js` error handling: an unsafe HTTP image URL generated a validation message that was incorrectly mapped to HTTP 503. It now returns HTTP 400, with a regression test confirming no collection mutation.
+- Build verification [38273001219](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001219) passed install, `npm audit --audit-level=high` (0 vulnerabilities), 87 Node tests, 27 Vitest tests across 6 files, client build, SSR build and homepage SSR smoke test.
+- Historical scan [38273001202](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38273001202) passed: 463 reachable commits / ~117.35 MB, zero Gitleaks findings; 118 reachable binary blobs / 170,446,401 bytes, zero findings.
+- No authorised isolated staging database has been verified, so actual MongoDB persistence, real Blob upload/storage, staging CRUD/auth/origin/public-read checks and migration comparison remain unverified. No live writes, upload, migration, deployment or public content-source change occurred. Vercel remains disconnected.
+
+
+## Expansion acceptance checkpoint — Short Task List Task 06 (2026-10-12)
+
+FAQ acceptance coverage has been added for create/update/delete, default draft state, order, publish/unpublish transitions, page association validation and reassignment, published-only reads, per-page isolation, invalid/missing page-key handling and admin UI filtering/error feedback. Source review found the FAQ validator and route enforce explicit valid page keys and filter public responses by both published status and requested page. No application logic change was justified by the inspected source.
+
+The test commits are `83b248c2480c0859911c58bbcf940bf0fe8dcbea` and `e0efd65cac369ff242b3093753c5e1a9ac209da3`. The available GitHub status/workflow query returned no check result for these commits; test execution and build success remain unverified and must not be claimed. Runtime acceptance remains blocked by Task 02: no authorised, production-isolated non-production database is verified. No production data, deployment, migration or public content source was changed; Vercel remains disconnected. Task 06 remains open pending evidence.
+
+
+Latest Task 06 test-only follow-up: commit `09debf63f90ae32f5fc449cb29dcb8ccb9f7d643` adds an explicit unpublish-to-public-API regression assertion. Test execution and build success remain unverified because no run evidence was returned by the available status/workflow lookup.
+
+### Short Task List Task 07 — admin security regression coverage (2026-10-12)
+- Added `tests/api/admin-security-acceptance.test.js` in commit `410429bd8c866817ca6a8998eff99be9f61e228e`.
+- Regression coverage checks unauthenticated and cross-origin POST/PUT/DELETE requests are rejected before database access. Invalid service create, invalid sort-order update and malformed delete ID return controlled HTTP 400 responses without changing the in-memory records.
+- Existing auth tests cover missing/mismatched Origin, production HTTPS scheme pinning, malformed cookies, signed session validity, session-version mismatch after password change and deleted/missing admin records.
+- No additional confirmed application vulnerability was found in this review, so no auth or API implementation change was justified. CI execution for the new test commit is pending evidence; no test/build pass is claimed yet.
+- No live/staging or production runtime test occurred. Task 02 still blocks live acceptance because an authorised, production-isolated non-production environment/database is not verified. Vercel remains disconnected.
+
+
+### Task 07 final CI evidence — 2026-10-12
+- Build verification [run 38276501223](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38276501223) passed on tested feature-branch HEAD `59e33fce4d76311c60ed864981b533f3f3d5b8d1`: dependency installation, `npm audit --audit-level=high` (0 vulnerabilities), `npm test` (97 Node tests passed, 0 failed; 29 Vitest tests passed across 7 files), client build, SSR build and homepage SSR smoke test.
+- Historical secret scan [run 38276501407](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38276501407) passed on the same HEAD: 482 reachable commits / approximately 117.39 MB scanned with 0 Gitleaks findings; 118 reachable binary blobs / 170,446,401 bytes examined with 0 printable-string findings. Binary scanning is heuristic and does not semantically inspect compressed/encrypted payloads.
+- The temporary draft CI PR [#3](https://github.com/layalialzahra/layali-al-zahra-website/pull/3) was closed unmerged after collecting the runs. No merge, `main` push, Vercel reconnect or deployment occurred.
+- **Automated Task 07 acceptance: PASS.** Runtime security acceptance remains open: Task 02 has not established an authorised production-isolated test environment; live MongoDB session revocation and deployed auth/origin behavior were not tested. No new application logic vulnerability was confirmed, so no auth/API code fix was warranted.
+
+
+## Short Task List Task 08 — image upload automated acceptance (2026-10-12)
+
+**Automated acceptance: PASS** on tested code/test commit [a9c5469e94d0c8b18006cbb4c21059b7cdfd7d28](https://github.com/layalialzahra/layali-al-zahra-website/commit/a9c5469e94d0c8b18006cbb4c21059b7cdfd7d28). Runtime acceptance remains **OPEN/BLOCKED by Task 02** because no authorised production-isolated non-production environment and Blob storage have been verified.
+
+- Added handler-level regression coverage to `tests/api/image-upload.test.js` for JPG/JPEG, PNG, WebP and GIF signature acceptance; unsupported SVG, MIME/signature mismatch and empty payload rejection; exact 4 MiB boundary and oversized bodies; declared Content-Length checks; malformed lengths and non-byte stream chunks; authentication and cross-origin rejection before reading/storing; generic storage/stream failure responses; and HTTPS storage URL validation.
+- Hardened `api/admin/upload.js`: enforce the 4 MiB limit using both declared length and actual streamed bytes; reject non-byte chunks and malformed lengths; validate returned Blob URLs as HTTPS without embedded credentials; return the validated declared MIME type instead of trusting storage response metadata; and avoid returning or logging provider error objects. Valid upload paths remain under `layali-al-zahra/content/` with type-based extensions and public Blob access.
+- First CI attempt [38277263547](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277263547) failed because the new test statically imported the upload handler before setting test-only MongoDB/session environment values. Updated the test to set test-only values before dynamic imports; no production credentials or runtime environment were used.
+- Final Build verification [38277348263](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348263) passed: `npm audit --audit-level=high` found 0 vulnerabilities; `npm test` reported 104 Node tests passed / 0 failed and Vitest reported 29 tests passed across 7 files; client build, SSR build and homepage SSR smoke test passed.
+- Historical secret scan [38277348295](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38277348295) passed: 491 reachable commits / approximately 117.41 MB scanned, zero Gitleaks findings; 118 binary blobs / 170,446,401 bytes of printable strings examined, zero findings. Binary scanning remains heuristic and does not semantically inspect compressed/encrypted payloads.
+- No real Blob upload, staging request, database write, migration, deployment or public-source cutover occurred. Vercel remains disconnected. Automated tests use injected storage and in-memory/request fixtures; live storage behavior and deployment configuration remain unverified until Task 02 is unblocked.
+
+## Short Task List Task 09 — public CMS response boundaries (2026-10-12)
+
+- Added tests for all four public managed-content endpoints: empty datasets, published-only records, resource-specific allowlisted fields, FAQ page isolation and generic failure responses for database connection, index and read errors.
+- Fixed nested service response serialization. The public serializer now filters `subservices` to `id`, `name`, `price`, `description` and `bookingUrl` rather than returning arbitrary nested database fields.
+- Build verification [38280386368](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386368) passed on tested HEAD `f832185898175ac10432546915d0a38bd5e66666`: 0 high-severity dependency vulnerabilities, 107 Node tests passed, 29 Vitest tests across 7 files passed, client/SSR builds and homepage SSR smoke test passed.
+- Historical scan [38280386362](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38280386362) passed with zero findings across 501 reachable commits and 118 binary blobs containing printable strings.
+- Runtime/staging acceptance remains blocked by Task 02. No live database calls, deployment, migration or public-source change occurred; Vercel remains disconnected.
+
+
+## Task 10 — Existing Blog, Beauty Tips and News CMS regression checks (2026-10-12)
+
+- Automated regression tests added in `tests/api/legacy-content-regression.test.js` for legacy content types, partial edit preservation, schedule validation, sanitized article bodies, public-field privacy, stable listing/detail route contracts and retention of upload tests.
+- Source review found no confirmed application regression; no application logic changes were made.
+- Build verification [38281099834](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281099834) passed on tested commit [49292cebd8b3c495faaa748062d34ca8d74dbe8d](https://github.com/layalialzahra/layali-al-zahra-website/commit/49292cebd8b3c495faaa748062d34ca8d74dbe8d): 0 high-severity dependency vulnerabilities, 114 Node tests, 29 Vitest tests across 7 files, client/SSR builds and homepage SSR smoke test.
+- First CI run failed because the test imported MongoDB helpers before setting a test-only URI; the harness was corrected and the final run passed.
+- Runtime/staging acceptance remains open because Task 02 has no verified authorised isolated non-production target. No real Blob upload, live DB, migration, deployment or public-source cutover occurred. Vercel remains disconnected.
+
+
+## Task 11 — migration source reconciliation (2026-10-12)
+
+**Source-to-migration comparison: PASS. Database/staging comparison: NOT RUN, blocked by Task 02.**
+
+- Added `tests/managed-content-migration-snapshot.test.js` to compare the migration builder against authoritative source files for all 56 records: 15 Services, 5 Offers, 23 Packages and 13 FAQs.
+- Compared exact source titles, descriptions, labels/prices, image paths/URLs, source order, subservice names/prices, validity labels/types, FAQ question/answer/page assignment/order and the existing Zylu booking URL. FAQ assignment counts are Services 5, Offers 4, Packages 4.
+- **Discrepancies found: 0. Source content changes: 0.** No source values were changed.
+- Documented explicit schema-generated mapping values separately from discrepancies: blank service description where source has none, title-derived image alt, generated subservice IDs, normalized offer/package slugs, shared booking fallback and zero-based sort order.
+- Full reconciliation: [`docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md`](https://github.com/layalialzahra/layali-al-zahra-website/blob/feat/layali-managed-content-cms/docs/MIGRATION-DATA-RECONCILIATION-2026-10-12.md).
+- Build verification [38281562425](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38281562425) passed on tested code/test commit [acc1accdb15c93ae43df285dd28179b0d606c671](https://github.com/layalialzahra/layali-al-zahra-website/commit/acc1accdb15c93ae43df285dd28179b0d606c671): 0 dependency vulnerabilities; 120 Node tests passed, 29 Vitest tests across 7 files passed, client/SSR builds and homepage SSR smoke test passed.
+- This verifies the generated source projection only, not database contents or an applied migration. No database connection/write, migration, deployment or public-source switch occurred. Task 02 remains blocked; Vercel remains disconnected. Temporary CI PR [#8](https://github.com/layalialzahra/layali-al-zahra-website/pull/8) was closed unmerged.
+
+
+## Core CMS acceptance decision — 2026-10-12
+
+**HOLD. Managed public content must remain disabled and the public content source must not change.** The evidence reconciliation for Tasks 03–12 is recorded in [Core CMS Acceptance Summary](./CORE-CMS-ACCEPTANCE-SUMMARY-2026-10-12.md).
+
+Automated test/build evidence exists for the recorded Services, Offers, security, uploads, public-read and legacy-regression changes. Task 11's comparison of 56 generated source records passed with zero discrepancies. These results do not establish live staging behavior. Task 05 remains open for real persistence/Blob acceptance; Task 06 has tests and integrated-suite evidence but no staging acceptance; Task 12 remains blocked because no owner-authorised production-isolated staging database has been verified. Real migration counts/field integrity, repeat-run idempotency and rollback/recovery are unverified.
+
+No additional confirmed Task 03–12 application defect is established by the available evidence. Fixed defects are listed in the acceptance summary. Separate release-readiness issues remain: generic SSR exceptions can return empty-root HTML with HTTP 200, and live proxy/browser security, deployed crawler HTML and responsive acceptance are not verified.
+
+**Required before acceptance:** verify Task 02's authorised staging target and isolation; complete Task 12 with evidence; run end-to-end staging acceptance across CRUD, publication, security, uploads and public reads; then obtain explicit written owner acceptance. Task 13 remains open until that owner decision is recorded. This documentation is not approval. No production migration, deployment or public source cutover occurred.
+
+
+## Google Business Profile integration prerequisite checkpoint — 2026-10-12
+
+Task 14 repository/configuration inspection is complete, but external access is **UNVERIFIED/BLOCKED**. The example environment file lists the required client ID, client secret, refresh token and `accounts/{accountId}/locations/{locationId}` setting, with placeholders rather than working credentials. Source-level checks cannot establish live environment-variable presence, API approval/enablement, OAuth consent/scope or access to the verified salon location. No secret values were accessed and no live API call or sync was attempted. Keep sync and managed homepage review flags disabled until these prerequisites are confirmed and a controlled read-only integration check passes. See [Task 14 evidence report](./GOOGLE-BUSINESS-PROFILE-PREREQUISITES-2026-10-12.md).
+
+
+## Task 15 — controlled Google Reviews sync checkpoint — 2026-10-13
+
+**Status: OPEN / BLOCKED; no live sync attempted.** Google Business Profile API approval/enablement, OAuth grant/scope, live server-side credential presence and verified salon-location access remain unverified. No OAuth exchange, Google API request, database write or deployment occurred. No secret values were accessed. Existing local reviews and the hard-coded homepage review fallback were not changed.
+
+Source review found that provider pagination and normalization complete before the sync handler starts review upserts. The fetcher rejects failed responses, invalid page shapes/counts, count changes across pages, duplicate review IDs, repeated page tokens, final-count mismatch and more than 200 pages. Existing unit coverage checks a multi-page fixture and rejects an incomplete page. This does not prove live pagination, actual record counts or field-level integrity. Also, MongoDB `bulkWrite` is not atomic across documents; a database-side failure during a batch may leave some writes applied. Test and address that separate case before claiming full failure atomicity.
+
+Required to unblock: verified Google API approval/enablement and OAuth/location access, plus an owner-authorised production-isolated non-production environment. Then run a controlled source read and sync, record provider totals/page completion/import counts and field-integrity evidence, and verify provider failure/incomplete results leave existing records unchanged. See [Task 15 controlled sync blocker report](./GOOGLE-REVIEWS-CONTROLLED-SYNC-BLOCKER-2026-10-13.md). Keep managed review sync and homepage review flags disabled; no deployment or public source cutover is authorised.
+
+## Google Reviews moderation verification — 2026-10-13
+- Added automated lifecycle coverage for draft-on-import, explicit publication, preservation of local publication/order during sync, local-only deletion, and suppression across a later sync. See `docs/GOOGLE-REVIEWS-MODERATION-ACCEPTANCE-2026-10-13.md`.
+- Build verification passed on `5872de79017b2cbb2d175ce445e4ca337f7ee6cd` ([run 38320839858]); tests and build passed. Authorised staging/runtime persistence checks remain open. This does not authorise public-source cutover; the existing homepage reviews remain unchanged.
+
+## Google Reviews Task 17 — sync failure preservation — 2026-10-13
+- Added mocked-provider regression cases for provider HTTP error, timeout-class exception, incomplete page count and malformed response. Each checks no review write occurs and the previous local/published review fixture remains intact.
+- Build verification [38321074011](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321074011) and historical secret scan [38321073947](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38321073947) passed. Live Google/provider behavior and authorised staging acceptance remain unverified. See `docs/GOOGLE-REVIEWS-SYNC-FAILURE-ACCEPTANCE-2026-10-13.md`. Do not cut over public review content.

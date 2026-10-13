@@ -1,0 +1,136 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createHomepageRenderHandler } from "../../api/_lib/homepage-renderer.js";
+
+function response() {
+  return {
+    code: 200, headers: {}, body: null,
+    status(code) { this.code = code; return this; },
+    setHeader(name, value) { this.headers[name] = value; },
+    send(body) { this.body = body; return this; },
+  };
+}
+
+test("SSR homepage inserts published review markup and safely encodes hydration data", async () => {
+  const res = response();
+  const handler = createHomepageRenderHandler({
+    readTemplate: async () => '<!doctype html><html><body><div id="root"></div></body></html>',
+    getPublishedReviews: async () => [
+      { title: "Published reviewer", initials: "PR", description: '<script>alert("x")</script>', rating: 5, isPublished: true },
+      { title: "Private reviewer", initials: "XR", description: "must be filtered", isPublished: false },
+    ],
+    getSuppressedReviewIds: async () => [],
+    renderPage: async (pathname, reviews) => {
+      assert.equal(pathname, "/");
+      assert.deepEqual(reviews.map((review) => review.title), ["Published reviewer"]);
+      return "<main><p>Published review rendered</p></main>";
+    },
+    logger: { error() {} },
+  });
+
+  await handler({ method: "GET" }, res);
+  assert.equal(res.code, 200);
+  assert.equal(res.headers["Content-Type"], "text/html; charset=utf-8");
+  assert.equal(res.headers["Cache-Control"], "no-store");
+  assert.match(res.body, /data-ssr="true"/);
+  assert.match(res.body, /Published review rendered/);
+  assert.doesNotMatch(res.body, /<script>alert/);
+  assert.doesNotMatch(res.body, /Private reviewer/);
+});
+
+test("generic SSR render failure returns HTTP 500 instead of an empty-root HTTP 200", async () => {
+  const template = '<!doctype html><html><body><div id="root"></div></body></html>';
+  const res = response();
+  const handler = createHomepageRenderHandler({
+    readTemplate: async () => template,
+    getPublishedReviews: async () => [],
+    renderPage: async () => { throw new Error("SSR bundle unavailable"); },
+    logger: { error() {} },
+  });
+
+  await handler({ method: "GET" }, res);
+  assert.equal(res.code, 500);
+  assert.equal(res.headers["Content-Type"], "text/plain; charset=utf-8");
+  assert.equal(res.headers["Cache-Control"], "no-store");
+  assert.equal(res.body, "Homepage unavailable");
+  assert.notEqual(res.body, template);
+});
+
+test("SSR homepage rejects state-changing methods", async () => {
+  const res = response();
+  const handler = createHomepageRenderHandler({ readTemplate: async () => "" });
+  await handler({ method: "POST" }, res);
+  assert.equal(res.code, 405);
+  assert.equal(res.headers.Allow, "GET, HEAD");
+});
+
+
+test("suppressed local reviews are excluded from server-rendered homepage content", async () => {
+  const res = response();
+  let renderedReviews = [];
+  const handler = createHomepageRenderHandler({
+    readTemplate: async () => '<!doctype html><html><body><div id="root"></div></body></html>',
+    getPublishedReviews: async () => [
+      { googleReviewId: "suppressed", title: "Suppressed reviewer", initials: "SR", description: "deleted review", rating: 5, isPublished: true },
+      { googleReviewId: "visible", title: "Visible reviewer", initials: "VR", description: "approved review", rating: 5, isPublished: true },
+    ],
+    getSuppressedReviewIds: async () => ["suppressed"],
+    renderPage: async (_pathname, reviews) => {
+      renderedReviews = reviews;
+      return "<main>Homepage</main>";
+    },
+    logger: { error() {} },
+  });
+
+  await handler({ method: "GET" }, res);
+  assert.equal(res.code, 200);
+  assert.deepEqual(renderedReviews.map((review) => review.title), ["Visible reviewer"]);
+});
+
+
+test("managed review mode fails closed instead of restoring legacy reviews on lookup failure", async () => {
+  const previous = process.env.MANAGED_HOME_REVIEWS_ENABLED;
+  process.env.MANAGED_HOME_REVIEWS_ENABLED = "true";
+  let renderedReviews;
+  try {
+    const res = response();
+    const handler = createHomepageRenderHandler({
+      readTemplate: async () => '<!doctype html><html><body><div id="root"></div></body></html>',
+      getPublishedReviews: async () => { throw new Error("database unavailable"); },
+      renderPage: async (_pathname, reviews) => {
+        renderedReviews = reviews;
+        return "<main>Managed mode</main>";
+      },
+      logger: { error() {} },
+    });
+    await handler({ method: "GET" }, res);
+    assert.equal(res.code, 200);
+    assert.deepEqual(renderedReviews, []);
+    assert.match(res.body, /data-initial-reviews="\[\]"/);
+    assert.doesNotMatch(res.body, /Shauna Haberlin/);
+  } finally {
+    if (previous === undefined) delete process.env.MANAGED_HOME_REVIEWS_ENABLED;
+    else process.env.MANAGED_HOME_REVIEWS_ENABLED = previous;
+  }
+});
+
+
+test("SSR preserves the requested /home alias while rendering the same homepage", async () => {
+  const res = response();
+  let pathnameSeen;
+  const handler = createHomepageRenderHandler({
+    readTemplate: async () => '<!doctype html><html><head><link rel="canonical" href="https://www.layalialzahra.com/"></head><body><div id="root"></div></body></html>',
+    getPublishedReviews: async () => [],
+    renderPage: async (pathname) => {
+      pathnameSeen = pathname;
+      return "<main>Homepage</main>";
+    },
+    logger: { error() {} },
+  });
+
+  await handler({ method: "GET", url: "/home?source=test" }, res);
+  assert.equal(res.code, 200);
+  assert.equal(pathnameSeen, "/home");
+  assert.match(res.body, /rel="canonical" href="https:\/\/www\.layalialzahra\.com\//);
+  assert.match(res.body, /<main>Homepage<\/main>/);
+});

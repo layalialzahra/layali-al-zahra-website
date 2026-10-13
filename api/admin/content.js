@@ -15,7 +15,7 @@ async function ensureUniqueSlug(collection, type, slug) {
 }
 
 export default async function handler(req, res) {
-  if (!requireAdmin(req, res)) return;
+  if (!(await requireAdmin(req, res))) return;
   if (!["GET", "POST", "PUT", "DELETE"].includes(req.method)) {
     res.setHeader("Allow", "GET, POST, PUT, DELETE");
     return sendError(res, 405, "Method not allowed");

@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   try {
     const db = await getDb();
     await db.command({ ping: 1 });
-    return res.status(200).json({ success: true, database: db.databaseName, message: "MongoDB connection is healthy" });
+    return res.status(200).json({ success: true, message: "Database connection is healthy" });
   } catch (error) {
     console.error("MongoDB health check failed", error);
     return res.status(503).json({ success: false, message: "Database connection unavailable" });
