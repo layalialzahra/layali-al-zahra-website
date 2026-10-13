@@ -453,3 +453,12 @@ Blocker report: [Offers and FAQ Integration Blocker](./OFFERS-FAQ-INTEGRATION-BL
 Existing automated Packages/FAQ tests and CI do not satisfy this prerequisite. Stopped before code changes, feature-flag changes or new integration tests. Managed public content remains disabled and legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
 
 Blocker report: [Packages and FAQ Integration Blocker](./PACKAGES-FAQ-INTEGRATION-BLOCKER-2026-10-13.md). Resume only after Core CMS acceptance is explicitly recorded; then verify published packages, pricing, categories/filters, images, booking destinations, FAQ reads, legacy fallback and presentation/booking behavior.
+
+
+## Task 24 — Homepage showcase-to-record mapping — 2026-10-13
+
+**Status: BLOCKED; no application code, mapping behavior or tests changed.** Core CMS acceptance remains HOLD/OPEN under Task 13. No owner-authorised production-isolated staging DB is verified. Staging migration, real database counts/field integrity, repeat-run idempotency, rollback/recovery and end-to-end CMS acceptance remain outstanding. Existing CI does not satisfy this gate or prove live managed-record integrity.
+
+Stopped before changing the curated homepage Service, Offer and Package showcases. Managed public content remains disabled and legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
+
+Blocker report: [Homepage Showcase Mapping Blocker](./HOMEPAGE-SHOWCASE-MAPPING-BLOCKER-2026-10-13.md). After explicit Core CMS acceptance, map canonical records and test preservation of selection/order/design/booking destinations plus missing, invalid, unpublished and fallback cases.
