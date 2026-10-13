@@ -165,3 +165,13 @@ Acceptance record: [Homepage SSR and Hydration Acceptance](../../HOMEPAGE-SSR-HY
 - Stopped before application-code changes, feature-flag changes or new integration tests. Managed public content remains disabled; legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
 - Blocker record: [Offers and FAQ Integration Blocker](../../OFFERS-FAQ-INTEGRATION-BLOCKER-2026-10-13.md).
 - Resume only after Core CMS acceptance is explicitly recorded. Then verify published offers, exact prices and validity labels, booking URLs, published FAQ reads, legacy fallback, and existing presentation/booking/contact behavior.
+
+
+### Task 23 — Packages and FAQ integration gate — 2026-10-13
+
+- [ ] **BLOCKED: do not implement or test integration until Core CMS acceptance is explicitly recorded.**
+- Task 13 remains HOLD/OPEN. No owner-authorised production-isolated staging DB is verified; Task 12 migration, real DB counts/field integrity, repeat-run idempotency and rollback/recovery are NOT RUN. End-to-end staging CRUD/auth/upload/public-read checks, FAQ persistence/publication and explicit written owner acceptance remain outstanding.
+- Existing automated Packages/FAQ tests and CI do not satisfy the prerequisite acceptance gate.
+- Stopped before application-code changes, feature-flag changes or new integration tests. Managed public content remains disabled; legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
+- Blocker record: [Packages and FAQ Integration Blocker](../../PACKAGES-FAQ-INTEGRATION-BLOCKER-2026-10-13.md).
+- Resume only after Core CMS acceptance is explicitly recorded. Then verify published packages, pricing, categories/filters, images, booking destinations, published FAQs, legacy fallback, and existing presentation/booking/contact behavior.
