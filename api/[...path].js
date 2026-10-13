@@ -75,7 +75,9 @@ export function createApiRouterHandler(options = {}) {
         return res.status(200).json({ success: true, message: "Existing content imported, verified and published to the website.", expectedCounts, actualCounts, migration });
       } catch (error) {
         console.error("Legacy content publish failed", error);
-        return res.status(503).json({ success: false, message: "Content could not be imported and verified. Website activation was not changed." });
+        const reason = error instanceof Error ? error.message : "Unknown import error";
+        const safeReason = reason.replace(/mongodb(?:\+srv)?:\/\/[^\s]+/gi, "[database connection redacted]").slice(0, 240);
+        return res.status(503).json({ success: false, message: `Content import failed: ${safeReason}. Website activation was not changed.` });
       }
     }],
     ["render-home", options.createHomepageRenderHandler ? options.createHomepageRenderHandler() : createHomepage()],
