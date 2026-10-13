@@ -390,7 +390,7 @@ import React, { useState, useEffect } from 'react';
           const items = Array.isArray(data.items) ? data.items : [];
           setPublicReviews(items.map((item: any) => {
             const title = typeof item.authorName === 'string' && item.authorName.trim() ? item.authorName.trim() : 'Client';
-            const initials = title.split(/\\s+/).slice(0, 2).map((part: string) => part[0] || '').join('').toUpperCase();
+            const initials = title.split(/\s+/).slice(0, 2).map((part: string) => part[0] || '').join('').toUpperCase();
             return { title, initials, description: String(item.reviewText || ''), rating: Number.isInteger(item.rating) ? item.rating : null, isPublished: true };
           }));
         })
