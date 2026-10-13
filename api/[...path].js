@@ -2,6 +2,7 @@ import { createManagedContentHandler } from "./_lib/managed-content-routes.js";
 import { requireAdmin, sameOrigin } from "./_lib/auth.js";
 import { getDb } from "./_lib/mongodb.js";
 import { migrateManagedContent, buildManagedContentRecords } from "../scripts/migrate-managed-content.js";
+import { createLegacyImportHandler } from "./admin/import-legacy-content.js";
 import { createHomepageRenderHandler } from "./_lib/homepage-renderer.js";
 import {
   createGoogleReviewsAdminHandler,
@@ -44,6 +45,7 @@ export function createApiRouterHandler(options = {}) {
     ["admin/offers", createManaged("offer", { admin: true })],
     ["admin/packages", createManaged("package", { admin: true })],
     ["admin/faqs", createManaged("faq", { admin: true })],
+    ["admin/import-legacy-content", createLegacyImportHandler()],
     ["admin/google-reviews", createReviewsAdmin()],
     ["admin/google-reviews-sync", options.createGoogleReviewsSyncHandler ? options.createGoogleReviewsSyncHandler() : createGoogleReviewsSyncHandler()],
     ["published-google-reviews", createReviewsPublic()],
