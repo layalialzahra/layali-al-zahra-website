@@ -37,7 +37,7 @@ test("legacy import uses the live CMS database configuration", async () => {
 test("legacy import uses the configured live database name", async () => {
   let called = false;
   const handler = createLegacyImportHandler({
-    requireAdminFn: admin, sameOriginFn: () => true, migrateFn: () => { called = true; },
+    requireAdminFn: admin, sameOriginFn: () => true, migrateFn: async () => { called = true; return { counts: { services: 15, offers: 5, packages: 23, faqs: 13 }, results: {} }; },
     env: { MONGODB_URI: "mongodb://live", MONGODB_DB_NAME: "layalialzahra" },
   });
   const res = response();
