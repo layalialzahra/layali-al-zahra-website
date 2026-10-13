@@ -11,9 +11,10 @@ function jsonResponse(items: unknown[], ok = true) {
 
 describe("public managed-content fallback and mapping", () => {
   it("keeps legacy services when the feature flag is disabled", async () => {
-    const fetchImpl = vi.fn();
+    const fetchImpl = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true, enabled: false }) });
     expect(await loadPublicServices(false, fetchImpl as typeof fetch)).toBe(legacyServicesData);
-    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).toHaveBeenCalledWith("/api/managed-content-status", { method: "GET", cache: "no-store" });
   });
 
   it("maps published services while preserving legacy image paths when no CMS image is set", async () => {
