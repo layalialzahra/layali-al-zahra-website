@@ -125,3 +125,33 @@ test("creating a service as a draft uses the explicit Save Draft action", async 
   await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
   expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toMatchObject({ title: "Hair Spa", status: "draft" });
 });
+
+
+test("service categories have separate add and rename controls", async () => {
+  const request = vi.mocked(fetch);
+  let categories = [{ id: "cat-1", name: "Hair" }];
+  request.mockImplementation(async (input, init) => {
+    const url = String(input);
+    if (url.startsWith("/api/admin/service-categories")) {
+      if (init?.method === "POST") { categories = [...categories, { id: "cat-2", name: JSON.parse(String(init.body)).name }]; return response({ success: true, item: categories[1] }); }
+      if (init?.method === "PUT") { const body = JSON.parse(String(init.body)); categories = categories.map((item) => item.name === body.oldName ? { ...item, name: body.name } : item); return response({ success: true, item: categories[0] }); }
+      return response({ success: true, items: categories });
+    }
+    if (url.startsWith("/api/admin/services")) return response({ success: true, items: [] });
+    return response({ success: true, items: [] });
+  });
+  render(<ServicesManager />);
+  await screen.findByRole("heading", { name: "Service categories" });
+  await screen.findByText("Hair");
+  await userEvent.type(screen.getByPlaceholderText("Category name"), "Nails");
+  await userEvent.click(screen.getByRole("button", { name: "Add category" }));
+  await screen.findByText("Nails");
+  expect(request).toHaveBeenCalledWith("/api/admin/service-categories", expect.objectContaining({ method: "POST" }));
+  await userEvent.click(screen.getByRole("button", { name: "Edit category" }).first());
+  const input = screen.getByPlaceholderText("Category name");
+  await userEvent.clear(input);
+  await userEvent.type(input, "Hair & Styling");
+  await userEvent.click(screen.getByRole("button", { name: "Save category" }));
+  await screen.findByText("Hair & Styling");
+  expect(request).toHaveBeenCalledWith("/api/admin/service-categories", expect.objectContaining({ method: "PUT" }));
+});
