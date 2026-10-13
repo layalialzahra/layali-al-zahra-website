@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Check, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Check, FilePlus2, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 
 type ResourceType = "service" | "offer" | "package" | "faq";
 type FieldType = "text" | "textarea" | "number" | "url" | "date" | "select" | "image" | "subservices" | "list";
@@ -82,6 +82,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   const [formOpen, setFormOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [importingLegacy, setImportingLegacy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -104,6 +105,30 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   }, [config.endpoint, faqPage, type]);
 
   useEffect(() => { void loadRecords(); }, [loadRecords]);
+
+  const importExistingWebsiteContent = async () => {
+    if (!window.confirm("Import and publish the existing Services, Offers, Packages and FAQs, then connect the public website to the CMS?")) return;
+    setImportingLegacy(true);
+    setError("");
+    setSuccess("");
+    try {
+      const response = await fetch("/api/admin/publish-legacy-content", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: true }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.message || "Content import failed.");
+      const counts = data.actualCounts || data.expectedCounts || {};
+      setSuccess(`Imported and published existing content. Services: ${counts.services || 0}, Offers: ${counts.offers || 0}, Packages: ${counts.packages || 0}, FAQs: ${counts.faqs || 0}.`);
+      await loadRecords();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Content import failed.");
+    } finally {
+      setImportingLegacy(false);
+    }
+  };
 
   const visibleItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -260,8 +285,8 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
 
   return <section className="managed-cms">
     <header className="managed-cms-head">
-      <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p></div>
-      {!formOpen && <button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button>}
+      <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p>{type === "service" && <p>Importing existing website content also brings in Offers, Packages and FAQs.</p>}</div>
+      {!formOpen && <div className="managed-head-actions">{type === "service" && <button type="button" className="cms-secondary-button" disabled={importingLegacy} onClick={() => void importExistingWebsiteContent()}>{importingLegacy ? <Loader2 className="cms-spin" size={16}/> : <FilePlus2 size={16}/>} {importingLegacy ? "Importing content…" : "Import existing website content"}</button>}<button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
