@@ -14,7 +14,7 @@ export function escapeAttribute(value) {
 }
 
 function initialsFor(name) {
-  const parts = String(name || "").trim().split(/\\s+/).filter(Boolean).slice(0, 2);
+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean).slice(0, 2);
   return parts.map((part) => Array.from(part)[0] || "").join("").toUpperCase() || "G";
 }
 
@@ -43,10 +43,7 @@ async function loadPublishedHomeReviews() {
 
 export function createHomepageRenderHandler(options = {}) {
   const readTemplate = options.readTemplate || (() => readFile(resolve(process.cwd(), "dist/index.html"), "utf8"));
-  const getPublishedReviews = options.getPublishedReviews || (async () => {
-    if (process.env.MANAGED_HOME_REVIEWS_ENABLED !== "true") return undefined;
-    return loadPublishedHomeReviews();
-  });
+  const getPublishedReviews = options.getPublishedReviews || loadPublishedHomeReviews;
   const getSuppressedReviewIds = options.getSuppressedReviewIds || (async () => []);
   const renderPage = options.renderPage || (async (pathname, reviews) => {
     const bundleUrl = pathToFileURL(resolve(process.cwd(), "server-dist/entry-server.js")).href;
@@ -87,7 +84,7 @@ export function createHomepageRenderHandler(options = {}) {
       }
     } catch (error) {
       logger.error?.("Homepage published-review lookup failed", error?.name || "Error");
-      reviews = process.env.MANAGED_HOME_REVIEWS_ENABLED === "true" ? [] : undefined;
+      reviews = [];
     }
 
     try {
