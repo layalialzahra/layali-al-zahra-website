@@ -376,7 +376,28 @@ import React, { useState, useEffect } from 'react';
   }
 
   export default function HomePage({ onNavigate, reviews, disableInitialAnimations = false }: HomePageProps) {
-    const eligibleReviews = reviews?.filter((review) => review.isPublished !== false);
+    const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
+    useEffect(() => {
+      if (reviews !== undefined) {
+        setPublicReviews(reviews);
+        return;
+      }
+      let active = true;
+      fetch('/api/published-google-reviews')
+        .then((response) => response.json())
+        .then((data) => {
+          if (!active) return;
+          const items = Array.isArray(data.items) ? data.items : [];
+          setPublicReviews(items.map((item: any) => {
+            const title = typeof item.authorName === 'string' && item.authorName.trim() ? item.authorName.trim() : 'Client';
+            const initials = title.split(/\\s+/).slice(0, 2).map((part: string) => part[0] || '').join('').toUpperCase();
+            return { title, initials, description: String(item.reviewText || ''), rating: Number.isInteger(item.rating) ? item.rating : null, isPublished: true };
+          }));
+        })
+        .catch(() => { if (active) setPublicReviews([]); });
+      return () => { active = false; };
+    }, [reviews]);
+    const eligibleReviews = publicReviews?.filter((review) => review.isPublished !== false);
     const reviewItems = eligibleReviews || [];
 
     return (
