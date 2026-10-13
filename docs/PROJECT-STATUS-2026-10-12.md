@@ -462,3 +462,12 @@ Blocker report: [Packages and FAQ Integration Blocker](./PACKAGES-FAQ-INTEGRATIO
 Stopped before changing the curated homepage Service, Offer and Package showcases. Managed public content remains disabled and legacy content remains the source of truth. Vercel remains disconnected. No deployment, production write/migration, public-source switch or `main` change occurred.
 
 Blocker report: [Homepage Showcase Mapping Blocker](./HOMEPAGE-SHOWCASE-MAPPING-BLOCKER-2026-10-13.md). After explicit Core CMS acceptance, map canonical records and test preservation of selection/order/design/booking destinations plus missing, invalid, unpublished and fallback cases.
+
+
+## Task 25 — Deployed crawlability acceptance — 2026-10-13
+**Status: OPEN / BLOCKED.** No explicit owner-approved release window/target environment or safe deployed access is evidenced. Vercel remains disconnected under the existing hold; it was not reconnected and no deployment was triggered.
+
+- Deployed route rewrites/function packaging, HTTP HTML for `/` and `/home`, metadata/canonical URLs and published-only review output were NOT RUN. Local SSR/CI evidence does not establish deployed behavior.
+- No deployment, production write/migration, public-source switch or `main` change occurred. Managed public content remains disabled; legacy content remains the source of truth.
+- Exact blocker and required evidence: [Task 25 deployed crawlability blocker](./DEPLOYED-CRAWLABILITY-ACCEPTANCE-BLOCKER-2026-10-13.md).
+- Resume only after explicit owner approval identifies the release window and environment and access is available. Capture deployment/commit identity, rewrites/function inventory, raw HTTP responses for both routes, metadata/canonicals and published-only review filtering evidence. Keep Task 25 unchecked until then.
