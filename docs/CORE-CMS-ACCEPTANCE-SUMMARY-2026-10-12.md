@@ -48,3 +48,10 @@ Before reconsidering acceptance:
 **Latest branch verification:** [Build verification 38282811459](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811459) passed on `2b3883d08165d73fcb7ac7a8bdeb11f797bf4438` (120 Node tests, 29 Vitest tests across 7 files, 0 dependency vulnerabilities, client/SSR builds and homepage SSR smoke test). [Historical secret scan 38282811451](https://github.com/layalialzahra/layali-al-zahra-website/actions/runs/38282811451) also passed. This does not change the staging or owner-acceptance gates.
 
 **No production migration, database writes, Vercel reconnection/deployment, public content-source switch or approval was performed or implied by this reconciliation.**
+
+
+## Task 24 — Homepage showcase mapping — 2026-10-13
+
+**Decision: BLOCKED; Core CMS acceptance remains HOLD.** Task 24 has not changed code or added tests because the prerequisite gate is not satisfied. Owner-authorised isolated staging, migration integrity/idempotency/rollback evidence, end-to-end CMS staging acceptance and explicit written owner acceptance remain outstanding.
+
+After the gate, verify that curated homepage Service, Offer and Package items resolve to canonical managed records while preserving intended selection, order, design and booking destinations. Test missing, invalid and unpublished references and safe legacy fallback. Existing automated CI does not establish this runtime acceptance. Managed public content must remain disabled until the gate and separate cutover approval are satisfied.
