@@ -85,10 +85,7 @@
   ],
   "functions": {
     "api/[...path].js": {
-      "includeFiles": [
-        "dist/index.html",
-        "server-dist/**"
-      ]
+      "includeFiles": "{dist/index.html,server-dist/**}"
     }
   }
 }
