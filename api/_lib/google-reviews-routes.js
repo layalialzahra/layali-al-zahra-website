@@ -29,9 +29,12 @@ function normalizeReview(input, { partial = false } = {}) {
   }
   if (!partial || Object.hasOwn(input || {}, "sourceCreatedAt")) {
     const date = typeof input?.sourceCreatedAt === "string" ? input.sourceCreatedAt.trim() : "";
-    const parsed = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(date + "T00:00:00.000Z") : null;
-    if (!parsed || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) throw new Error("A valid review date is required");
-    output.sourceCreatedAt = date;
+    if (!date) output.sourceCreatedAt = null;
+    else {
+      const parsed = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(date + "T00:00:00.000Z") : null;
+      if (!parsed || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) throw new Error("A valid review date is required");
+      output.sourceCreatedAt = date;
+    }
   }
   if (!partial || Object.hasOwn(input || {}, "sortOrder")) {
     const order = Number(input?.sortOrder ?? 0);
