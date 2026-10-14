@@ -28,7 +28,6 @@ export default function GoogleReviewsManager() {
   const [items, setItems] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [importingExisting, setImportingExisting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [search, setSearch] = useState("");
@@ -61,24 +60,6 @@ export default function GoogleReviewsManager() {
       (publicationFilter === "all" || String(item.isPublished) === publicationFilter)
     );
   }, [items, publicationFilter, ratingFilter, search]);
-
-  const importExistingWebsiteReviews = async () => {
-    if (!window.confirm("Import the 15 existing reviews already shown on the website into Google Reviews? Existing reviews will be left unchanged.")) return;
-    setImportingExisting(true); setError(""); setSuccess("");
-    try {
-      const response = await fetch("/api/admin/content?action=import-homepage-reviews", {
-        method: "POST", credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ confirm: true }),
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) throw new Error(data.message || "Unable to import existing website reviews.");
-      setSuccess(`Existing website reviews imported. Added: ${Number(data.inserted || 0)}. Already present or skipped: ${Number(data.skipped || 0)}.`);
-      await loadRecords();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to import existing website reviews.");
-    } finally { setImportingExisting(false); }
-  };
 
   const openCreate = () => {
     setEditing(null);
@@ -152,7 +133,7 @@ export default function GoogleReviewsManager() {
   return <section className="managed-cms google-reviews-manager">
     <header className="managed-cms-head">
       <div><span className="cms-kicker">REPUTATION MANAGEMENT</span><h1>Google Reviews</h1><p>Manually add reviews copied from your live Google Business profile, then choose when they publish and control their display order.</p></div>
-      {!formOpen && <div className="managed-head-actions"><button type="button" className="cms-secondary-button" disabled={importingExisting || busy} onClick={() => void importExistingWebsiteReviews()}>{importingExisting ? <Loader2 className="cms-spin" size={16}/> : <Check size={16}/>} {importingExisting ? "Importing website reviews…" : "Import existing website reviews"}</button><button type="button" className="cms-primary-button" onClick={openCreate}><Plus size={16}/> Add Google Review</button></div>}
+      {!formOpen && <button type="button" className="cms-primary-button" onClick={openCreate}><Plus size={16}/> Add Google Review</button>}
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
