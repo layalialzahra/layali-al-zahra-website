@@ -144,12 +144,14 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   };
 
   const importExistingWebsiteContent = async () => {
-    if (!window.confirm("Import existing website services into the live CMS database? Missing services will be added. Existing CMS edits will be preserved.")) return;
+    const label = type === "offer" ? "offers" : "services";
+    if (!window.confirm(`Import existing website ${label} into the live CMS database? Missing ${label} will be added. Existing CMS edits will be preserved.`)) return;
     setImportingLegacy(true);
     setError("");
     setSuccess("");
     try {
-      const response = await fetch("/api/admin/content?action=import-legacy-content", {
+      const collection = type === "offer" ? "offers" : "services";
+      const response = await fetch(`/api/admin/content?action=import-legacy-content&collection=${collection}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -166,7 +168,8 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
       }
       const results = data.results || {};
       const added = (key: string) => Number(results[key]?.inserted || 0);
-      setSuccess(`Services import complete. New services added: ${added("services")}. Existing services were left unchanged.`);
+      const collection = type === "offer" ? "offers" : "services";
+      setSuccess(`${collection === "offers" ? "Offers" : "Services"} import complete. New records added: ${added(collection)}. Existing records were left unchanged.`);
       await loadRecords();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Content import failed.");
@@ -333,8 +336,8 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
 
   return <section className="managed-cms">
     <header className="managed-cms-head">
-      <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p>{type === "service" && <p>Import existing website content into the live CMS database. Existing records are preserved.</p>}</div>
-      {!formOpen && <div className="managed-head-actions">{type === "service" && <button type="button" className="cms-secondary-button" disabled={importingLegacy} onClick={() => void importExistingWebsiteContent()}>{importingLegacy ? <Loader2 className="cms-spin" size={16}/> : <FilePlus2 size={16}/>} {importingLegacy ? "Importing content…" : "Import existing website content"}</button>}<button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
+      <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p></div>
+      {!formOpen && <div className="managed-head-actions">{type === "offer" && <button type="button" className="cms-secondary-button" disabled={importingLegacy} onClick={() => void importExistingWebsiteContent()}>{importingLegacy ? <Loader2 className="cms-spin" size={16}/> : <FilePlus2 size={16}/>} {importingLegacy ? "Importing offers…" : "Import existing offers"}</button>}<button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
