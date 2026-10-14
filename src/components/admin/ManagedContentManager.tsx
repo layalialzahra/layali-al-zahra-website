@@ -168,7 +168,6 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
       }
       const results = data.results || {};
       const added = (key: string) => Number(results[key]?.inserted || 0);
-      const collection = type === "offer" ? "offers" : "services";
       setSuccess(`${collection === "offers" ? "Offers" : "Services"} import complete. New records added: ${added(collection)}. Existing records were left unchanged.`);
       await loadRecords();
     } catch (err) {
