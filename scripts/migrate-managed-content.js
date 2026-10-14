@@ -77,9 +77,12 @@ export async function migrateManagedContent({
   uri = process.env.MONGODB_URI,
   dbName = process.env.MONGODB_DB_NAME || "layalialzahra",
   clientFactory = (connectionString) => new MongoClient(connectionString, { serverSelectionTimeoutMS: 5000 }),
+  collections = COLLECTIONS,
 } = {}) {
+  const allowedCollections = [...new Set(collections)];
+  if (allowedCollections.some((name) => !COLLECTIONS.includes(name))) throw new Error("Invalid managed content collection");
   const records = buildManagedContentRecords();
-  const counts = Object.fromEntries(COLLECTIONS.map((name) => [name, records[name].length]));
+  const counts = Object.fromEntries(allowedCollections.map((name) => [name, records[name].length]));
   if (!apply) return { applied: false, counts };
   if (!uri) throw new Error("MONGODB_URI is required for --apply");
 
@@ -88,7 +91,7 @@ export async function migrateManagedContent({
     await client.connect();
     const db = client.db(dbName);
     const results = {};
-    for (const name of COLLECTIONS) {
+    for (const name of allowedCollections) {
       const collection = db.collection(name);
       if (name === "faqs") {
         await collection.createIndex({ pageKey: 1, question: 1 }, { unique: true, name: "page_question_unique" });
