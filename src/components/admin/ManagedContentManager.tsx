@@ -24,7 +24,7 @@ const configs: Record<ResourceType, { title: string; singular: string; empty: st
     ],
   },
   offer: {
-    title: "Offers", singular: "Offer", empty: "No offers yet", endpoint: "/api/admin/offers",
+    title: "Offers", singular: "Offer", empty: "No offers yet", endpoint: "/api/admin/content?action=managed-offers",
     fields: [
       { key: "title", label: "Title", required: true }, { key: "slug", label: "URL slug" },
       { key: "description", label: "Description", type: "textarea" }, { key: "priceLabel", label: "Price label", required: true },
