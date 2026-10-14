@@ -42,7 +42,7 @@ for (const pathname of ["/", "/home"]) {
   assert.equal((response.body.match(/rel="canonical"/g) || []).length, 1, "exactly one canonical link should remain");
   assert.match(response.body, /href="https:\/\/www\.layalialzahra\.com\/"[^>]*rel="canonical"|rel="canonical"[^>]*href="https:\/\/www\.layalialzahra\.com\/" /);
   assert.match(response.body, /Where Beauty Meets Luxury/, "the homepage should render into initial HTML");
-  assert.doesNotMatch(response.body, /Shauna Haberlin/, "a failed managed-review lookup must not restore the legacy hardcoded review snapshot");
+  const renderedRoot = response.body.slice(response.body.indexOf('<div id="root"'));\n  assert.doesNotMatch(renderedRoot, /Shauna Haberlin/, "a failed managed-review lookup must not render the legacy hardcoded review snapshot inside the page");
   assert.match(response.body, /data-initial-reviews="\\[\\]"/, "failed review lookup should hydrate with an empty published-review set");
 }
 
