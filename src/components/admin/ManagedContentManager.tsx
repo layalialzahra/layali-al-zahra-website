@@ -155,8 +155,15 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ confirm: true }),
       });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) throw new Error(data.message || "Content import failed.");
+      const responseText = await response.text();
+      let data: RecordData = {};
+      try { data = responseText ? JSON.parse(responseText) : {}; } catch { /* Report status when the server returns a non-JSON error page. */ }
+      if (!response.ok || !data.success) {
+        const detail = typeof data.message === "string" && data.message.trim()
+          ? data.message
+          : `The import endpoint returned HTTP ${response.status}${responseText ? ` (${responseText.slice(0, 120).replace(/\\s+/g, " ")} )` : ""}.`;
+        throw new Error(detail);
+      }
       const results = data.results || {};
       const added = (key: string) => Number(results[key]?.inserted || 0);
       setSuccess(`Live CMS import complete. New records added: Services ${added("services")}, Offers ${added("offers")}, Packages ${added("packages")}, FAQs ${added("faqs")}. Existing records were left unchanged.`);
