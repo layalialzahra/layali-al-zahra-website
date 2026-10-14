@@ -21,7 +21,7 @@ export function createLegacyImportHandler({
     if (req.body?.confirm !== true) return fail(res, 400, "Explicit import confirmation is required.");
 
     const requestedCollection = String(req.query?.collection || "services");
-    const collectionName = ["services", "offers", "packages"].includes(requestedCollection) ? requestedCollection : "services";
+    const collectionName = ["services", "offers", "packages", "faqs"].includes(requestedCollection) ? requestedCollection : "services";
 
     // Use the same live database configuration as the rest of the CMS.
     const uri = env.MONGODB_URI;
