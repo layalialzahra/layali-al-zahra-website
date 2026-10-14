@@ -41,7 +41,7 @@ export default function GoogleReviewsManager() {
     setLoading(true);
     setError("");
     try {
-      const data = await readResponse(await fetch("/api/admin/reviews?limit=100", { credentials: "include" }));
+      const data = await readResponse(await fetch("/api/admin/content?action=google-reviews&limit=100", { credentials: "include" }));
       setItems(Array.isArray(data.items) ? data.items : []);
     } catch (err) {
       setItems([]);
@@ -87,7 +87,7 @@ export default function GoogleReviewsManager() {
     setBusy(true); setError(""); setSuccess("");
     try {
       const payload = { ...form, rating: Number(form.rating), sortOrder: Number(form.sortOrder), isPublished };
-      const url = editing ? `/api/admin/reviews?id=${encodeURIComponent(editing._id)}` : "/api/admin/reviews";
+      const url = editing ? `/api/admin/content?action=google-reviews&id=${encodeURIComponent(editing._id)}` : "/api/admin/content?action=google-reviews";
       const data = await readResponse(await fetch(url, {
         method: editing ? "PUT" : "POST",
         credentials: "include",
@@ -107,7 +107,7 @@ export default function GoogleReviewsManager() {
   const setPublication = async (item: Review, action: "publish" | "unpublish") => {
     setBusy(true); setError(""); setSuccess("");
     try {
-      await readResponse(await fetch(`/api/admin/reviews?id=${encodeURIComponent(item._id)}`, {
+      await readResponse(await fetch(`/api/admin/content?action=google-reviews&id=${encodeURIComponent(item._id)}`, {
         method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       }));
@@ -122,7 +122,7 @@ export default function GoogleReviewsManager() {
     if (!window.confirm(`Delete the review by ${item.authorName}? This cannot be undone.`)) return;
     setBusy(true); setError(""); setSuccess("");
     try {
-      await readResponse(await fetch(`/api/admin/reviews?id=${encodeURIComponent(item._id)}`, { method: "DELETE", credentials: "include" }));
+      await readResponse(await fetch(`/api/admin/content?action=google-reviews&id=${encodeURIComponent(item._id)}`, { method: "DELETE", credentials: "include" }));
       setSuccess("Review deleted.");
       await loadRecords();
     } catch (err) {
@@ -132,14 +132,14 @@ export default function GoogleReviewsManager() {
 
   return <section className="managed-cms google-reviews-manager">
     <header className="managed-cms-head">
-      <div><span className="cms-kicker">REPUTATION MANAGEMENT</span><h1>Manual Reviews</h1><p>Add real client reviews, choose when they publish and control their display order.</p></div>
-      {!formOpen && <button type="button" className="cms-primary-button" onClick={openCreate}><Plus size={16}/> Add Review</button>}
+      <div><span className="cms-kicker">REPUTATION MANAGEMENT</span><h1>Google Reviews</h1><p>Manually add reviews copied from your live Google Business profile, then choose when they publish and control their display order.</p></div>
+      {!formOpen && <button type="button" className="cms-primary-button" onClick={openCreate}><Plus size={16}/> Add Google Review</button>}
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
 
     {formOpen && <form className="managed-editor" aria-label="Review editor" onSubmit={(event) => event.preventDefault()}>
-      <div className="managed-editor-head"><div><h2>{editing ? "Edit Review" : "Add Review"}</h2><p>Only choose publish when the review is ready for the website.</p></div>
+      <div className="managed-editor-head"><div><h2>{editing ? "Edit Google Review" : "Add Google Review"}</h2><p>Copy the review details from your live Google Business profile. Nothing is fetched automatically from Google.</p></div>
         <button type="button" className="managed-icon-button" aria-label="Close editor" onClick={() => { setFormOpen(false); setEditing(null); }}><X size={18}/></button>
       </div>
       <div className="managed-fields">
