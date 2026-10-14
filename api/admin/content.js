@@ -1,4 +1,5 @@
 import { requireAdmin, sameOrigin } from "../_lib/auth.js";
+import { createLegacyImportHandler } from "../_lib/import-legacy-content.js";
 
 function sendError(res, status, message) { return res.status(status).json({ success: false, message }); }
 function escapeRegex(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
@@ -15,6 +16,11 @@ async function ensureUniqueSlug(collection, type, slug) {
 }
 
 export default async function handler(req, res) {
+  // Keep the import on this existing explicit API route so it works even when
+  // Vercel does not resolve the catch-all route for nested admin URLs.
+  if (req.query?.action === "import-legacy-content") {
+    return createLegacyImportHandler()(req, res);
+  }
   if (!(await requireAdmin(req, res))) return;
   if (!["GET", "POST", "PUT", "DELETE"].includes(req.method)) {
     res.setHeader("Allow", "GET, POST, PUT, DELETE");
