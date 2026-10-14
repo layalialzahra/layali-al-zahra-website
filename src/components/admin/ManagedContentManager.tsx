@@ -149,7 +149,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
     setError("");
     setSuccess("");
     try {
-      const response = await fetch("/api/admin/import-legacy-content", {
+      const response = await fetch("/api/admin/content?action=import-legacy-content", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
