@@ -51,7 +51,7 @@ const configs: Record<ResourceType, { title: string; singular: string; empty: st
     ],
   },
   faq: {
-    title: "FAQs", singular: "FAQ", empty: "No FAQs yet", endpoint: "/api/admin/faqs",
+    title: "FAQs", singular: "FAQ", empty: "No FAQs yet", endpoint: "/api/admin/content?action=managed-faqs",
     fields: [
       { key: "pageKey", label: "Page", type: "select", required: true, options: pageOptions },
       { key: "question", label: "Question", required: true }, { key: "answer", label: "Answer", type: "textarea", required: true },
@@ -144,13 +144,13 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   };
 
   const importExistingWebsiteContent = async () => {
-    const label = type === "offer" ? "offers" : type === "package" ? "packages" : "services";
+    const label = type === "offer" ? "offers" : type === "package" ? "packages" : type === "faq" ? "FAQs" : "services";
     if (!window.confirm(`Import existing website ${label} into the live CMS database? Missing ${label} will be added. Existing CMS edits will be preserved.`)) return;
     setImportingLegacy(true);
     setError("");
     setSuccess("");
     try {
-      const collection = type === "offer" ? "offers" : type === "package" ? "packages" : "services";
+      const collection = type === "offer" ? "offers" : type === "package" ? "packages" : type === "faq" ? "faqs" : "services";
       const response = await fetch(`/api/admin/content?action=import-legacy-content&collection=${collection}`, {
         method: "POST",
         credentials: "include",
@@ -336,7 +336,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   return <section className="managed-cms">
     <header className="managed-cms-head">
       <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p></div>
-      {!formOpen && <div className="managed-head-actions">{type === "package" && <button type="button" className="cms-secondary-button" disabled={importingLegacy} onClick={() => void importExistingWebsiteContent()}>{importingLegacy ? <Loader2 className="cms-spin" size={16}/> : <FilePlus2 size={16}/>} {importingLegacy ? "Importing packages…" : "Import existing packages"}</button>}<button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
+      {!formOpen && <div className="managed-head-actions">{type === "faq" && <button type="button" className="cms-secondary-button" disabled={importingLegacy} onClick={() => void importExistingWebsiteContent()}>{importingLegacy ? <Loader2 className="cms-spin" size={16}/> : <FilePlus2 size={16}/>} {importingLegacy ? "Importing FAQs…" : "Import existing FAQs"}</button>}<button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
