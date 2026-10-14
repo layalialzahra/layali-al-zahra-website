@@ -28,7 +28,9 @@ export function createLegacyImportHandler({
     if (!uri) return fail(res, 503, "The CMS database is not configured.");
 
     try {
-      const result = await migrateFn({ apply: true, uri, dbName, collections: [collectionName] });
+      const migrationOptions = { apply: true, uri, dbName };
+      if (collectionName !== "services") migrationOptions.collections = [collectionName];
+      const result = await migrateFn(migrationOptions);
       const label = collectionName === "offers" ? "offers" : "services";
       return res.status(200).json({
         success: true,
