@@ -26,10 +26,10 @@ export function createLegacyImportHandler({
     if (!uri) return fail(res, 503, "The CMS database is not configured.");
 
     try {
-      const result = await migrateFn({ apply: true, uri, dbName });
+      const result = await migrateFn({ apply: true, uri, dbName, collections: ["services"] });
       return res.status(200).json({
         success: true,
-        message: "Existing website content imported into the live CMS database. Existing CMS edits were preserved.",
+        message: "Existing website services imported into the live CMS database. Existing CMS edits were preserved.",
         expectedCounts: result.counts,
         results: result.results,
       });
