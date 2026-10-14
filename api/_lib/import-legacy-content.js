@@ -36,8 +36,8 @@ export function createLegacyImportHandler({
     } catch (error) {
       const reason = error instanceof Error ? error.message : "Unknown import error";
       const safeReason = reason
-        .replace(/mongodb(?:\\+srv)?:\\/\\/[^\\s]+/gi, "[database connection redacted]")
-        .replace(/(password|secret|token|api[_-]?key)\\s*[:=]\\s*[^\\s,;]+/gi, "$1=[redacted]")
+        .replace(/mongodb(?:\+srv)?:\/\/[^\s]+/gi, "[database connection redacted]")
+        .replace(/(password|secret|token|api[_-]?key)\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]")
         .slice(0, 240);
       console.error("Legacy managed-content import failed", error?.name || "Error", safeReason);
       return fail(res, 503, `Legacy content import failed: ${safeReason}`);
