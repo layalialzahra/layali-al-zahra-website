@@ -15,7 +15,7 @@ test("manual review form creates a draft with reviewer, rating, date, text and d
     .mockResolvedValueOnce(response({ success: true, items: [{ ...review, _id: "new" }] }));
   render(<GoogleReviewsManager />);
   await screen.findByText("No reviews added yet");
-  await userEvent.click(screen.getByRole("button", { name: /add review/i }));
+  await userEvent.click(screen.getByRole("button", { name: /add google review/i }));
   await userEvent.type(screen.getByLabelText("Reviewer name"), "A Reviewer");
   await userEvent.selectOptions(screen.getByLabelText("Rating"), "4");
   fireEvent.change(screen.getByLabelText("Review date"), { target: { value: "2026-09-01" } });
@@ -24,7 +24,7 @@ test("manual review form creates a draft with reviewer, rating, date, text and d
   await userEvent.type(screen.getByLabelText("Review text"), "Great service");
   await userEvent.click(screen.getByRole("button", { name: "Save Draft" }));
   await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
-  expect(request.mock.calls[1][0]).toBe("/api/admin/reviews");
+  expect(request.mock.calls[1][0]).toBe("/api/admin/content?action=google-reviews");
   expect(request.mock.calls[1][1]?.method).toBe("POST");
   expect(JSON.parse(String(request.mock.calls[1][1]?.body))).toMatchObject({
     authorName: "A Reviewer", rating: 4, sourceCreatedAt: "2026-09-01",
