@@ -122,6 +122,42 @@ export function createManualReviewsAdminHandler(options = {}) {
   };
 }
 
+export function createImportHomepageReviewsHandler(options = {}) {
+  return async function handler(req, res) {
+    const auth = await getAuth(options);
+    if (!(await auth.requireAdmin(req, res))) return;
+    if (String(req.method || "GET").toUpperCase() !== "POST") {
+      res.setHeader("Allow", "POST");
+      return fail(res, 405, "Method not allowed");
+    }
+    if (!auth.sameOrigin(req)) return fail(res, 403, "Forbidden");
+    try {
+      const { legacyHomepageReviews } = await import("../../src/data/legacy-reviews.js");
+      const db = await getDb(options.getDb);
+      const reviews = db.collection("reviews");
+      let inserted = 0;
+      let skipped = 0;
+      for (const [index, source] of legacyHomepageReviews.entries()) {
+        const authorName = String(source.title || "").trim();
+        const reviewText = String(source.description || "").trim();
+        if (!authorName || !reviewText) { skipped += 1; continue; }
+        const existing = await reviews.findOne({ authorName, reviewText }, { projection: { _id: 1 } });
+        if (existing) { skipped += 1; continue; }
+        const now = new Date();
+        await reviews.insertOne({
+          authorName, reviewText, rating: 5, sourceCreatedAt: null,
+          isPublished: true, sortOrder: index, createdAt: now, updatedAt: now,
+          source: "legacy-homepage",
+        });
+        inserted += 1;
+      }
+      return res.status(200).json({ success: true, inserted, skipped, total: legacyHomepageReviews.length });
+    } catch {
+      return fail(res, 503, "Existing homepage reviews could not be imported.");
+    }
+  };
+}
+
 export function createGoogleReviewsPublicHandler(options = {}) {
   return async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store, max-age=0");
