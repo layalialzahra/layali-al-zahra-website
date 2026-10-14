@@ -21,9 +21,16 @@ export default async function handler(req, res) {
     const { createLegacyImportHandler } = await import("../_lib/import-legacy-content.js");
     return createLegacyImportHandler()(req, res);
   }
-  if (req.query?.action === "managed-services") {
+  const managedTypes = {
+    "managed-services": "service",
+    "managed-offers": "offer",
+    "managed-packages": "package",
+    "managed-faqs": "faq",
+  };
+  const managedType = managedTypes[req.query?.action];
+  if (managedType) {
     const { createManagedContentHandler } = await import("../_lib/managed-content-routes.js");
-    return createManagedContentHandler("service", { admin: true })(req, res);
+    return createManagedContentHandler(managedType, { admin: true })(req, res);
   }
   if (req.query?.action === "service-categories") {
     const { createServiceCategoriesHandler } = await import("../_lib/service-categories-routes.js");
