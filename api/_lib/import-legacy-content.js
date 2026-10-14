@@ -20,7 +20,8 @@ export function createLegacyImportHandler({
     if (!sameOriginFn(req)) return fail(res, 403, "Forbidden");
     if (req.body?.confirm !== true) return fail(res, 400, "Explicit import confirmation is required.");
 
-    const collectionName = req.query?.collection === "offers" ? "offers" : "services";
+    const requestedCollection = String(req.query?.collection || "services");
+    const collectionName = ["services", "offers", "packages"].includes(requestedCollection) ? requestedCollection : "services";
 
     // Use the same live database configuration as the rest of the CMS.
     const uri = env.MONGODB_URI;
@@ -31,7 +32,7 @@ export function createLegacyImportHandler({
       const migrationOptions = { apply: true, uri, dbName };
       if (collectionName !== "services") migrationOptions.collections = [collectionName];
       const result = await migrateFn(migrationOptions);
-      const label = collectionName === "offers" ? "offers" : "services";
+      const label = collectionName;
       return res.status(200).json({
         success: true,
         message: `Existing website ${label} imported into the live CMS database. Existing CMS edits were preserved.`,
