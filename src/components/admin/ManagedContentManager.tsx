@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Check, FilePlus2, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Check, ImagePlus, Loader2, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 
 type ResourceType = "service" | "offer" | "package" | "faq";
 type FieldType = "text" | "textarea" | "number" | "url" | "date" | "select" | "category-select" | "image" | "subservices" | "list";
@@ -82,7 +82,6 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   const [formOpen, setFormOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [importingLegacy, setImportingLegacy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -141,40 +140,6 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
       await loadServiceCategories();
     } catch (err) { setError(err instanceof Error ? err.message : "Unable to delete service category."); }
     finally { setCategoryBusy(false); }
-  };
-
-  const importExistingWebsiteContent = async () => {
-    const label = type === "offer" ? "offers" : type === "package" ? "packages" : type === "faq" ? "FAQs" : "services";
-    if (!window.confirm(`Import existing website ${label} into the live CMS database? Missing ${label} will be added. Existing CMS edits will be preserved.`)) return;
-    setImportingLegacy(true);
-    setError("");
-    setSuccess("");
-    try {
-      const collection = type === "offer" ? "offers" : type === "package" ? "packages" : type === "faq" ? "faqs" : "services";
-      const response = await fetch(`/api/admin/content?action=import-legacy-content&collection=${collection}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ confirm: true }),
-      });
-      const responseText = await response.text();
-      let data: RecordData = {};
-      try { data = responseText ? JSON.parse(responseText) : {}; } catch { /* Report status when the server returns a non-JSON error page. */ }
-      if (!response.ok || !data.success) {
-        const detail = typeof data.message === "string" && data.message.trim()
-          ? data.message
-          : `The import endpoint returned HTTP ${response.status}${responseText ? ` (${responseText.slice(0, 120).replace(/\s+/g, " ")})` : ""}.`;
-        throw new Error(detail);
-      }
-      const results = data.results || {};
-      const added = (key: string) => Number(results[key]?.inserted || 0);
-      setSuccess(`${collection === "offers" ? "Offers" : "Services"} import complete. New records added: ${added(collection)}. Existing records were left unchanged.`);
-      await loadRecords();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Content import failed.");
-    } finally {
-      setImportingLegacy(false);
-    }
   };
 
   const visibleItems = useMemo(() => {
@@ -336,7 +301,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   return <section className="managed-cms">
     <header className="managed-cms-head">
       <div><span className="cms-kicker">CONTENT MANAGEMENT</span><h1>{config.title}</h1><p>Create and maintain the content shown on the public website.</p></div>
-      {!formOpen && <div className="managed-head-actions">{type === "faq" && <button type="button" className="cms-secondary-button" disabled={importingLegacy} onClick={() => void importExistingWebsiteContent()}>{importingLegacy ? <Loader2 className="cms-spin" size={16}/> : <FilePlus2 size={16}/>} {importingLegacy ? "Importing FAQs…" : "Import existing FAQs"}</button>}<button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
+      {!formOpen && <div className="managed-head-actions"><button type="button" className="cms-primary-button" onClick={startCreate}><Plus size={17}/> Add {config.singular}</button></div>}
     </header>
     {error && <div className="cms-alert error" role="alert">{error}</div>}
     {success && <div className="cms-alert success" role="status">{success}</div>}
