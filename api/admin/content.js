@@ -32,6 +32,10 @@ export default async function handler(req, res) {
     const { createManagedContentHandler } = await import("../_lib/managed-content-routes.js");
     return createManagedContentHandler(managedType, { admin: true })(req, res);
   }
+  if (req.query?.action === "google-reviews") {
+    const { createManualReviewsAdminHandler } = await import("../_lib/google-reviews-routes.js");
+    return createManualReviewsAdminHandler()(req, res);
+  }
   if (req.query?.action === "service-categories") {
     const { createServiceCategoriesHandler } = await import("../_lib/service-categories-routes.js");
     return createServiceCategoriesHandler()(req, res);
