@@ -21,6 +21,14 @@ export default async function handler(req, res) {
     const { createLegacyImportHandler } = await import("../_lib/import-legacy-content.js");
     return createLegacyImportHandler()(req, res);
   }
+  if (req.query?.action === "managed-services") {
+    const { createManagedContentHandler } = await import("../_lib/managed-content-routes.js");
+    return createManagedContentHandler("service", { admin: true })(req, res);
+  }
+  if (req.query?.action === "service-categories") {
+    const { createServiceCategoriesHandler } = await import("../_lib/service-categories-routes.js");
+    return createServiceCategoriesHandler()(req, res);
+  }
   if (!(await requireAdmin(req, res))) return;
   if (!["GET", "POST", "PUT", "DELETE"].includes(req.method)) {
     res.setHeader("Allow", "GET, POST, PUT, DELETE");
