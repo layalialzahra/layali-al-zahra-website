@@ -161,7 +161,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
       if (!response.ok || !data.success) {
         const detail = typeof data.message === "string" && data.message.trim()
           ? data.message
-          : `The import endpoint returned HTTP ${response.status}${responseText ? ` (${responseText.slice(0, 120).replace(/\\s+/g, " ")} )` : ""}.`;
+          : `The import endpoint returned HTTP ${response.status}${responseText ? ` (${responseText.slice(0, 120).replace(/\s+/g, " ")})` : ""}.`;
         throw new Error(detail);
       }
       const results = data.results || {};
