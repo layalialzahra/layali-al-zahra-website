@@ -144,7 +144,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
   };
 
   const importExistingWebsiteContent = async () => {
-    if (!window.confirm("Import the existing Services, Offers, Packages and FAQs into the live CMS database? Missing records will be added. Existing CMS edits will be preserved.")) return;
+    if (!window.confirm("Import existing website services into the live CMS database? Missing services will be added. Existing CMS edits will be preserved.")) return;
     setImportingLegacy(true);
     setError("");
     setSuccess("");
@@ -166,7 +166,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
       }
       const results = data.results || {};
       const added = (key: string) => Number(results[key]?.inserted || 0);
-      setSuccess(`Live CMS import complete. New records added: Services ${added("services")}, Offers ${added("offers")}, Packages ${added("packages")}, FAQs ${added("faqs")}. Existing records were left unchanged.`);
+      setSuccess(`Services import complete. New services added: ${added("services")}. Existing services were left unchanged.`);
       await loadRecords();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Content import failed.");
