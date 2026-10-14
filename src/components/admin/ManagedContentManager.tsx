@@ -14,7 +14,7 @@ const pageOptions: FieldOption[] = [
 ];
 const configs: Record<ResourceType, { title: string; singular: string; empty: string; endpoint: string; fields: Field[] }> = {
   service: {
-    title: "Services", singular: "Service", empty: "No services yet", endpoint: "/api/admin/services",
+    title: "Services", singular: "Service", empty: "No services yet", endpoint: "/api/admin/content?action=managed-services",
     fields: [
       { key: "title", label: "Title", required: true }, { key: "slug", label: "URL slug" },
       { key: "description", label: "Description", type: "textarea" }, { key: "category", label: "Category", type: "category-select" },
@@ -99,7 +99,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
     try {
       const params = new URLSearchParams({ limit: "100" });
       if (type === "faq") params.set("pageKey", faqPage);
-      const data = await readResponse(await fetch(`${config.endpoint}?${params.toString()}`, { credentials: "include" }));
+      const data = await readResponse(await fetch(`${config.endpoint}${config.endpoint.includes("?") ? "&" : "?"}${params.toString()}`, { credentials: "include" }));
       setItems(Array.isArray(data.items) ? data.items : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load records.");
@@ -112,7 +112,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
 
   const loadServiceCategories = useCallback(async () => {
     try {
-      const data = await readResponse(await fetch("/api/admin/service-categories", { credentials: "include" }));
+      const data = await readResponse(await fetch("/api/admin/content?action=service-categories", { credentials: "include" }));
       setServiceCategories(Array.isArray(data.items) ? data.items : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load service categories.");
@@ -125,7 +125,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
     try {
       const method = editingCategory ? "PUT" : "POST";
       const body = editingCategory ? { oldName: editingCategory, name: categoryName } : { name: categoryName };
-      await readResponse(await fetch("/api/admin/service-categories", { method, credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
+      await readResponse(await fetch("/api/admin/content?action=service-categories", { method, credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
       setSuccess(editingCategory ? "Service category updated." : "Service category added.");
       setCategoryName(""); setEditingCategory(null);
       await Promise.all([loadServiceCategories(), loadRecords()]);
@@ -136,7 +136,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
     if (!window.confirm(`Delete the service category "${name}"? Categories assigned to services cannot be deleted.`)) return;
     setCategoryBusy(true); setError(""); setSuccess("");
     try {
-      await readResponse(await fetch("/api/admin/service-categories", { method: "DELETE", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ oldName: name }) }));
+      await readResponse(await fetch("/api/admin/content?action=service-categories", { method: "DELETE", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ oldName: name }) }));
       setSuccess("Service category deleted.");
       await loadServiceCategories();
     } catch (err) { setError(err instanceof Error ? err.message : "Unable to delete service category."); }
@@ -233,7 +233,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
         delete payload.validFrom;
         delete payload.validUntil;
       }
-      const url = editing ? `${config.endpoint}?id=${encodeURIComponent(String(editing._id))}` : config.endpoint;
+      const url = editing ? `${config.endpoint}${config.endpoint.includes("?") ? "&" : "?"}id=${encodeURIComponent(String(editing._id))}` : config.endpoint;
       const data = await readResponse(await fetch(url, {
         method: editing ? "PUT" : "POST",
         credentials: "include",
@@ -257,7 +257,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
     setError("");
     setSuccess("");
     try {
-      await readResponse(await fetch(`${config.endpoint}?id=${encodeURIComponent(String(item._id))}`, {
+      await readResponse(await fetch(`${config.endpoint}${config.endpoint.includes("?") ? "&" : "?"}id=${encodeURIComponent(String(item._id))}`, {
         method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }),
       }));
       setSuccess(status === "published" ? `${config.singular} published.` : `${config.singular} unpublished.`);
@@ -276,7 +276,7 @@ export default function ManagedContentManager({ type }: { type: ResourceType }) 
     setError("");
     setSuccess("");
     try {
-      await readResponse(await fetch(`${config.endpoint}?id=${encodeURIComponent(String(item._id))}`, { method: "DELETE", credentials: "include" }));
+      await readResponse(await fetch(`${config.endpoint}${config.endpoint.includes("?") ? "&" : "?"}id=${encodeURIComponent(String(item._id))}`, { method: "DELETE", credentials: "include" }));
       setSuccess(`${config.singular} deleted.`);
       await loadRecords();
     } catch (err) {
