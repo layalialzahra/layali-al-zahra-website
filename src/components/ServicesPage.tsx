@@ -1,193 +1,130 @@
-import React, { useEffect, useState } from 'react';
-import { Phone, MessageCircle, Download } from 'lucide-react';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
-
+import React, { useEffect, useMemo, useState } from 'react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Download, MessageCircle, Phone, Search, Sparkles } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { legacyServicesData } from '../data/legacy-services.js';
 import { loadPublicServices, loadPublicFaqs } from '../data/managed-content-public.js';
 import { legacyFaqs } from '../data/legacy-faqs.js';
+
 const phoneNumbers = [
   { label: 'Mobile 1', number: '+971 52 370 6025', link: 'tel:+971523706025' },
   { label: 'Mobile 2', number: '+971 50 614 3199', link: 'tel:+971506143199' },
   { label: 'Tel 1', number: '+971 4 347 5545', link: 'tel:+97143475545' },
   { label: 'Tel 2', number: '+971 4 357 1060', link: 'tel:+97143571060' },
 ];
+const categoryFor = (title: string) => {
+  const value = title.toLowerCase();
+  if (/hair|colour|color|blow.?dry|styling|cut|keratin|treatment/.test(value)) return 'Hair';
+  if (/nail|manicure|pedicure|polish|acrylic|gel/.test(value)) return 'Nails';
+  if (/lash|brow|eyebrow|eyelash/.test(value)) return 'Lashes & brows';
+  if (/facial|skin|cleanse|peel|aesthetic/.test(value)) return 'Skin & facials';
+  if (/wax|massage|body|scrub|spa/.test(value)) return 'Body & spa';
+  if (/make.?up|bridal|henna/.test(value)) return 'Makeup & occasion';
+  return 'Beauty rituals';
+};
 
 export default function ServicesPage() {
   const [servicesData, setServicesData] = useState(legacyServicesData);
   const [faqs, setFaqs] = useState(legacyFaqs.services);
   const [selectedService, setSelectedService] = useState<(typeof legacyServicesData)[0] | null>(null);
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('All services');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     let active = true;
-    void Promise.all([loadPublicServices(), loadPublicFaqs("services")]).then(([services, loadedFaqs]) => {
+    void Promise.all([loadPublicServices(), loadPublicFaqs('services')]).then(([services, loadedFaqs]) => {
       if (!active) return;
       setServicesData(services as typeof legacyServicesData);
       setFaqs(loadedFaqs as typeof legacyFaqs.services);
-    });
+    }).catch(() => {});
     return () => { active = false; };
   }, []);
 
+  const categories = useMemo(() => ['All services', ...Array.from(new Set(servicesData.map((service) => categoryFor(service.title))))], [servicesData]);
+  const filteredServices = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return servicesData.filter((service) => {
+      const matchesCategory = activeCategory === 'All services' || categoryFor(service.title) === activeCategory;
+      const matchesQuery = !query || service.title.toLowerCase().includes(query) || service.subservices.some((item) => item.name.toLowerCase().includes(query));
+      return matchesCategory && matchesQuery;
+    });
+  }, [servicesData, activeCategory, searchQuery]);
+
+  const bookUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
+  const whatsappUrl = 'https://wa.me/971523706025?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.%20Could%20you%20please%20share%20the%20available%20slots%20and%20details%3F';
+
   return (
-    <div className="min-h-screen pt-8 pb-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h1 className="font-tangerine text-6xl md:text-8xl text-rose-900 mb-4">Our Services</h1>
-          <p className="text-gray-700 text-xl max-w-3xl mx-auto">
-            Discover our comprehensive range of luxury beauty services
-          </p>
-        </div>
-
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {servicesData.map((service) => (
-            <div
-              key={service.id}
-              onClick={() => setSelectedService(service)}
-              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer group"
-            >
-              <div className="h-64 overflow-hidden">
-                <img
-                  src={service.image}
-                  alt={service.title + ' — beauty service at Layali Al Zahra, Al Barsha, Dubai'}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-rose-900 text-center">{service.title}</h3>
-              </div>
+    <div className="min-h-screen overflow-hidden bg-[#17120f] text-[#f3eadc]">
+      <section className="relative isolate flex min-h-[570px] items-end bg-[#201710] md:min-h-[620px] md:items-center">
+        {servicesData[0]?.image && <img className="absolute inset-0 -z-20 h-full w-full object-cover object-center opacity-45" src={servicesData[0].image} alt="" aria-hidden="true" fetchPriority="high" />}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#100d0b]/95 via-[#100d0b]/65 to-[#100d0b]/20" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#17120f] via-transparent to-[#17120f]/10" />
+        <div className="mx-auto w-full max-w-7xl px-5 pb-12 pt-28 md:px-8 md:pb-24">
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">Layali Al Zahra · Dubai</span>
+            <h1 className="mt-7 font-serif text-5xl font-normal leading-[.98] tracking-[-.045em] sm:text-6xl md:text-8xl">Your moment.<br /><em className="text-[#c8a77d]">Your ritual.</em></h1>
+            <p className="mt-6 max-w-xl text-base leading-8 text-[#d6c9ba] md:text-lg">Thoughtfully chosen beauty rituals, delivered with care. Discover the services that help you feel polished, restored and entirely yourself.</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#c8a77d] bg-[#c8a77d] px-6 text-sm font-medium text-[#1c140e] transition hover:-translate-y-0.5 hover:bg-[#e0c29b]" href="#lz-service-menu">Explore our services <ArrowRight size={16} /></a>
+              <a className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#f3eadc]/40 bg-white/5 px-6 text-sm transition hover:-translate-y-0.5 hover:border-[#c8a77d] hover:bg-white/10" href={bookUrl} target="_blank" rel="noreferrer">Book an appointment <ArrowUpRight size={16} /></a>
             </div>
-          ))}
+            <a href="#lz-service-menu" className="mt-12 inline-flex items-center gap-3 text-[11px] uppercase tracking-[.18em] text-[#b9aa99]"><ArrowDown size={15} /> Explore the menu</a>
+          </div>
         </div>
+      </section>
 
-        {/* Service Detail Dialog */}
-        <Dialog open={!!selectedService} onOpenChange={() => setSelectedService(null)}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-rose-900 text-center mb-4">
-                {selectedService?.title}
-              </DialogTitle>
-              <DialogDescription className="sr-only">
-                View detailed pricing for {selectedService?.title}
-              </DialogDescription>
-            </DialogHeader>
-            {selectedService && (
-              <div>
-                <img
-                  src={selectedService.image}
-                  alt={selectedService.title + ' — beauty service at Layali Al Zahra, Al Barsha, Dubai'}
-                  className="w-full h-64 object-cover rounded-lg mb-6"
-                />
-                <div className="space-y-3">
-                  {selectedService.subservices.map((subservice, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center p-4 bg-rose-50 rounded-lg"
-                    >
-                      <span className="text-gray-800">{subservice.name}</span>
-                      <span className="text-rose-600">{subservice.price}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+      <section className="px-5 pb-10 pt-20 text-center md:pb-12 md:pt-28">
+        <div className="mx-auto max-w-3xl"><span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">The service edit</span>
+          <h2 className="mt-5 font-serif text-4xl font-normal leading-tight tracking-[-.04em] md:text-6xl">A little time, <em className="text-[#c8a77d]">just for you.</em></h2>
+          <p className="mx-auto mt-4 max-w-2xl leading-7 text-[#c5b7a6]">From everyday essentials to special-occasion finishing touches, find your service and explore the options available at our Al Barsha salon.</p>
+        </div>
+      </section>
 
-        {/* Phone Numbers Dialog */}
-        <Dialog open={showPhoneDialog} onOpenChange={setShowPhoneDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="text-rose-900 text-center mb-4">Contact Us</DialogTitle>
-              <DialogDescription className="sr-only">
-                Choose a phone number to contact us
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-3">
-              {phoneNumbers.map((phone, index) => (
-                <a
-                  key={index}
-                  href={phone.link}
-                  className="flex items-center justify-between p-4 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors"
-                >
-                  <span className="text-gray-700">{phone.label}</span>
-                  <span className="text-rose-600">{phone.number}</span>
-                </a>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+      <div id="lz-service-menu" className="sticky top-0 z-20 border-y border-[#e2caab]/20 bg-[#17120f]/95 py-4 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 md:px-8">
+          <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Filter services by category">
+            {categories.map((category) => <button key={category} type="button" aria-pressed={activeCategory === category} onClick={() => setActiveCategory(category)} className={'min-h-10 shrink-0 rounded-full border px-4 text-xs transition ' + (activeCategory === category ? 'border-[#f3eadc] bg-[#f3eadc] text-[#211711]' : 'border-[#e2caab]/20 text-[#cbbdad] hover:border-[#c8a77d] hover:text-[#f3eadc]')}>{category}</button>)}
+          </div>
+          <label className="flex w-full items-center gap-3 border-b border-[#f3eadc]/25 py-2 text-[#c5b7a6] md:ml-auto md:max-w-xs"><Search size={17} aria-hidden="true" /><input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Find a service…" aria-label="Search services" className="w-full bg-transparent text-sm text-[#f3eadc] outline-none placeholder:text-[#9d8e7e]" /></label>
+        </div>
       </div>
 
-      {/* Action Buttons Section - Above Footer */}
-      <div className="py-12 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button
-              onClick={() =>
-                window.open(
-                  'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services',
-                  '_blank'
-                )
-              }
-              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6 shadow-md"
-            >
-              Book Now
-            </Button>
-            <Button
-              onClick={() => setShowPhoneDialog(true)}
-              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6"
-            >
-              <Phone className="w-5 h-5 mr-2" />
-              Contact Us
-            </Button>
-            <Button
-              onClick={() =>
-                window.open(
-                  'https://wa.me/971523706025?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.%20Could%20you%20please%20share%20the%20available%20slots%20and%20details%3F',
-                  '_blank'
-                )
-              }
-              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              WhatsApp Us
-            </Button>
-            <Button
-              onClick={() =>
-                window.open(
-                  'https://drive.google.com/file/d/1nakcllVMlJWBZr5ZLhyQuw2W2Ua93ZF0/view?usp=sharing',
-                  '_blank'
-                )
-              }
-              className="bg-gradient-to-br from-rose-900 via-pink-900 to-rose-950 text-white hover:opacity-90 px-8 py-6"
-            >
-              <Download className="w-5 h-5 mr-2" />
-              View Price List
-            </Button>
-          </div>
+      <section className="px-4 pb-20 pt-8 md:px-8 md:pb-28"><div className="mx-auto max-w-7xl">
+        <div className="mb-6 flex items-center justify-between gap-3 text-xs text-[#a99a89]"><span>{activeCategory === 'All services' ? 'Explore the collection' : activeCategory}</span><span>{filteredServices.length} {filteredServices.length === 1 ? 'service' : 'services'}</span></div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+          {filteredServices.map((service) => <article key={service.id} className="group grid min-h-[168px] grid-cols-[38%_minmax(0,1fr)] overflow-hidden border border-[#e2caab]/20 bg-gradient-to-br from-[#2a2019] to-[#1c1511] transition duration-300 hover:-translate-y-1 hover:border-[#c8a77d]/60 hover:shadow-xl sm:flex sm:flex-col">
+            <div className="relative min-h-full overflow-hidden bg-[#30241c] sm:h-60 sm:min-h-0"><img src={service.image} alt={service.title + ' at Layali Al Zahra Beauty Lounge in Dubai'} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" /><div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" /><span className="absolute bottom-3 left-3 text-[9px] uppercase tracking-[.15em] text-[#f3eadc] sm:bottom-4 sm:left-5 sm:text-[10px]">{categoryFor(service.title)}</span></div>
+            <div className="flex min-w-0 flex-col p-4 sm:p-6"><h3 className="font-serif text-xl font-normal leading-tight text-[#f3eadc] sm:text-2xl">{service.title}</h3><div className="mb-3 mt-3 flex items-center gap-2 text-[11px] text-[#b7a694] sm:mb-5 sm:text-xs"><Sparkles size={14} /> Personalised salon care</div>
+              <div className="mt-auto flex items-end justify-between gap-2 border-t border-[#e2caab]/20 pt-3 sm:pt-4"><span className="text-[10px] text-[#b7a694] sm:text-xs">{service.subservices.length} {service.subservices.length === 1 ? 'option' : 'options'}</span><button type="button" className="inline-flex items-center gap-1 text-xs text-[#c8a77d] hover:text-[#e0c29b] sm:gap-2 sm:text-sm" onClick={() => setSelectedService(service)} aria-label={'Explore ' + service.title + ' services'}>Explore menu <ArrowUpRight size={15} /></button></div>
+            </div>
+          </article>)}
+          {filteredServices.length === 0 && <div className="col-span-full border border-[#e2caab]/20 px-5 py-14 text-center text-[#c5b7a6]"><p>No services match that search.</p><button type="button" className="mt-3 inline-flex items-center gap-2 text-sm text-[#c8a77d]" onClick={() => { setSearchQuery(''); setActiveCategory('All services'); }}>Clear filters <ArrowRight size={15} /></button></div>}
         </div>
-      </div>
-        {/* FAQ Section */}
-        <div className="max-w-4xl mx-auto px-4 pb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-rose-900 text-3xl font-semibold mb-2">Frequently Asked Questions</h2>
-            <p className="text-gray-600">Everything you need to know about our beauty services in Al Barsha, Dubai</p>
-          </div>
-          <div className="space-y-3">
-            {faqs.map((faq, i) => (
-              <details key={i} className="bg-white rounded-lg shadow-sm border border-rose-100">
-                <summary className="flex justify-between items-center p-5 cursor-pointer list-none font-semibold text-rose-900 hover:text-rose-700">
-                  <span>{faq.q}</span>
-                  <span className="ml-4 text-rose-400 flex-shrink-0 text-xl font-light select-none">&#43;</span>
-                </summary>
-                <p className="px-5 pb-5 text-gray-600 leading-relaxed">{faq.a}</p>
-              </details>
-            ))}
-          </div>
+      </div></section>
+
+      <section className="border-y border-[#e2caab]/20 bg-[#211711] px-5 py-16 md:px-8 md:py-24"><div className="mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-2 md:gap-14">
+        {servicesData[1]?.image && <img className="h-72 w-full object-cover saturate-75 md:order-2 md:h-[440px]" src={servicesData[1].image} alt="A beauty service at Layali Al Zahra Beauty Lounge" loading="lazy" />}
+        <div><span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">The Layali experience</span><h2 className="mt-5 font-serif text-4xl font-normal leading-tight tracking-[-.04em] md:text-6xl">Beauty, with room to <em className="text-[#c8a77d]">breathe.</em></h2>
+          <p className="mt-5 max-w-lg leading-8 text-[#c5b7a6]">Your visit should feel as considered as the result. Our team is here to help you choose the right service, understand your options and make time for yourself.</p>
+          <div className="mt-6 grid gap-4 text-sm text-[#e6d8c7]"><div className="flex items-center gap-3"><Sparkles size={17} className="text-[#c8a77d]" /> Thoughtful care tailored to your needs</div><div className="flex items-center gap-3"><MessageCircle size={17} className="text-[#c8a77d]" /> A team ready to help with your questions</div></div>
+          <a className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full border border-[#c8a77d] bg-[#c8a77d] px-6 text-sm font-medium text-[#1c140e] transition hover:-translate-y-0.5 hover:bg-[#e0c29b]" href={bookUrl} target="_blank" rel="noreferrer">Find your appointment <ArrowUpRight size={16} /></a>
         </div>
-  
+      </div></section>
+
+      <section className="px-5 py-16 md:px-8 md:py-24"><div className="mx-auto max-w-4xl">
+        <div className="mb-9 text-center"><span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">Good to know</span><h2 className="mt-5 font-serif text-4xl font-normal md:text-6xl">Before your visit</h2><p className="mt-3 text-sm text-[#c5b7a6]">Helpful answers to make planning your appointment easier.</p></div>
+        <div className="border-t border-[#e2caab]/20">{faqs.map((faq, index) => <details key={index} className="group border-b border-[#e2caab]/20"><summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-5 font-serif text-lg marker:hidden sm:text-xl">{faq.q}<span className="text-xl text-[#c8a77d] transition group-open:rotate-45">+</span></summary><p className="max-w-3xl pb-6 pr-8 text-sm leading-7 text-[#c5b7a6]">{faq.a}</p></details>)}</div>
+      </div></section>
+
+      <section className="border-t border-[#e2caab]/20 bg-gradient-to-br from-[#35251a] to-[#1b1410] px-5 py-16 text-center md:px-8 md:py-24"><div className="mx-auto max-w-3xl">
+        <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">Your time starts here</span><h2 className="mt-5 font-serif text-4xl font-normal leading-tight tracking-[-.04em] md:text-6xl">Make space for <em className="text-[#c8a77d]">yourself.</em></h2><p className="mx-auto mt-4 max-w-xl leading-7 text-[#c5b7a6]">Choose your service online or reach out to our team if you would like help finding the right one.</p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3"><a className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#c8a77d] bg-[#c8a77d] px-5 text-sm font-medium text-[#1c140e] transition hover:bg-[#e0c29b]" href={bookUrl} target="_blank" rel="noreferrer">Book now <ArrowUpRight size={16} /></a><button type="button" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#f3eadc]/40 px-5 text-sm transition hover:border-[#c8a77d]" onClick={() => setShowPhoneDialog(true)}><Phone size={16} /> Contact us</button><a className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#f3eadc]/40 px-5 text-sm transition hover:border-[#c8a77d]" href={whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp</a><a className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#f3eadc]/40 px-5 text-sm transition hover:border-[#c8a77d]" href="https://drive.google.com/file/d/1nakcllVMlJWBZr5ZLhyQuw2W2Ua93ZF0/view?usp=sharing" target="_blank" rel="noreferrer"><Download size={16} /> Price list</a></div>
+      </div></section>
+
+      <Dialog open={!!selectedService} onOpenChange={(open) => { if (!open) setSelectedService(null); }}><DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto"><DialogHeader><DialogTitle className="text-rose-900 text-center mb-2">{selectedService?.title}</DialogTitle><DialogDescription className="text-center">Explore the available services and pricing.</DialogDescription></DialogHeader>
+        {selectedService && <div><img src={selectedService.image} alt={selectedService.title + ' at Layali Al Zahra'} className="w-full h-56 object-cover rounded-md mb-5" /><div className="space-y-2">{selectedService.subservices.map((subservice, index) => <div key={index} className="flex justify-between items-start gap-4 p-4 bg-rose-50 rounded-md"><span className="text-gray-800">{subservice.name}</span><span className="text-rose-700 whitespace-nowrap">{subservice.price}</span></div>)}</div><div className="mt-5 text-center"><a className="inline-flex items-center gap-2 rounded-full bg-rose-900 px-6 py-3 text-white" href={bookUrl} target="_blank" rel="noreferrer">Book this service <ArrowUpRight size={16} /></a></div></div>}
+      </DialogContent></Dialog>
+      <Dialog open={showPhoneDialog} onOpenChange={setShowPhoneDialog}><DialogContent><DialogHeader><DialogTitle className="text-rose-900 text-center mb-3">Contact Layali Al Zahra</DialogTitle><DialogDescription className="text-center">Choose the number that works best for you.</DialogDescription></DialogHeader><div className="space-y-2">{phoneNumbers.map((phone) => <a key={phone.link} href={phone.link} className="flex items-center justify-between gap-4 p-4 bg-rose-50 rounded-md hover:bg-rose-100 transition-colors"><span className="text-gray-700">{phone.label}</span><span className="text-rose-700">{phone.number}</span></a>)}</div></DialogContent></Dialog>
     </div>
   );
 }
