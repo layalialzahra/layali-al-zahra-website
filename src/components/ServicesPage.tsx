@@ -40,6 +40,23 @@ export default function ServicesPage() {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    const root = document.querySelector('.lz-services-page');
+    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const targets = root.querySelectorAll('.lz-intro, .lz-card, .lz-ritual, .lz-faq, .lz-last-cta');
+    targets.forEach((target) => target.classList.add('lz-reveal'));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('lz-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -35px 0px' });
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, [servicesData.length]);
+
   const categories = useMemo(() => ['All services', ...Array.from(new Set(servicesData.map((service) => categoryFor(service.title))))], [servicesData]);
   const filteredServices = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -56,43 +73,65 @@ export default function ServicesPage() {
   return (
     <div className="lz-services-page min-h-screen overflow-hidden bg-[#17120f] text-[#f3eadc]">
       <style>{`
-        .lz-services-page{--lz-bg:#17120f;--lz-panel:#211711;--lz-cream:#f3eadc;--lz-muted:#c5b7a6;--lz-gold:#c8a77d;background:var(--lz-bg);color:var(--lz-cream);font-family:Montserrat,Arial,sans-serif}
-        .lz-services-page .lz-hero{position:relative;isolation:isolate;min-height:610px;display:flex;align-items:center;background:#201710}
-        .lz-services-page .lz-hero>img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:center 42%;opacity:.58}
-        .lz-services-page .lz-hero>div.absolute{z-index:-1}
-        .lz-services-page .lz-hero h1,.lz-services-page .lz-intro h2,.lz-services-page .lz-ritual h2,.lz-services-page .lz-faq h2,.lz-services-page .lz-last-cta h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.045em}
-        .lz-services-page .lz-hero h1{font-size:clamp(3.6rem,7.5vw,7rem);line-height:.98}
-        .lz-services-page .lz-intro{background:#17120f;padding-top:76px;padding-bottom:38px}
-        .lz-services-page .lz-intro h2{font-size:clamp(2.5rem,5vw,4.4rem);line-height:1.05}
-        .lz-services-page .lz-tools{background:rgba(23,18,15,.96);border-color:rgba(226,202,171,.22);backdrop-filter:blur(16px)}
-        .lz-services-page .lz-menu{background:#17120f}
-        .lz-services-page .lz-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;background:linear-gradient(145deg,#2a2019,#1c1511);border:1px solid rgba(226,202,171,.2);border-radius:3px;animation:lzCardIn .65s both}
-        .lz-services-page .lz-card-image{position:relative;height:245px;min-height:245px;overflow:hidden;background:#30241c}
-        .lz-services-page .lz-card-image img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;transition:transform .7s}
-        .lz-services-page .lz-card:hover .lz-card-image img{transform:scale(1.05)}
-        .lz-services-page .lz-card-image>div{position:absolute;inset:0;pointer-events:none}
-        .lz-services-page .lz-card>div:last-child{flex:1;padding:22px;display:flex;flex-direction:column}
-        .lz-services-page .lz-card h3{font-family:Georgia,'Times New Roman',serif;font-size:1.55rem;line-height:1.15;font-weight:400;color:var(--lz-cream)}
-        .lz-services-page .lz-ritual{background:#211711;border-color:rgba(226,202,171,.2)}
-        .lz-services-page .lz-ritual img{width:100%;height:440px;object-fit:cover;filter:saturate(.78)}
-        .lz-services-page .lz-faq{background:#17120f}
-        .lz-services-page .lz-faq summary{list-style:none}
+        .lz-services-page{--lz-bg:#17120f;--lz-panel:#241a14;--lz-panel-2:#302219;--lz-cream:#f3eadc;--lz-muted:#c5b7a6;--lz-gold:#c8a77d;position:relative;width:100%;overflow:hidden;background:#17120f!important;color:#f3eadc!important;font-family:Montserrat,Arial,sans-serif}
+        .lz-services-page,.lz-services-page *{box-sizing:border-box}
+        .lz-services-page .lz-hero{position:relative;isolation:isolate;display:flex;align-items:center;min-height:clamp(560px,66vw,760px);background:#201710!important;overflow:hidden}
+        .lz-services-page .lz-hero>img{position:absolute!important;inset:0!important;z-index:-2!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 42%;opacity:.62;transform:scale(1.025);animation:lzHeroDrift 18s ease-in-out infinite alternate}
+        .lz-services-page .lz-hero>div.absolute{position:absolute;inset:0;z-index:-1}
+        .lz-services-page .lz-hero>div.absolute:first-of-type{background:linear-gradient(90deg,rgba(13,10,8,.92) 0%,rgba(13,10,8,.65) 43%,rgba(13,10,8,.08) 100%)}
+        .lz-services-page .lz-hero>div.absolute:nth-of-type(2){background:linear-gradient(0deg,#17120f 0%,transparent 27%,rgba(15,10,8,.1) 100%)}
+        .lz-services-page .lz-hero h1,.lz-services-page .lz-intro h2,.lz-services-page .lz-ritual h2,.lz-services-page .lz-faq h2,.lz-services-page .lz-last-cta h2{font-family:Georgia,'Times New Roman',serif!important;font-weight:400!important;letter-spacing:-.045em}
+        .lz-services-page .lz-hero h1{font-size:clamp(3.7rem,7.8vw,7.3rem)!important;line-height:.94!important;color:#f3eadc!important}
+        .lz-services-page .lz-hero h1 em,.lz-services-page h2 em{color:#c8a77d!important}
+        .lz-services-page .lz-hero p{max-width:540px;color:#dfd1c1!important;line-height:1.85}
+        .lz-services-page .lz-intro{background:#17120f!important;padding:82px 24px 44px!important;text-align:center}
+        .lz-services-page .lz-intro h2{font-size:clamp(2.5rem,5vw,4.7rem)!important;line-height:1.05!important;color:#f3eadc!important}
+        .lz-services-page .lz-intro p{color:#c5b7a6!important}
+        .lz-services-page .lz-tools{position:sticky;top:0;z-index:30;background:rgba(23,18,15,.96)!important;border-color:rgba(226,202,171,.2)!important;backdrop-filter:blur(18px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
+        .lz-services-page .lz-tools button{font-family:Montserrat,Arial,sans-serif}
+        .lz-services-page .lz-tools input{color:#f3eadc!important}
+        .lz-services-page .lz-menu{background:#17120f!important;padding-top:36px!important}
+        .lz-services-page .lz-card{display:flex!important;flex-direction:column!important;min-width:0;overflow:hidden;background:linear-gradient(145deg,#302219,#1d1510)!important;border:1px solid rgba(226,202,171,.2)!important;border-radius:3px!important;box-shadow:0 8px 26px rgba(0,0,0,.12);transition:transform .45s cubic-bezier(.2,.7,.2,1),border-color .35s,box-shadow .35s;animation:lzCardIn .7s both}
+        .lz-services-page .lz-card:hover{transform:translateY(-7px)!important;border-color:rgba(200,167,125,.72)!important;box-shadow:0 22px 46px rgba(0,0,0,.3)}
+        .lz-services-page .lz-card-image{position:relative!important;display:block!important;height:clamp(190px,21vw,270px)!important;min-height:190px!important;overflow:hidden!important;background:#30241c!important}
+        .lz-services-page .lz-card-image img{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;opacity:1!important;filter:saturate(.78) contrast(1.03);transition:transform .85s cubic-bezier(.2,.7,.2,1),filter .5s}
+        .lz-services-page .lz-card:hover .lz-card-image img{transform:scale(1.07)!important;filter:saturate(.98) contrast(1.05)}
+        .lz-services-page .lz-card-image>div{position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(14,10,8,.58),transparent 62%)}
+        .lz-services-page .lz-card>div:last-child{display:flex;flex:1;flex-direction:column;padding:22px!important}
+        .lz-services-page .lz-card h3{margin:0;font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(1.35rem,2vw,1.8rem)!important;line-height:1.13!important;font-weight:400!important;color:#f3eadc!important}
+        .lz-services-page .lz-card>div:last-child>div{color:#c5b7a6!important}
+        .lz-services-page .lz-card button{color:#d7b58a!important}
+        .lz-services-page .lz-card button:hover{color:#f0d2a8!important}
+        .lz-services-page .lz-ritual{background:#211711!important;border-color:rgba(226,202,171,.2)!important}
+        .lz-services-page .lz-ritual img{display:block;width:100%;height:clamp(300px,40vw,480px)!important;object-fit:cover;filter:saturate(.78);box-shadow:0 24px 60px rgba(0,0,0,.25)}
+        .lz-services-page .lz-ritual h2{font-size:clamp(2.6rem,5vw,4.6rem)!important;line-height:1.02!important;color:#f3eadc!important}
+        .lz-services-page .lz-ritual p,.lz-services-page .lz-ritual .text-sm{color:#c5b7a6!important}
+        .lz-services-page .lz-faq{background:#17120f!important}
+        .lz-services-page .lz-faq h2{font-size:clamp(2.6rem,5vw,4.4rem)!important;color:#f3eadc!important}
+        .lz-services-page .lz-faq summary{list-style:none;color:#f3eadc!important;transition:color .2s}
         .lz-services-page .lz-faq summary::-webkit-details-marker{display:none}
-        .lz-services-page .lz-last-cta{background:linear-gradient(115deg,#35251a,#1b1410);border-color:rgba(226,202,171,.2)}
-        @keyframes lzCardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:640px){
-          .lz-services-page .lz-hero{min-height:590px;align-items:flex-end}
-          .lz-services-page .lz-hero>img{object-position:58% center;opacity:.44}
-          .lz-services-page .lz-hero>div.absolute:first-of-type{background:linear-gradient(90deg,rgba(16,13,11,.82),rgba(16,13,11,.25))}
-          .lz-services-page .lz-hero h1{font-size:clamp(3.3rem,14vw,4.8rem)}
-          .lz-services-page .lz-intro{padding-top:58px;padding-bottom:28px}
-          .lz-services-page .lz-card{display:grid;grid-template-columns:38% minmax(0,1fr);min-height:160px}
-          .lz-services-page .lz-card-image{height:auto;min-height:160px}
-          .lz-services-page .lz-card>div:last-child{padding:15px 13px}
-          .lz-services-page .lz-card h3{font-size:1.22rem}
-          .lz-services-page .lz-ritual img{height:280px}
+        .lz-services-page .lz-faq summary:hover{color:#d7b58a!important}
+        .lz-services-page .lz-faq details p{color:#c5b7a6!important}
+        .lz-services-page .lz-last-cta{background:radial-gradient(ellipse at 50% 0%,rgba(127,83,49,.3),transparent 62%),linear-gradient(115deg,#35251a,#1b1410)!important;border-color:rgba(226,202,171,.2)!important}
+        .lz-services-page .lz-last-cta h2{font-size:clamp(2.7rem,5vw,4.8rem)!important;color:#f3eadc!important}
+        .lz-services-page .lz-last-cta p{color:#c5b7a6!important}
+        .lz-services-page .lz-reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+        .lz-services-page .lz-reveal.lz-visible{opacity:1;transform:translateY(0)}
+        @keyframes lzHeroDrift{from{transform:scale(1.025) translate3d(0,0,0)}to{transform:scale(1.09) translate3d(-1%,1%,0)}}
+        @keyframes lzCardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:760px){
+          .lz-services-page .lz-hero{min-height:590px!important;align-items:flex-end!important}
+          .lz-services-page .lz-hero>img{object-position:58% center;opacity:.48}
+          .lz-services-page .lz-hero>div.absolute:first-of-type{background:linear-gradient(0deg,rgba(13,10,8,.96),rgba(13,10,8,.55) 58%,rgba(13,10,8,.18))}
+          .lz-services-page .lz-hero h1{font-size:clamp(3.3rem,13vw,5rem)!important}
+          .lz-services-page .lz-intro{padding:60px 18px 30px!important}
+          .lz-services-page .lz-card{display:grid!important;grid-template-columns:38% minmax(0,1fr)!important;min-height:160px!important}
+          .lz-services-page .lz-card-image{height:auto!important;min-height:160px!important}
+          .lz-services-page .lz-card>div:last-child{padding:15px 13px!important}
+          .lz-services-page .lz-card h3{font-size:1.25rem!important}
+          .lz-services-page .lz-ritual img{height:280px!important}
         }
-        @media(prefers-reduced-motion:reduce){.lz-services-page .lz-card,.lz-services-page .lz-card *{animation:none!important;transition:none!important}}
+        @media(prefers-reduced-motion:reduce){.lz-services-page .lz-hero>img,.lz-services-page .lz-card,.lz-services-page .lz-reveal{animation:none!important;transition:none!important;transform:none!important}.lz-services-page .lz-reveal{opacity:1!important}}
       `}</style>
       <section className="lz-hero relative isolate flex min-h-[570px] items-end bg-[#201710] md:min-h-[620px] md:items-center">
         {servicesData[0]?.image && <img className="absolute inset-0 -z-20 h-full w-full object-cover object-center opacity-45" src={servicesData[0].image} alt="" aria-hidden="true" fetchPriority="high" />}
