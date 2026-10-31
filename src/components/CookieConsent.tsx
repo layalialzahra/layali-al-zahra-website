@@ -21,20 +21,22 @@ import React, { useState, useEffect } from 'react';
         aria-label="Cookie consent"
         style={{
           position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
+          bottom: '18px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'min(960px, calc(100% - 36px))',
           zIndex: 9997,
           background: 'rgba(23, 18, 15, 0.98)',
           color: '#211711',
-          padding: '16px 24px',
+          padding: '13px 20px',
+          border: '1px solid rgba(200,167,125,0.42)',
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '12px',
-          boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
-          borderTop: '1px solid rgba(200,167,125,0.42)',
+          boxShadow: '0 12px 42px rgba(0,0,0,0.28)',
+          borderRadius: '3px',
         }}
       >
         <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.6', maxWidth: '780px', color: '#e4d8c8' }}>
@@ -52,11 +54,11 @@ import React, { useState, useEffect } from 'react';
           onClick={handleAccept}
           style={{
             background: '#c8a77d',
-            color: 'white',
+            color: '#211711',
             border: 'none',
             borderRadius: '2px',
-            padding: '10px 28px',
-            fontSize: '14px',
+            padding: '11px 20px',
+            fontSize: '11px',
             fontWeight: 700,
             cursor: 'pointer',
             flexShrink: 0,
