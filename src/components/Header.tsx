@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logo from 'figma:asset/ccff0a49342c068a5e59474ff43366f8b3e86b65.png';
-import { Menu, X, Instagram, Facebook, Phone } from 'lucide-react';
-import { Button } from './ui/button';
+import { Menu, X, Instagram, Facebook } from 'lucide-react';
 
 interface HeaderProps { currentPage: string; onNavigate: (page: string) => void; }
 
@@ -10,19 +9,85 @@ const navItems = [
   { name: 'Offers', id: 'offers' }, { name: 'Tips', id: 'tips' }, { name: 'Blog', id: 'blog' }, { name: 'News', id: 'news' }, { name: 'Contact', id: 'contact' },
 ];
 const isActive = (currentPage: string, id: string) => currentPage === id || currentPage.startsWith(`${id}:`);
+const bookingUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
 
 export default function Header({ currentPage, onNavigate }: HeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); const [isScrolled, setIsScrolled] = useState(false);
-  useEffect(() => { const handleScroll = () => setIsScrolled(window.scrollY > 200); window.addEventListener('scroll', handleScroll); return () => window.removeEventListener('scroll', handleScroll); }, []);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleNavClick = (id: string) => { onNavigate(id); setIsMenuOpen(false); };
-  const bookNow = () => { window.open('https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services', '_blank'); setIsMenuOpen(false); };
-  const renderLinks = (compact = false) => navItems.map(item => <button key={item.id} onClick={() => handleNavClick(item.id)} className={`text-white hover:text-amber-300 transition-colors duration-300 px-3 ${compact ? 'py-1.5 text-sm' : 'py-2'} ${isActive(currentPage,item.id) ? 'text-amber-300 border-b-2 border-amber-300' : ''}`}>{item.name}</button>);
-  return <>
-    <header className="bg-[#FFF8F0] shadow-md">
-      <div className="bg-gradient-to-r from-rose-50 to-pink-50 border-b border-rose-100"><div className="container mx-auto px-4 py-2"><div className="flex flex-wrap justify-between items-center text-sm"><div className="flex items-center gap-2 text-gray-700"><Phone className="w-4 h-4 text-rose-500"/><a href="tel:+971523706025" className="hover:text-rose-600 transition-colors">+971 52 370 6025</a></div><div className="flex items-center gap-3"><a href="https://www.instagram.com/alzahrabeauty.dubai/" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:text-rose-600" aria-label="Instagram"><Instagram className="w-5 h-5"/></a><a href="https://www.facebook.com/profile.php?id=61582104334753" target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:text-rose-600" aria-label="Facebook"><Facebook className="w-5 h-5"/></a></div></div></div></div>
-      <div className="container mx-auto px-4 py-6"><div className="flex flex-col items-center justify-center gap-4"><img src={logo} alt="Layali Al Zahra Logo" style={{height:'96px',width:'auto',maxWidth:'220px',objectFit:'contain'}}/><h1 className="font-abhaya text-black text-2xl md:text-3xl lg:text-4xl tracking-wide text-center">LAYALI AL ZAHRA BEAUTY SALON LLC</h1></div></div>
-      <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600"><div className="container mx-auto px-4"><nav className="flex items-center justify-between py-2 md:py-4"><div className="hidden md:flex flex-wrap items-center justify-center gap-2 md:gap-4 w-full">{renderLinks()}<Button onClick={bookNow} className="bg-rose-200 text-rose-900 hover:bg-amber-400 hover:text-white px-6 py-2 ml-2 shadow-sm">Book Now</Button></div><div className="flex md:hidden items-center justify-between w-full"><button onClick={()=>setIsMenuOpen(!isMenuOpen)} className="text-white p-2" aria-label="Toggle menu">{isMenuOpen?<X className="w-6 h-6"/>:<Menu className="w-6 h-6"/>}</button><span className="text-white text-lg uppercase flex-1 text-center">{navItems.find(item=>isActive(currentPage,item.id))?.name.toUpperCase()||'HOME'}</span><div className="w-10"/></div></nav>{isMenuOpen&&<div className="md:hidden bg-rose-600 py-4 space-y-2">{navItems.map(item=><button key={item.id} onClick={()=>handleNavClick(item.id)} className={`block w-full text-left text-white hover:bg-rose-700 px-4 py-3 transition-colors ${isActive(currentPage,item.id)?'bg-rose-700 text-amber-300':''}`}>{item.name}</button>)}<div className="px-4 pt-2"><Button onClick={bookNow} className="w-full bg-rose-200 text-rose-900 hover:bg-amber-400 hover:text-white">Book Now</Button></div></div>}</div></div>
+  const renderLinks = (mobile = false) => navItems.map((item) => (
+    <button key={item.id} onClick={() => handleNavClick(item.id)}
+      className={`lz-nav-link ${isActive(currentPage, item.id) ? 'is-active' : ''} ${mobile ? 'lz-mobile-link' : ''}`}
+      aria-current={isActive(currentPage, item.id) ? 'page' : undefined}>{item.name}</button>
+  ));
+
+  return (
+    <header className="lz-site-header">
+      <style>{`
+        .lz-site-header{position:relative;z-index:60;background:#17120f;color:#f3eadc;font-family:Montserrat,Arial,sans-serif}
+        .lz-site-header *{box-sizing:border-box}
+        .lz-site-header .lz-header-utility{height:38px;display:flex;align-items:center;justify-content:space-between;max-width:1440px;margin:auto;padding:0 5.2%;border-bottom:1px solid rgba(200,167,125,.16);font-size:11px;letter-spacing:.12em;color:#c9b9a7}
+        .lz-site-header .lz-utility-right{display:flex;align-items:center;gap:18px}
+        .lz-site-header .lz-utility-right a{display:flex;color:#c8a77d;transition:color .25s}
+        .lz-site-header .lz-utility-right a:hover{color:#f3eadc}
+        .lz-site-header .lz-utility-right svg{width:14px;height:14px}
+        .lz-site-header .lz-brand-row{min-height:108px;display:flex;align-items:center;justify-content:center;gap:20px;padding:16px 24px 14px}
+        .lz-site-header .lz-brand-row img{width:auto;height:68px;max-width:110px;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,.18))}
+        .lz-site-header .lz-brand-name{margin:0;color:#f3eadc;font-family:Georgia,'Times New Roman',serif;font-size:clamp(20px,2.1vw,29px);font-weight:400;letter-spacing:.105em;line-height:1.15;text-align:left}
+        .lz-site-header .lz-brand-subtitle{margin-top:7px;color:#b9a38b;font-size:9px;letter-spacing:.31em;text-transform:uppercase}
+        .lz-site-header .lz-navigation{position:sticky;top:0;background:rgba(23,18,15,.97);border-top:1px solid rgba(200,167,125,.2);border-bottom:1px solid rgba(200,167,125,.28);backdrop-filter:blur(18px)}
+        .lz-site-header .lz-nav-inner{min-height:58px;max-width:1440px;margin:auto;padding:0 4%;display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.1vw,30px)}
+        .lz-site-header .lz-nav-link{position:relative;border:0;background:none;padding:19px 2px 17px;color:#e5d9cb;font:500 12px Montserrat,Arial,sans-serif;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;transition:color .25s}
+        .lz-site-header .lz-nav-link:after{content:"";position:absolute;left:0;right:100%;bottom:10px;height:1px;background:#c8a77d;transition:right .3s ease}
+        .lz-site-header .lz-nav-link:hover,.lz-site-header .lz-nav-link.is-active{color:#d8b98f}
+        .lz-site-header .lz-nav-link:hover:after,.lz-site-header .lz-nav-link.is-active:after{right:0}
+        .lz-site-header .lz-book-button{border:1px solid #c8a77d;background:#c8a77d;color:#21170f;padding:12px 22px;font:600 10px Montserrat,Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;transition:background .25s,color .25s,border-color .25s}
+        .lz-site-header .lz-book-button:hover{background:transparent;color:#e4c69f;border-color:#e4c69f}
+        .lz-site-header .lz-mobile-toggle{display:none;border:1px solid rgba(200,167,125,.35);background:transparent;color:#e7d7c5;padding:9px}
+        .lz-site-header .lz-mobile-panel{display:none}
+        @media(max-width:900px){.lz-site-header .lz-nav-inner{gap:13px;padding:0 2%}.lz-site-header .lz-nav-link{font-size:10px;letter-spacing:.06em}.lz-site-header .lz-book-button{padding:11px 15px}}
+        @media(max-width:700px){
+          .lz-site-header .lz-header-utility{height:34px;padding:0 18px;font-size:9px;letter-spacing:.08em}
+          .lz-site-header .lz-brand-row{min-height:82px;gap:12px;padding:12px 18px;justify-content:flex-start}
+          .lz-site-header .lz-brand-row img{height:52px;max-width:75px}
+          .lz-site-header .lz-brand-name{font-size:clamp(15px,4vw,20px);letter-spacing:.055em}
+          .lz-site-header .lz-brand-subtitle{font-size:7px;letter-spacing:.2em;margin-top:5px}
+          .lz-site-header .lz-nav-inner{min-height:54px;justify-content:space-between;padding:0 18px}
+          .lz-site-header .lz-desktop-links{display:none}
+          .lz-site-header .lz-mobile-toggle{display:inline-flex;align-items:center;justify-content:center}
+          .lz-site-header .lz-mobile-current{color:#d8b98f;font-size:10px;letter-spacing:.17em;text-transform:uppercase}
+          .lz-site-header .lz-mobile-book{padding:10px 13px;font-size:9px}
+          .lz-site-header .lz-mobile-panel{display:block;padding:8px 18px 20px;background:#1d1611;border-top:1px solid rgba(200,167,125,.15)}
+          .lz-site-header .lz-mobile-link{display:block;width:100%;padding:13px 3px;text-align:left;border-bottom:1px solid rgba(200,167,125,.12);font-size:11px}
+          .lz-site-header .lz-mobile-link:after{display:none}
+          .lz-site-header .lz-mobile-panel .lz-book-button{width:100%;margin-top:16px}
+        }
+      `}</style>
+      <div className="lz-header-utility">
+        <a href="tel:+971523706025" className="hover:text-[#f3eadc] transition-colors">AL BARSHA, DUBAI <span className="mx-2 text-[#80694f]">·</span> +971 52 370 6025</a>
+        <div className="lz-utility-right">
+          <a href="https://www.instagram.com/alzahrabeauty.dubai/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a>
+          <a href="https://www.facebook.com/profile.php?id=61582104334753" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a>
+        </div>
+      </div>
+      <div className="lz-brand-row">
+        <img src={logo} alt="Layali Al Zahra" />
+        <div>
+          <p className="lz-brand-name">LAYALI AL ZAHRA</p>
+          <p className="lz-brand-subtitle">Beauty Salon LLC · Dubai</p>
+        </div>
+      </div>
+      <div className="lz-navigation">
+        <nav className="lz-nav-inner" aria-label="Main navigation">
+          <div className="lz-desktop-links flex items-center justify-center gap-[inherit]">{renderLinks()}</div>
+          <a className="lz-book-button hidden md:inline-flex" href={bookingUrl} target="_blank" rel="noopener noreferrer">Book an appointment</a>
+          <button className="lz-mobile-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} aria-expanded={isMenuOpen}>
+            {isMenuOpen ? <X size={19} /> : <Menu size={19} />}
+          </button>
+          <span className="lz-mobile-current md:hidden">{navItems.find(item => isActive(currentPage, item.id))?.name || 'Home'}</span>
+          <a className="lz-book-button lz-mobile-book md:hidden" href={bookingUrl} target="_blank" rel="noopener noreferrer">Book now</a>
+        </nav>
+        {isMenuOpen && <div className="lz-mobile-panel">{renderLinks(true)}<a className="lz-book-button" href={bookingUrl} target="_blank" rel="noopener noreferrer">Book an appointment</a></div>}
+      </div>
     </header>
-    {isScrolled&&<nav className="fixed top-0 left-0 right-0 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 shadow-lg z-50"><div className="container mx-auto px-4"><div className="flex items-center justify-between py-2"><div className="hidden md:flex items-center gap-3 w-full justify-center">{renderLinks(true)}<Button onClick={bookNow} className="bg-rose-200 text-rose-900 hover:bg-amber-400 hover:text-white px-4 py-1 text-sm shadow-sm">Book Now</Button></div><div className="flex md:hidden items-center justify-between w-full"><button onClick={()=>setIsMenuOpen(!isMenuOpen)} className="text-white p-2" aria-label="Toggle menu">{isMenuOpen?<X className="w-5 h-5"/>:<Menu className="w-5 h-5"/>}</button><span className="text-white uppercase flex-1 text-center text-sm">{navItems.find(item=>isActive(currentPage,item.id))?.name||'HOME'}</span><div className="w-9"/></div></div></div></nav>}
-  </>;
+  );
 }
