@@ -34,7 +34,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
         .lz-site-header .lz-brand-row img{width:auto;height:68px;max-width:110px;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,.18))}
         .lz-site-header .lz-brand-name{margin:0;color:#f3eadc;font-family:Georgia,'Times New Roman',serif;font-size:clamp(20px,2.1vw,29px);font-weight:400;letter-spacing:.105em;line-height:1.15;text-align:left}
         .lz-site-header .lz-brand-subtitle{margin-top:7px;color:#b9a38b;font-size:9px;letter-spacing:.31em;text-transform:uppercase}
-        .lz-site-header .lz-navigation{position:sticky;top:0;background:rgba(23,18,15,.97);border-top:1px solid rgba(200,167,125,.2);border-bottom:1px solid rgba(200,167,125,.28);backdrop-filter:blur(18px)}
+        .lz-site-header .lz-navigation{position:relative;top:auto;background:rgba(23,18,15,.97);border-top:1px solid rgba(200,167,125,.2);border-bottom:1px solid rgba(200,167,125,.28);backdrop-filter:blur(18px)}
         .lz-site-header .lz-nav-inner{min-height:58px;max-width:1440px;margin:auto;padding:0 4%;display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.1vw,30px)}
         .lz-site-header .lz-nav-link{position:relative;border:0;background:none;padding:19px 2px 17px;color:#e5d9cb;font:500 12px Montserrat,Arial,sans-serif;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;transition:color .25s}
         .lz-site-header .lz-nav-link:after{content:"";position:absolute;left:0;right:100%;bottom:10px;height:1px;background:#c8a77d;transition:right .3s ease}
@@ -45,7 +45,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
         .lz-site-header .lz-mobile-toggle{display:none;border:1px solid rgba(200,167,125,.35);background:transparent;color:#e7d7c5;padding:9px}
         .lz-site-header .lz-mobile-panel{display:none}
         @media(max-width:900px){.lz-site-header .lz-nav-inner{gap:13px;padding:0 2%}.lz-site-header .lz-nav-link{font-size:10px;letter-spacing:.06em}.lz-site-header .lz-book-button{padding:11px 15px}}
-        @media(max-width:700px){
+        @media(max-width:767px){
           .lz-site-header .lz-header-utility{height:34px;padding:0 18px;font-size:9px;letter-spacing:.08em}
           .lz-site-header .lz-brand-row{min-height:82px;gap:12px;padding:12px 18px;justify-content:flex-start}
           .lz-site-header .lz-brand-row img{height:52px;max-width:75px}
