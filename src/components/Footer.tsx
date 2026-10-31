@@ -2,8 +2,6 @@ import React from 'react';
 import logo from 'figma:asset/9817600458343764435239bfb3fefec844c082eb.png';
 import { Instagram, Facebook } from 'lucide-react';
 
-const bookingUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
-
 export default function Footer() {
   return (
     <footer className="lz-site-footer">
@@ -11,13 +9,7 @@ export default function Footer() {
         .lz-site-footer{background:#17120f;color:#eee2d2;padding:72px 5.5% 24px;font-family:Montserrat,Arial,sans-serif;border-top:1px solid rgba(200,167,125,.28)}
         .lz-site-footer *{box-sizing:border-box}
         .lz-site-footer .lz-footer-inner{max-width:1320px;margin:0 auto}
-        .lz-site-footer .lz-footer-intro{text-align:center;padding:0 20px 55px;border-bottom:1px solid rgba(200,167,125,.2)}
-        .lz-site-footer .lz-footer-eyebrow{margin:0 0 13px;color:#c8a77d;font-size:10px;letter-spacing:.25em;text-transform:uppercase}
-        .lz-site-footer .lz-footer-intro h2{margin:0;color:#f3eadc;font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,4.5vw,52px);font-weight:400;letter-spacing:-.035em;line-height:1.1}
-        .lz-site-footer .lz-footer-intro p{margin:14px 0 22px;color:#bcae9e;font-size:13px;line-height:1.8}
-        .lz-site-footer .lz-footer-book{display:inline-block;padding:13px 25px;border:1px solid #c8a77d;color:#d9bd98;font-size:10px;font-weight:600;letter-spacing:.15em;text-decoration:none;text-transform:uppercase;transition:background .25s,color .25s}
-        .lz-site-footer .lz-footer-book:hover{background:#c8a77d;color:#21170f}
-        .lz-site-footer .lz-footer-grid{display:grid;grid-template-columns:1.25fr 1fr 1.25fr .7fr;gap:52px;padding:48px 0 55px}
+                .lz-site-footer .lz-footer-grid{display:grid;grid-template-columns:1.25fr 1fr 1.25fr .7fr;gap:52px;padding:8px 0 55px}
         .lz-site-footer .lz-footer-brand img{display:block;width:auto;height:72px;max-width:150px;object-fit:contain;margin-bottom:20px}
         .lz-site-footer .lz-footer-brand p{max-width:245px;color:#bcae9e;font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.45}
         .lz-site-footer h3{margin:4px 0 22px;color:#c8a77d;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
@@ -47,13 +39,6 @@ export default function Footer() {
         }
       `}</style>
       <div className="lz-footer-inner">
-        <div className="lz-footer-intro">
-          <p className="lz-footer-eyebrow">A little time, entirely yours</p>
-          <h2>Make room for your own kind of beautiful.</h2>
-          <p>Thoughtful beauty, considered care and a moment to yourself in the heart of Al Barsha.</p>
-          <a className="lz-footer-book" href={bookingUrl} target="_blank" rel="noopener noreferrer">Book your visit</a>
-        </div>
-
         <div className="lz-footer-grid">
           <div className="lz-footer-brand">
             <img src={logo} alt="Layali Al Zahra Beauty Salon LLC" />
