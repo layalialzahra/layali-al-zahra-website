@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { legacyServicesData } from '../data/legacy-services.js';
@@ -6,31 +6,42 @@ import { loadPublicServices, loadPublicFaqs } from '../data/managed-content-publ
 import { legacyFaqs } from '../data/legacy-faqs.js';
 
 const phoneNumbers = [
-  { label: 'Mobile 1', number: '+971 52 370 6025', link: 'tel:+971523706025' },
-  { label: 'Mobile 2', number: '+971 50 614 3199', link: 'tel:+971506143199' },
-  { label: 'Tel 1', number: '+971 4 347 5545', link: 'tel:+97143475545' },
-  { label: 'Tel 2', number: '+971 4 357 1060', link: 'tel:+97143571060' },
+  { label: 'Mobile', number: '+971 52 370 6025', link: 'tel:+971523706025' },
+  { label: 'Telephone', number: '+971 4 347 5545', link: 'tel:+97143475545' },
+  { label: 'Telephone', number: '+971 4 357 1060', link: 'tel:+97143571060' },
 ];
+
 const categoryFor = (title: string) => {
   const value = title.toLowerCase();
-  if (/hair|colour|color|blow.?dry|styling|cut|keratin|treatment/.test(value)) return 'Hair';
+  if (/hair removal|wax|threading|bleach/.test(value)) return 'Skin & body';
   if (/nail|manicure|pedicure|polish|acrylic|gel/.test(value)) return 'Nails';
   if (/lash|brow|eyebrow|eyelash/.test(value)) return 'Lashes & brows';
-  if (/facial|skin|cleanse|peel|aesthetic/.test(value)) return 'Skin & facials';
-  if (/wax|massage|body|scrub|spa/.test(value)) return 'Body & spa';
-  if (/make.?up|bridal|henna/.test(value)) return 'Makeup & occasion';
-  return 'Beauty rituals';
+  if (/facial|skin|cleanse|peel|aesthetic/.test(value)) return 'Skin & body';
+  if (/massage|body|scrub|spa/.test(value)) return 'Wellbeing';
+  if (/make.?up|bridal|henna/.test(value)) return 'Occasion';
+  if (/hair|colour|color|blow.?dry|styling|cut|keratin|treatment|extension/.test(value)) return 'Hair';
+  return 'Little luxuries';
 };
+
+const categoryCopy: Record<string, string> = {
+  Hair: 'A considered approach to cut, colour and care. Find the finish, treatment or transformation that feels like you.',
+  Nails: 'From a beautifully finished manicure to detailed extensions, discover the small details that make a difference.',
+  'Lashes & brows': 'Thoughtful definition, soft enhancements and precise finishing touches, tailored to your features.',
+  'Skin & body': 'Feel-good essentials and targeted care, with treatments selected to leave you feeling refreshed.',
+  Wellbeing: 'Make a little room to slow down. Explore restorative massages and rituals designed around your time.',
+  Occasion: 'For celebrations, meaningful moments and days when you want every detail to feel just right.',
+  'Little luxuries': 'A little something for younger guests and anyone who enjoys a thoughtful finishing touch.',
+};
+
+const categoryOrder = ['Hair', 'Nails', 'Lashes & brows', 'Skin & body', 'Wellbeing', 'Occasion', 'Little luxuries'];
 
 export default function ServicesPage() {
   const [servicesData, setServicesData] = useState(legacyServicesData);
   const [faqs, setFaqs] = useState(legacyFaqs.services);
   const [selectedService, setSelectedService] = useState<(typeof legacyServicesData)[0] | null>(null);
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('All services');
+  const [activeCategory, setActiveCategory] = useState('Hair');
   const [searchQuery, setSearchQuery] = useState('');
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const moveCarousel = (direction: -1 | 1) => { const track = carouselRef.current; if (!track) return; const card = track.querySelector<HTMLElement>('.lz-card'); const distance = card ? card.offsetWidth + 22 : track.clientWidth * 0.8; track.scrollBy({ left: direction * distance, behavior: 'smooth' }); };
 
   useEffect(() => {
     let active = true;
@@ -42,173 +53,222 @@ export default function ServicesPage() {
     return () => { active = false; };
   }, []);
 
-  useEffect(() => {
-    const root = document.querySelector('.lz-services-page');
-    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const targets = root.querySelectorAll('.lz-intro, .lz-card, .lz-ritual, .lz-faq, .lz-last-cta');
-    targets.forEach((target) => target.classList.add('lz-reveal'));
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('lz-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -35px 0px' });
-    targets.forEach((target) => observer.observe(target));
-    return () => observer.disconnect();
-  }, [servicesData.length]);
+  const categories = useMemo(() => categoryOrder.filter((category) => servicesData.some((service) => categoryFor(service.title) === category)), [servicesData]);
+  const groupedServices = useMemo(() => servicesData.reduce<Record<string, typeof legacyServicesData>>((groups, service) => {
+    const category = categoryFor(service.title);
+    (groups[category] ||= []).push(service);
+    return groups;
+  }, {}), [servicesData]);
 
-  const categories = useMemo(() => ['All services', ...Array.from(new Set(servicesData.map((service) => categoryFor(service.title))))], [servicesData]);
-  const filteredServices = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return servicesData.filter((service) => {
-      const matchesCategory = activeCategory === 'All services' || categoryFor(service.title) === activeCategory;
-      const matchesQuery = !query || service.title.toLowerCase().includes(query) || service.subservices.some((item) => item.name.toLowerCase().includes(query));
-      return matchesCategory && matchesQuery;
-    });
-  }, [servicesData, activeCategory, searchQuery]);
+  const query = searchQuery.trim().toLowerCase();
+  const visibleServices = useMemo(() => {
+    if (query) return servicesData.filter((service) => service.title.toLowerCase().includes(query) || service.subservices.some((item) => item.name.toLowerCase().includes(query)));
+    return groupedServices[activeCategory] || [];
+  }, [servicesData, groupedServices, activeCategory, query]);
 
   const bookUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
   const whatsappUrl = 'https://wa.me/971523706025?text=Hi!%20I%E2%80%99d%20like%20to%20book%20an%20appointment%20at%20Layali%20Al%20Zahra%20Beauty%20Lounge.%20Could%20you%20please%20share%20the%20available%20slots%20and%20details%3F';
+  const activeImage = visibleServices[0]?.image || servicesData[0]?.image;
 
   return (
-    <div className="lz-services-page min-h-screen overflow-hidden bg-[#17120f] text-[#f3eadc]">
+    <main className="lz-services-page">
       <style>{`
-        .lz-services-page{--lz-bg:#17120f;--lz-panel:#241a14;--lz-panel-2:#302219;--lz-cream:#f3eadc;--lz-muted:#c5b7a6;--lz-gold:#c8a77d;position:relative;width:100%;overflow:hidden;background:#17120f!important;color:#f3eadc!important;font-family:Montserrat,Arial,sans-serif}
-        .lz-services-page,.lz-services-page *{box-sizing:border-box}
-        .lz-services-page .lz-hero{position:relative;isolation:isolate;display:flex;align-items:center;min-height:clamp(560px,66vw,760px);background:#201710!important;overflow:hidden}
-        .lz-services-page .lz-hero>img{position:absolute!important;inset:0!important;z-index:-2!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 42%;opacity:.62;transform:scale(1.025);animation:lzHeroDrift 18s ease-in-out infinite alternate}
-        .lz-services-page .lz-hero>div.absolute{position:absolute;inset:0;z-index:-1}
-        .lz-services-page .lz-hero>div.absolute:first-of-type{background:linear-gradient(90deg,rgba(13,10,8,.92) 0%,rgba(13,10,8,.65) 43%,rgba(13,10,8,.08) 100%)}
-        .lz-services-page .lz-hero>div.absolute:nth-of-type(2){background:linear-gradient(0deg,#17120f 0%,transparent 27%,rgba(15,10,8,.1) 100%)}
-        .lz-services-page .lz-hero h1,.lz-services-page .lz-intro h2,.lz-services-page .lz-ritual h2,.lz-services-page .lz-faq h2,.lz-services-page .lz-last-cta h2{font-family:Georgia,'Times New Roman',serif!important;font-weight:400!important;letter-spacing:-.045em}
-        .lz-services-page .lz-hero h1{font-size:clamp(3.7rem,7.8vw,7.3rem)!important;line-height:.94!important;color:#f3eadc!important}
-        .lz-services-page .lz-hero h1 em,.lz-services-page h2 em{color:#c8a77d!important}
-        .lz-services-page .lz-hero p{max-width:540px;color:#dfd1c1!important;line-height:1.85}
-        .lz-services-page .lz-intro{background:#17120f!important;padding:82px 24px 44px!important;text-align:center}
-        .lz-services-page .lz-intro h2{font-size:clamp(2.5rem,5vw,4.7rem)!important;line-height:1.05!important;color:#f3eadc!important}
-        .lz-services-page .lz-intro p{color:#c5b7a6!important}
-        .lz-services-page .lz-tools{position:sticky;top:0;z-index:30;background:rgba(23,18,15,.96)!important;border-color:rgba(226,202,171,.2)!important;backdrop-filter:blur(18px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
-        .lz-services-page .lz-tools button{font-family:Montserrat,Arial,sans-serif}
-        .lz-services-page .lz-tools input{color:#f3eadc!important}
-        .lz-services-page .lz-menu{background:#17120f!important;padding-top:36px!important}
-        .lz-services-page .lz-carousel-track{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:5px 2px 24px;scrollbar-width:none;-ms-overflow-style:none}.lz-services-page .lz-carousel-track::-webkit-scrollbar{display:none}.lz-services-page .lz-card{display:flex!important;flex:0 0 calc((100% - 44px)/3)!important;flex-direction:column!important;min-width:0;overflow:hidden;background:linear-gradient(145deg,#302219,#1d1510)!important;border:1px solid rgba(226,202,171,.2)!important;border-radius:2px!important;box-shadow:0 8px 26px rgba(0,0,0,.12);scroll-snap-align:start;transition:transform .45s cubic-bezier(.2,.7,.2,1),border-color .35s,box-shadow .35s;animation:lzCardIn .7s both}
-        .lz-services-page .lz-card:hover{transform:translateY(-7px)!important;border-color:rgba(200,167,125,.72)!important;box-shadow:0 22px 46px rgba(0,0,0,.3)}
-        .lz-services-page .lz-card-image{position:relative!important;display:block!important;height:clamp(190px,21vw,270px)!important;min-height:190px!important;overflow:hidden!important;background:#30241c!important}
-        .lz-services-page .lz-card-image img{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;opacity:1!important;filter:saturate(.78) contrast(1.03);transition:transform .85s cubic-bezier(.2,.7,.2,1),filter .5s}
-        .lz-services-page .lz-card:hover .lz-card-image img{transform:scale(1.07)!important;filter:saturate(.98) contrast(1.05)}
-        .lz-services-page .lz-card-image>div{position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(14,10,8,.12),transparent 45%)}
-        .lz-services-page .lz-card>div:last-child{display:flex;flex:1;flex-direction:column;padding:22px!important}
-        .lz-services-page .lz-card h3{margin:0;font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(1.35rem,2vw,1.8rem)!important;line-height:1.13!important;font-weight:400!important;color:#f3eadc!important}
-        .lz-services-page .lz-card>div:last-child>div{color:#c5b7a6!important}
-        .lz-services-page .lz-card button{color:#d7b58a!important;border:0;background:none;padding:0;font:500 11px Montserrat,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
-        .lz-services-page .lz-card button:hover{color:#f0d2a8!important}
-        .lz-services-page .lz-ritual{background:#211711!important;border-color:rgba(226,202,171,.2)!important}
-        .lz-services-page .lz-ritual img{display:block;width:100%;height:clamp(300px,40vw,480px)!important;object-fit:cover;filter:saturate(.78);box-shadow:0 24px 60px rgba(0,0,0,.25)}
-        .lz-services-page .lz-ritual h2{font-size:clamp(2.6rem,5vw,4.6rem)!important;line-height:1.02!important;color:#f3eadc!important}
-        .lz-services-page .lz-ritual p,.lz-services-page .lz-ritual .text-sm{color:#c5b7a6!important}
-        .lz-services-page .lz-faq{background:#17120f!important}
-        .lz-services-page .lz-faq h2{font-size:clamp(2.6rem,5vw,4.4rem)!important;color:#f3eadc!important}
-        .lz-services-page .lz-faq summary{list-style:none;color:#f3eadc!important;transition:color .2s}
-        .lz-services-page .lz-faq summary::-webkit-details-marker{display:none}
-        .lz-services-page .lz-faq summary:hover{color:#d7b58a!important}
-        .lz-services-page .lz-faq details p{color:#c5b7a6!important}
-        .lz-services-page .lz-last-cta{background:radial-gradient(ellipse at 50% 0%,rgba(127,83,49,.3),transparent 62%),linear-gradient(115deg,#35251a,#1b1410)!important;border-color:rgba(226,202,171,.2)!important}
-        .lz-services-page .lz-last-cta h2{font-size:clamp(2.7rem,5vw,4.8rem)!important;color:#f3eadc!important}
-        .lz-services-page .lz-last-cta p{color:#c5b7a6!important}
-        .lz-services-page .lz-reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
-        .lz-services-page .lz-reveal.lz-visible{opacity:1;transform:translateY(0)}
-        @keyframes lzHeroDrift{from{transform:scale(1.025) translate3d(0,0,0)}to{transform:scale(1.09) translate3d(-1%,1%,0)}}
-        @keyframes lzCardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:900px){.lz-services-page .lz-card{flex-basis:calc((100% - 22px)/2)!important}}
-        @media(max-width:760px){
-          .lz-services-page .lz-hero{min-height:590px!important;align-items:flex-end!important}
-          .lz-services-page .lz-hero>img{object-position:58% center;opacity:.48}
-          .lz-services-page .lz-hero>div.absolute:first-of-type{background:linear-gradient(0deg,rgba(13,10,8,.96),rgba(13,10,8,.55) 58%,rgba(13,10,8,.18))}
-          .lz-services-page .lz-hero h1{font-size:clamp(3.3rem,13vw,5rem)!important}
-          .lz-services-page .lz-intro{padding:60px 18px 30px!important}
-          .lz-services-page .lz-card{display:flex!important;flex:0 0 min(82vw,340px)!important;min-height:0!important}
-          .lz-services-page .lz-card-image{height:205px!important;min-height:205px!important}
-          .lz-services-page .lz-card>div:last-child{padding:18px!important}
-          .lz-services-page .lz-card h3{font-size:1.35rem!important}
-          .lz-services-page .lz-ritual img{height:280px!important}
-        }
-        @media(prefers-reduced-motion:reduce){.lz-services-page .lz-hero>img,.lz-services-page .lz-card,.lz-services-page .lz-reveal{animation:none!important;transition:none!important;transform:none!important}.lz-services-page .lz-reveal{opacity:1!important}}
+        .lz-services-page{--ink:#211a16;--espresso:#211711;--paper:#eee7dc;--paper-deep:#e4dacb;--muted:#786d61;--gold:#a98255;--line:rgba(42,31,23,.18);background:var(--paper);color:var(--ink);font-family:Montserrat,Arial,sans-serif;overflow:hidden}
+        .lz-services-page *{box-sizing:border-box}
+        .lz-services-page .lz-editorial-hero{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(380px,.98fr);min-height:650px;background:var(--paper)}
+        .lz-services-page .lz-hero-copy{display:flex;flex-direction:column;justify-content:center;padding:80px clamp(28px,7vw,112px) 84px max(28px,calc((100vw - 1280px)/2))}
+        .lz-services-page .lz-kicker{display:flex;align-items:center;gap:13px;color:var(--gold);font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase}
+        .lz-services-page .lz-kicker:before{content:"";width:32px;height:1px;background:currentColor}
+        .lz-services-page .lz-hero-title{max-width:700px;margin:27px 0 23px;font-family:Georgia,'Times New Roman',serif;font-size:clamp(4.1rem,7.3vw,7.8rem);font-weight:400;letter-spacing:-.075em;line-height:.86;color:var(--ink)}
+        .lz-services-page .lz-hero-title em{display:block;margin-left:.55em;color:var(--gold);font-weight:400}
+        .lz-services-page .lz-hero-description{max-width:440px;color:#665b51;font-size:14px;line-height:2}
+        .lz-services-page .lz-hero-actions{display:flex;align-items:center;gap:24px;margin-top:34px;flex-wrap:wrap}
+        .lz-services-page .lz-primary-link{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 23px;background:var(--espresso);color:#f3eadc;text-decoration:none;font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;transition:background .25s,transform .25s}
+        .lz-services-page .lz-primary-link:hover{background:#59402e;transform:translateY(-2px)}
+        .lz-services-page .lz-text-link{color:var(--ink);font-size:11px;text-decoration:none;border-bottom:1px solid rgba(33,26,22,.45);padding:0 0 5px;transition:color .2s}
+        .lz-services-page .lz-text-link:hover{color:var(--gold)}
+        .lz-services-page .lz-hero-visual{position:relative;min-height:650px;overflow:hidden;background:#c9b9a6}
+        .lz-services-page .lz-hero-visual img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;object-position:center;filter:saturate(.76);animation:lzEditorialDrift 22s ease-in-out infinite alternate}
+        .lz-services-page .lz-hero-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,14,10,.32),transparent 42%)}
+        .lz-services-page .lz-image-caption{position:absolute;z-index:1;bottom:30px;left:34px;color:#fff7ed;font-size:9px;letter-spacing:.2em;text-transform:uppercase}
+        .lz-services-page .lz-hero-index{position:absolute;z-index:1;top:28px;right:28px;color:rgba(255,248,238,.9);font-family:Georgia,serif;font-size:13px;letter-spacing:.12em}
+        .lz-services-page .lz-explorer{padding:92px 28px 110px;background:#e4dacb}
+        .lz-services-page .lz-explorer-inner{max-width:1320px;margin:0 auto}
+        .lz-services-page .lz-explorer-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:48px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+        .lz-services-page .lz-explorer-heading h2{margin:14px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:clamp(3rem,5vw,5.1rem);font-weight:400;letter-spacing:-.06em;line-height:.98}
+        .lz-services-page .lz-explorer-heading p{max-width:330px;margin:0;color:var(--muted);font-size:12px;line-height:1.9}
+        .lz-services-page .lz-explorer-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:clamp(28px,5vw,76px);align-items:start}
+        .lz-services-page .lz-category-index{position:sticky;top:24px;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+        .lz-services-page .lz-category-button{display:grid;grid-template-columns:27px minmax(0,1fr) 24px;align-items:center;gap:8px;min-height:59px;padding:9px 8px;border:0;border-bottom:1px solid var(--line);background:transparent;color:#786d61;text-align:left;cursor:pointer;transition:background .25s,color .25s,padding .25s}
+        .lz-services-page .lz-category-button .lz-category-number{font-family:Georgia,serif;font-size:12px;color:#a18d77}
+        .lz-services-page .lz-category-button .lz-category-name{font-family:Georgia,serif;font-size:17px;line-height:1.15}
+        .lz-services-page .lz-category-button .lz-category-count{font-size:9px;text-align:right;color:#9c8e7e}
+        .lz-services-page .lz-category-button:hover{color:var(--ink);padding-left:13px}
+        .lz-services-page .lz-category-button.is-active{background:var(--espresso);color:#f0e6d8;padding-left:13px}
+        .lz-services-page .lz-category-button.is-active .lz-category-number,.lz-services-page .lz-category-button.is-active .lz-category-count{color:#c6a77f}
+        .lz-services-page .lz-service-stage{min-width:0;animation:lzStageIn .48s ease both}
+        .lz-services-page .lz-stage-topline{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:19px}
+        .lz-services-page .lz-stage-label{color:var(--gold);font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+        .lz-services-page .lz-stage-count{color:#887a6b;font-size:10px;letter-spacing:.08em}
+        .lz-services-page .lz-stage-feature{display:grid;grid-template-columns:minmax(240px,.78fr) minmax(0,1.22fr);min-height:420px;background:#f2ece3;box-shadow:0 16px 38px rgba(49,36,25,.06)}
+        .lz-services-page .lz-stage-image{position:relative;min-height:420px;overflow:hidden;background:#cbbba8}
+        .lz-services-page .lz-stage-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.78);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+        .lz-services-page .lz-stage-feature:hover .lz-stage-image img{transform:scale(1.035)}
+        .lz-services-page .lz-stage-image:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,13,10,.42),transparent 48%)}
+        .lz-services-page .lz-stage-image-caption{position:absolute;z-index:1;left:24px;bottom:23px;color:#fff6eb;font-size:9px;letter-spacing:.17em;text-transform:uppercase}
+        .lz-services-page .lz-stage-content{padding:clamp(25px,3.5vw,48px);min-width:0}
+        .lz-services-page .lz-stage-title{margin:9px 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:clamp(2.5rem,4vw,4.1rem);font-weight:400;letter-spacing:-.06em;line-height:.98}
+        .lz-services-page .lz-stage-description{max-width:480px;margin:0;color:#776b5e;font-size:11px;line-height:1.85}
+        .lz-services-page .lz-search{display:flex;align-items:center;gap:10px;margin:23px 0 8px;padding:11px 0;border-bottom:1px solid var(--line);color:#8a7967}
+        .lz-services-page .lz-search input{width:100%;border:0;outline:0;background:transparent;color:var(--ink);font:11px Montserrat,Arial,sans-serif}
+        .lz-services-page .lz-search input::placeholder{color:#9b8d7d}
+        .lz-services-page .lz-service-list{margin-top:11px;border-top:1px solid var(--line)}
+        .lz-services-page .lz-service-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}
+        .lz-services-page .lz-row-number{color:#a58c70;font-family:Georgia,serif;font-size:12px}
+        .lz-services-page .lz-row-title{font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.25}
+        .lz-services-page .lz-row-meta{margin-top:4px;color:#8d8174;font-size:9px;letter-spacing:.04em}
+        .lz-services-page .lz-row-action{border:0;background:transparent;color:#80613e;padding:8px 0 8px 10px;font-size:9px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+        .lz-services-page .lz-row-action:hover{color:#211711}
+        .lz-services-page .lz-search-empty{padding:28px 0;color:#786d61;font-size:12px}
+        .lz-services-page .lz-story{display:grid;grid-template-columns:1fr 1fr;min-height:430px;background:var(--espresso);color:#f0e6d8}
+        .lz-services-page .lz-story-image{position:relative;min-height:430px;overflow:hidden}
+        .lz-services-page .lz-story-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.7)}
+        .lz-services-page .lz-story-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(36px,7vw,100px)}
+        .lz-services-page .lz-story-copy h2{max-width:550px;margin:22px 0;font-family:Georgia,'Times New Roman',serif;font-size:clamp(2.8rem,5vw,5.2rem);font-weight:400;letter-spacing:-.06em;line-height:.98}
+        .lz-services-page .lz-story-copy h2 em{color:#c8a77d;font-weight:400}
+        .lz-services-page .lz-story-copy p{max-width:460px;color:#c8b9a7;font-size:12px;line-height:2}
+        .lz-services-page .lz-faq{padding:94px 28px 100px;background:var(--paper)}
+        .lz-services-page .lz-faq-inner{max-width:930px;margin:auto}
+        .lz-services-page .lz-faq-heading{text-align:center;margin-bottom:42px}
+        .lz-services-page .lz-faq-heading h2{margin:15px 0 9px;font-family:Georgia,'Times New Roman',serif;font-size:clamp(2.8rem,5vw,4.6rem);font-weight:400;letter-spacing:-.06em}
+        .lz-services-page .lz-faq-heading p{color:var(--muted);font-size:11px}
+        .lz-services-page .lz-faq-list{border-top:1px solid var(--line)}
+        .lz-services-page .lz-faq-list details{border-bottom:1px solid var(--line)}
+        .lz-services-page .lz-faq-list summary{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:19px 2px;list-style:none;cursor:pointer;font-family:Georgia,serif;font-size:19px}
+        .lz-services-page .lz-faq-list summary::-webkit-details-marker{display:none}
+        .lz-services-page .lz-faq-list summary:after{content:"+";font-family:Montserrat,sans-serif;font-size:17px;color:var(--gold);transition:transform .25s}
+        .lz-services-page .lz-faq-list details[open] summary:after{transform:rotate(45deg)}
+        .lz-services-page .lz-faq-list details p{max-width:760px;margin:0;padding:0 30px 22px 2px;color:#776b5e;font-size:11px;line-height:1.9}
+        .lz-services-page .lz-final-cta{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:42px max(28px,calc((100vw - 1320px)/2));background:#d8c9b7}
+        .lz-services-page .lz-final-cta h2{margin:10px 0 0;font-family:Georgia,serif;font-size:clamp(2.2rem,4vw,3.7rem);font-weight:400;letter-spacing:-.06em}
+        .lz-services-page .lz-final-cta .lz-primary-link{flex-shrink:0}
+        .lz-services-page .lz-dialog-content{background:#eee7dc!important;color:#211a16!important;border:1px solid rgba(42,31,23,.18)!important;border-radius:2px!important}
+        .lz-services-page .lz-dialog-title{color:#211a16!important;font-family:Georgia,serif!important;font-size:30px!important;font-weight:400!important}
+        .lz-services-page .lz-dialog-description{color:#786d61!important}
+        .lz-services-page .lz-price-row{display:flex;justify-content:space-between;gap:18px;padding:13px 2px;border-bottom:1px solid var(--line);font-size:11px;color:#41372e}
+        .lz-services-page .lz-price-row span:last-child{color:#80613e;white-space:nowrap}
+        @keyframes lzEditorialDrift{from{transform:scale(1.02)}to{transform:scale(1.09)}}
+        @keyframes lzStageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:1000px){.lz-services-page .lz-editorial-hero{grid-template-columns:1fr .85fr}.lz-services-page .lz-hero-copy{padding:70px 38px}.lz-services-page .lz-explorer-layout{grid-template-columns:180px minmax(0,1fr);gap:25px}.lz-services-page .lz-stage-feature{grid-template-columns:1fr}.lz-services-page .lz-stage-image{min-height:260px}.lz-services-page .lz-stage-content{padding:28px}}
+        @media(max-width:720px){.lz-services-page .lz-editorial-hero{grid-template-columns:1fr;min-height:0}.lz-services-page .lz-hero-copy{padding:72px 23px 48px}.lz-services-page .lz-hero-title{font-size:clamp(4rem,17vw,6.2rem)}.lz-services-page .lz-hero-visual{min-height:390px}.lz-services-page .lz-explorer{padding:66px 17px 75px}.lz-services-page .lz-explorer-heading{display:block;margin-bottom:25px;padding-bottom:20px}.lz-services-page .lz-explorer-heading p{margin-top:16px}.lz-services-page .lz-explorer-layout{display:flex;flex-direction:column;gap:22px}.lz-services-page .lz-category-index{position:static;width:100%;display:flex;flex-direction:row;overflow-x:auto;border-top:0;border-bottom:1px solid var(--line);scrollbar-width:none}.lz-services-page .lz-category-index::-webkit-scrollbar{display:none}.lz-services-page .lz-category-button{display:flex;flex:0 0 auto;min-height:48px;gap:7px;padding:8px 12px;border-bottom:0;white-space:nowrap}.lz-services-page .lz-category-button .lz-category-number{font-size:10px}.lz-services-page .lz-category-button .lz-category-name{font-family:Montserrat,Arial,sans-serif;font-size:10px;letter-spacing:.03em}.lz-services-page .lz-category-button .lz-category-count{display:none}.lz-services-page .lz-category-button.is-active{padding-left:12px}.lz-services-page .lz-service-stage{width:100%}.lz-services-page .lz-stage-feature{grid-template-columns:1fr}.lz-services-page .lz-stage-image{min-height:250px}.lz-services-page .lz-stage-content{padding:24px 20px}.lz-services-page .lz-stage-title{font-size:3rem}.lz-services-page .lz-row-title{font-size:16px}.lz-services-page .lz-story{grid-template-columns:1fr}.lz-services-page .lz-story-image{min-height:300px}.lz-services-page .lz-story-copy{padding:50px 24px 58px}.lz-services-page .lz-faq{padding:70px 20px}.lz-services-page .lz-faq-list summary{font-size:17px}.lz-services-page .lz-final-cta{align-items:flex-start;flex-direction:column;padding:36px 23px}.lz-services-page .lz-final-cta h2{font-size:2.7rem}}
+        @media(prefers-reduced-motion:reduce){.lz-services-page *{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
       `}</style>
-      <section className="lz-hero relative isolate flex min-h-[570px] items-end bg-[#201710] md:min-h-[620px] md:items-center">
-        {servicesData[0]?.image && <img className="absolute inset-0 -z-20 h-full w-full object-cover object-center opacity-45" src={servicesData[0].image} alt="" aria-hidden="true" fetchPriority="high" />}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#100d0b]/95 via-[#100d0b]/65 to-[#100d0b]/20" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#17120f] via-transparent to-[#17120f]/10" />
-        <div className="mx-auto w-full max-w-7xl px-5 pb-12 pt-28 md:px-8 md:pb-24">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">Layali Al Zahra · Dubai</span>
-            <h1 className="mt-7 font-serif text-5xl font-normal leading-[.98] tracking-[-.045em] sm:text-6xl md:text-8xl">Your moment.<br /><em className="text-[#c8a77d]">Your ritual.</em></h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-[#d6c9ba] md:text-lg">Thoughtfully chosen beauty rituals, delivered with care. Discover the services that help you feel polished, restored and entirely yourself.</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a className="inline-flex min-h-12 items-center rounded-full border border-[#c8a77d] bg-[#c8a77d] px-6 text-sm font-medium text-[#1c140e] transition hover:bg-[#e0c29b]" href="#lz-service-menu">Explore services</a>
-              <a className="inline-flex min-h-12 items-center rounded-full border border-[#f3eadc]/40 bg-white/5 px-6 text-sm transition hover:border-[#c8a77d]" href={bookUrl} target="_blank" rel="noreferrer">Book an appointment</a>
+
+      <section className="lz-editorial-hero">
+        <div className="lz-hero-copy">
+          <span className="lz-kicker">Layali Al Zahra · Al Barsha, Dubai</span>
+          <h1 className="lz-hero-title">Beauty,<em>in your own time.</em></h1>
+          <p className="lz-hero-description">A considered collection of hair, skin, nail and wellbeing rituals. Find the treatment that feels right for you, then leave the details to us.</p>
+          <div className="lz-hero-actions">
+            <a className="lz-primary-link" href="#lz-service-explorer">Discover the menu</a>
+            <a className="lz-text-link" href={bookUrl} target="_blank" rel="noreferrer">Book an appointment</a>
+          </div>
+        </div>
+        <div className="lz-hero-visual">
+          {servicesData.find((service) => service.id === 'hair-treatments')?.image && <img src={servicesData.find((service) => service.id === 'hair-treatments')?.image} alt="A hair treatment at Layali Al Zahra Beauty Salon" fetchPriority="high" />}
+          <span className="lz-hero-index">A LITTLE TIME, ENTIRELY YOURS</span>
+          <span className="lz-image-caption">The Layali beauty experience</span>
+        </div>
+      </section>
+
+      <section id="lz-service-explorer" className="lz-explorer">
+        <div className="lz-explorer-inner">
+          <div className="lz-explorer-heading">
+            <div><span className="lz-kicker">The service directory</span><h2>Find your<br/>kind of care.</h2></div>
+            <p>Explore by category. Each collection opens into its own considered menu, with clear options and pricing before you book.</p>
+          </div>
+
+          <div className="lz-explorer-layout">
+            <nav className="lz-category-index" aria-label="Service categories">
+              {categories.map((category, index) => <button key={category} type="button" className={'lz-category-button ' + (!query && activeCategory === category ? 'is-active' : '')} aria-pressed={!query && activeCategory === category} onClick={() => { setActiveCategory(category); setSearchQuery(''); }}>
+                <span className="lz-category-number">{String(index + 1).padStart(2, '0')}</span>
+                <span className="lz-category-name">{category}</span>
+                <span className="lz-category-count">{String((groupedServices[category] || []).length).padStart(2, '0')}</span>
+              </button>)}
+            </nav>
+
+            <div className="lz-service-stage" key={query ? 'search-' + query : activeCategory}>
+              <div className="lz-stage-topline"><span className="lz-stage-label">{query ? 'Search results' : 'Explore the collection'}</span><span className="lz-stage-count">{visibleServices.length} {visibleServices.length === 1 ? 'category' : 'categories'}</span></div>
+              <div className="lz-stage-feature">
+                <div className="lz-stage-image">
+                  {activeImage && <img src={activeImage} alt={query ? 'Beauty service search result' : activeCategory + ' services at Layali Al Zahra'} />}
+                  <span className="lz-stage-image-caption">{query ? 'Your search, considered' : activeCategory}</span>
+                </div>
+                <div className="lz-stage-content">
+                  <span className="lz-kicker">{query ? 'Find a treatment' : 'The edit · ' + String(categories.indexOf(activeCategory) + 1).padStart(2, '0')}</span>
+                  <h3 className="lz-stage-title">{query ? 'Your results.' : activeCategory + '.'}</h3>
+                  <p className="lz-stage-description">{query ? 'Matching services from across our salon menu.' : categoryCopy[activeCategory]}</p>
+                  <label className="lz-search"><Search size={15} aria-hidden="true"/><input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search treatments or services" aria-label="Search all salon services"/></label>
+                  <div className="lz-service-list">
+                    {visibleServices.map((service, index) => <div className="lz-service-row" key={service.id}>
+                      <span className="lz-row-number">{String(index + 1).padStart(2, '0')}</span>
+                      <div><div className="lz-row-title">{service.title}</div><div className="lz-row-meta">{service.subservices.length} treatments · Menu and pricing</div></div>
+                      <button type="button" className="lz-row-action" onClick={() => setSelectedService(service)}>View menu</button>
+                    </div>)}
+                    {visibleServices.length === 0 && <div className="lz-search-empty">No matching treatments. Try another search term.</div>}
+                  </div>
+                </div>
+              </div>
             </div>
-            
           </div>
         </div>
       </section>
 
-      <section className="lz-intro px-5 pb-10 pt-20 text-center md:pb-12 md:pt-28">
-        <div className="mx-auto max-w-3xl"><span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">The service edit</span>
-          <h2 className="mt-5 font-serif text-4xl font-normal leading-tight tracking-[-.04em] md:text-6xl">A little time, <em className="text-[#c8a77d]">just for you.</em></h2>
-          <p className="mx-auto mt-4 max-w-2xl leading-7 text-[#c5b7a6]">From everyday essentials to special-occasion finishing touches, find your service and explore the options available at our Al Barsha salon.</p>
+      <section className="lz-story">
+        <div className="lz-story-image">
+          {servicesData.find((service) => service.id === 'massage')?.image && <img src={servicesData.find((service) => service.id === 'massage')?.image} alt="A relaxing beauty and wellbeing treatment" loading="lazy"/>}
+        </div>
+        <div className="lz-story-copy">
+          <span className="lz-kicker">A moment that belongs to you</span>
+          <h2>Good care is felt <em>in every detail.</em></h2>
+          <p>From the first consultation to the finishing touch, our team is here to make your visit feel personal, considered and unhurried. Not just a service. Time well spent.</p>
+          <div style={{marginTop:28}}><a className="lz-primary-link" href={bookUrl} target="_blank" rel="noreferrer">Plan your visit</a></div>
         </div>
       </section>
 
-      <div id="lz-service-menu" className="lz-tools sticky top-0 z-20 border-y border-[#e2caab]/20 bg-[#17120f]/95 py-4 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 md:px-8">
-          <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Filter services by category">
-            {categories.map((category) => <button key={category} type="button" aria-pressed={activeCategory === category} onClick={() => setActiveCategory(category)} className={'min-h-10 shrink-0 rounded-full border px-4 text-xs transition ' + (activeCategory === category ? 'border-[#f3eadc] bg-[#f3eadc] text-[#211711]' : 'border-[#e2caab]/20 text-[#cbbdad] hover:border-[#c8a77d] hover:text-[#f3eadc]')}>{category}</button>)}
-          </div>
-          <label className="flex w-full items-center gap-3 border-b border-[#f3eadc]/25 py-2 text-[#c5b7a6] md:ml-auto md:max-w-xs"><Search size={17} aria-hidden="true" /><input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Find a service…" aria-label="Search services" className="w-full bg-transparent text-sm text-[#f3eadc] outline-none placeholder:text-[#9d8e7e]" /></label>
+      <section className="lz-faq">
+        <div className="lz-faq-inner">
+          <div className="lz-faq-heading"><span className="lz-kicker" style={{justifyContent:'center'}}>Good to know</span><h2>Before your visit</h2><p>Helpful answers to make planning your appointment easier.</p></div>
+          <div className="lz-faq-list">{faqs.map((faq, index) => <details key={index}><summary>{faq.q}</summary><p>{faq.a}</p></details>)}</div>
         </div>
-      </div>
+      </section>
 
-      <section className="lz-menu px-4 pb-20 pt-8 md:px-8 md:pb-28"><div className="mx-auto max-w-7xl">
-        <div className="lz-carousel-heading">
-          <div><p className="text-[10px] uppercase tracking-[.2em] text-[#c8a77d]">{activeCategory === 'All services' ? 'The service collection' : activeCategory}</p><p className="mt-2 text-xs text-[#a99a89]">{filteredServices.length} services to explore</p></div>
-          <div className="lz-carousel-controls" aria-label="Carousel controls"><button type="button" onClick={() => moveCarousel(-1)} aria-label="Previous services">Previous</button><button type="button" onClick={() => moveCarousel(1)} aria-label="Next services">Next</button></div>
+      <section className="lz-final-cta">
+        <div><span className="lz-kicker">Your time starts here</span><h2>We look forward to welcoming you.</h2></div>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <a className="lz-primary-link" href={bookUrl} target="_blank" rel="noreferrer">Book your visit</a>
+          <button type="button" className="lz-text-link" onClick={() => setShowPhoneDialog(true)} style={{background:'transparent',border:0,borderBottom:'1px solid rgba(33,26,22,.45)',cursor:'pointer'}}>Speak to our team</button>
         </div>
-        <div ref={carouselRef} className="lz-carousel-track" aria-label="Salon services carousel">
-          {filteredServices.map((service) => <article key={service.id} className="lz-card group">
-            <div className="lz-card-image"><img src={service.image} alt={service.title + ' at Layali Al Zahra Beauty Salon in Dubai'} loading="lazy" /><div /></div>
-            <div><h3>{service.title}</h3><div className="mt-3 mb-5 text-xs">{service.subservices.length} {service.subservices.length === 1 ? 'treatment' : 'treatments'} available</div>
-              <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#e2caab]/20 pt-4"><span className="text-[10px] uppercase tracking-[.12em] text-[#a99a89]">Explore category</span><button type="button" onClick={() => setSelectedService(service)} aria-label={'View ' + service.title + ' services'}>View services</button></div>
-            </div>
-          </article>)}
-          {filteredServices.length === 0 && <div className="min-w-full border border-[#e2caab]/20 px-5 py-14 text-center text-[#c5b7a6]"><p>No services match that search.</p><button type="button" className="mt-3 text-sm text-[#c8a77d]" onClick={() => { setSearchQuery(''); setActiveCategory('All services'); }}>Clear filters</button></div>}
-        </div>
-      </div></section>
+      </section>
 
-      <section className="lz-ritual border-y border-[#e2caab]/20 bg-[#211711] px-5 py-16 md:px-8 md:py-24"><div className="mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-2 md:gap-14">
-        {servicesData[1]?.image && <img className="h-72 w-full object-cover saturate-75 md:order-2 md:h-[440px]" src={servicesData[1].image} alt="A beauty service at Layali Al Zahra Beauty Lounge" loading="lazy" />}
-        <div><span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">The Layali experience</span><h2 className="mt-5 font-serif text-4xl font-normal leading-tight tracking-[-.04em] md:text-6xl">Beauty, with room to <em className="text-[#c8a77d]">breathe.</em></h2>
-          <p className="mt-5 max-w-lg leading-8 text-[#c5b7a6]">Your visit should feel as considered as the result. Our team is here to help you choose the right service, understand your options and make time for yourself.</p>
-          <div className="mt-6 space-y-3 text-sm leading-7 text-[#d2c3b1]"><p>Thoughtful care, tailored to your needs.</p><p>A welcoming team, ready to help you choose.</p></div>
-          <a className="mt-8 inline-flex min-h-12 items-center rounded-full border border-[#c8a77d] bg-[#c8a77d] px-6 text-sm font-medium text-[#1c140e] transition hover:bg-[#e0c29b]" href={bookUrl} target="_blank" rel="noreferrer">Find your appointment</a>
-        </div>
-      </div></section>
+      <Dialog open={!!selectedService} onOpenChange={(open) => { if (!open) setSelectedService(null); }}>
+        <DialogContent className="lz-dialog-content max-w-2xl max-h-[82vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="lz-dialog-title">{selectedService?.title}</DialogTitle><DialogDescription className="lz-dialog-description">Available treatments and pricing at Layali Al Zahra.</DialogDescription></DialogHeader>
+          {selectedService && <div className="mt-4">
+            <div className="mb-4 flex items-center justify-between gap-3 text-[10px] uppercase tracking-[.15em] text-[#8b7967]"><span>{selectedService.subservices.length} treatments</span><span>Prices in AED</span></div>
+            {selectedService.subservices.map((subservice, index) => <div className="lz-price-row" key={index}><span>{subservice.name}</span><span>{subservice.price}</span></div>)}
+            <div className="mt-6"><a className="lz-primary-link" href={bookUrl} target="_blank" rel="noreferrer">Book this service</a></div>
+          </div>}
+        </DialogContent>
+      </Dialog>
 
-      <section className="lz-faq px-5 py-16 md:px-8 md:py-24"><div className="mx-auto max-w-4xl">
-        <div className="mb-9 text-center"><span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">Good to know</span><h2 className="mt-5 font-serif text-4xl font-normal md:text-6xl">Before your visit</h2><p className="mt-3 text-sm text-[#c5b7a6]">Helpful answers to make planning your appointment easier.</p></div>
-        <div className="border-t border-[#e2caab]/20">{faqs.map((faq, index) => <details key={index} className="group border-b border-[#e2caab]/20"><summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-5 font-serif text-lg marker:hidden sm:text-xl">{faq.q}<span className="text-xl text-[#c8a77d] transition group-open:rotate-45">+</span></summary><p className="max-w-3xl pb-6 pr-8 text-sm leading-7 text-[#c5b7a6]">{faq.a}</p></details>)}</div>
-      </div></section>
-
-      <section className="lz-last-cta border-t border-[#e2caab]/20 bg-gradient-to-br from-[#35251a] to-[#1b1410] px-5 py-16 text-center md:px-8 md:py-24"><div className="mx-auto max-w-3xl">
-        <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[.24em] text-[#c8a77d] before:h-px before:w-7 before:bg-current">Your time starts here</span><h2 className="mt-5 font-serif text-4xl font-normal leading-tight tracking-[-.04em] md:text-6xl">Make space for <em className="text-[#c8a77d]">yourself.</em></h2><p className="mx-auto mt-4 max-w-xl leading-7 text-[#c5b7a6]">Choose your service online or reach out to our team if you would like help finding the right one.</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3"><a className="inline-flex min-h-12 items-center rounded-full border border-[#c8a77d] bg-[#c8a77d] px-5 text-sm font-medium text-[#1c140e] transition hover:bg-[#e0c29b]" href={bookUrl} target="_blank" rel="noreferrer">Book now</a><button type="button" className="inline-flex min-h-12 items-center rounded-full border border-[#f3eadc]/40 px-5 text-sm transition hover:border-[#c8a77d]" onClick={() => setShowPhoneDialog(true)}>Contact us</button><a className="inline-flex min-h-12 items-center rounded-full border border-[#f3eadc]/40 px-5 text-sm transition hover:border-[#c8a77d]" href={whatsappUrl} target="_blank" rel="noreferrer">WhatsApp</a><a className="inline-flex min-h-12 items-center rounded-full border border-[#f3eadc]/40 px-5 text-sm transition hover:border-[#c8a77d]" href="https://drive.google.com/file/d/1nakcllVMlJWBZr5ZLhyQuw2W2Ua93ZF0/view?usp=sharing" target="_blank" rel="noreferrer">Price list</a></div>
-      </div></section>
-
-      <Dialog open={!!selectedService} onOpenChange={(open) => { if (!open) setSelectedService(null); }}><DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto"><DialogHeader><DialogTitle className="text-[#c8a77d] text-center mb-2">{selectedService?.title}</DialogTitle><DialogDescription className="text-center">Explore the available services and pricing.</DialogDescription></DialogHeader>
-        {selectedService && <div><img src={selectedService.image} alt={selectedService.title + ' at Layali Al Zahra'} className="w-full h-56 object-cover rounded-md mb-5" /><div className="space-y-2">{selectedService.subservices.map((subservice, index) => <div key={index} className="flex justify-between items-start gap-4 p-4 bg-[#2a2019] rounded-md"><span className="text-[#f3eadc]">{subservice.name}</span><span className="text-[#d7b58a] whitespace-nowrap">{subservice.price}</span></div>)}</div><div className="mt-5 text-center"><a className="inline-flex items-center gap-2 rounded-full bg-[#c8a77d] px-6 py-3 text-[#211711]" href={bookUrl} target="_blank" rel="noreferrer">Book this service</a></div></div>}
-      </DialogContent></Dialog>
-      <Dialog open={showPhoneDialog} onOpenChange={setShowPhoneDialog}><DialogContent><DialogHeader><DialogTitle className="text-[#c8a77d] text-center mb-3">Contact Layali Al Zahra</DialogTitle><DialogDescription className="text-center">Choose the number that works best for you.</DialogDescription></DialogHeader><div className="space-y-2">{phoneNumbers.map((phone) => <a key={phone.link} href={phone.link} className="flex items-center justify-between gap-4 p-4 bg-[#2a2019] rounded-md hover:bg-[#35251a] transition-colors"><span className="text-[#e4d8c8]">{phone.label}</span><span className="text-rose-700">{phone.number}</span></a>)}</div></DialogContent></Dialog>
-    </div>
+      <Dialog open={showPhoneDialog} onOpenChange={setShowPhoneDialog}>
+        <DialogContent className="lz-dialog-content">
+          <DialogHeader><DialogTitle className="lz-dialog-title">Speak to our team</DialogTitle><DialogDescription className="lz-dialog-description">Choose the number that works best for you.</DialogDescription></DialogHeader>
+          <div className="mt-4">{phoneNumbers.map((phone, index) => <a key={index} href={phone.link} className="lz-price-row" style={{textDecoration:'none'}}><span>{phone.label}</span><span>{phone.number}</span></a>)}</div>
+          <a className="lz-text-link mt-5 inline-block" href={whatsappUrl} target="_blank" rel="noreferrer">Or message us on WhatsApp</a>
+        </DialogContent>
+      </Dialog>
+    </main>
   );
 }
