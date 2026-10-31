@@ -42,7 +42,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
         .lz-site-header .lz-nav-link:hover:after,.lz-site-header .lz-nav-link.is-active:after{right:0}
         .lz-site-header .lz-book-button{border:1px solid #c8a77d;background:#c8a77d;color:#21170f;padding:12px 22px;font:600 10px Montserrat,Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;transition:background .25s,color .25s,border-color .25s}
         .lz-site-header .lz-book-button:hover{background:transparent;color:#e4c69f;border-color:#e4c69f}
-        .lz-site-header .lz-mobile-toggle{display:none;border:1px solid rgba(200,167,125,.35);background:transparent;color:#e7d7c5;padding:9px}
+        .lz-site-header .lz-mobile-current{display:none}.lz-site-header .lz-mobile-toggle{display:none;border:1px solid rgba(200,167,125,.35);background:transparent;color:#e7d7c5;padding:9px}
         .lz-site-header .lz-mobile-panel{display:none}
         @media(max-width:1100px){.lz-site-header .lz-nav-inner{gap:12px;padding:0 2%}.lz-site-header .lz-desktop-links{gap:12px}.lz-site-header .lz-nav-link{font-size:10px;letter-spacing:.05em}.lz-site-header .lz-book-button{padding:11px 13px}}
         @media(max-width:900px){
@@ -54,7 +54,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
           .lz-site-header .lz-nav-inner{min-height:54px;justify-content:space-between;padding:0 18px}
           .lz-site-header .lz-desktop-links,.lz-site-header .lz-book-desktop{display:none}
           .lz-site-header .lz-mobile-toggle{display:inline-flex;align-items:center;justify-content:center}
-          .lz-site-header .lz-mobile-current{color:#d8b98f;font-size:10px;letter-spacing:.17em;text-transform:uppercase}
+          .lz-site-header .lz-mobile-current{display:inline-flex;align-items:center;color:#d8b98f;font-size:10px;letter-spacing:.17em;text-transform:uppercase}
           .lz-site-header .lz-mobile-book{display:inline-flex;padding:10px 13px;font-size:9px}
           .lz-site-header .lz-mobile-panel{display:block;padding:8px 18px 20px;background:#1d1611;border-top:1px solid rgba(200,167,125,.15)}
           .lz-site-header .lz-mobile-link{display:block;width:100%;padding:13px 3px;text-align:left;border-bottom:1px solid rgba(200,167,125,.12);font-size:11px}
