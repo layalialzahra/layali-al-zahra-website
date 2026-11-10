@@ -70,10 +70,11 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
     </nav>
     <a className="lz-panel-book" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit</a>
     <button className="lz-menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls={`lz-mobile-nav${inverse ? '-open' : ''}`}>
-      <span className={`lz-menu-glyph${menuOpen ? ' lz-menu-glyph--open' : ''}`} aria-hidden="true"><i /><i /></span>
-      <span>{menuOpen ? 'Close' : 'Menu'}</span>
+      <span>{menuOpen ? 'Close' : 'Index'}</span>
+      <i aria-hidden="true" />
     </button>
     {menuOpen && <nav className="lz-mobile-nav" id={`lz-mobile-nav${inverse ? '-open' : ''}`} aria-label="Mobile navigation">
+      <p className="lz-mobile-nav__kicker">A visit at Layali</p>
       {menuItems.map((item) => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
       <button onClick={() => { onNavigate('packages'); setMenuOpen(false); }}>Packages</button>
       <button onClick={() => { onNavigate('offers'); setMenuOpen(false); }}>Offers</button>
@@ -91,25 +92,29 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
   const [reviewIndex, setReviewIndex] = useState(0);
   const [reviewPaused, setReviewPaused] = useState(false);
+  const [reviewDirection, setReviewDirection] = useState(1);
+  const [serviceIndex, setServiceIndex] = useState(0);
+  const [serviceDirection, setServiceDirection] = useState(1);
+  const [servicePaused, setServicePaused] = useState(false);
   const { scrollYProgress } = useScroll({ target: openingTrack, offset: ['start start', 'end end'] });
   const easedProgress = useSpring(scrollYProgress, { stiffness: 32, damping: 30, mass: 1.05 });
   const sceneProgress = useTransform(easedProgress, (value) => (reducedMotion || disableInitialAnimations ? 0 : value));
   const cardScale = useTransform(sceneProgress, [0, 0.9], [0.975, 1]);
   const cardLift = useTransform(sceneProgress, [0, 0.9], [5, 0]);
   const cardRadius = useTransform(sceneProgress, [0, 0.9], [24, 14]);
-  const coverOpacity = useTransform(sceneProgress, [0, 0.42, 0.72], [1, 1, 0]);
-  const coverPhotoScale = useTransform(sceneProgress, [0, 0.72], [1, 1.055]);
-  const coverCopyY = useTransform(sceneProgress, [0, 0.68], [0, -18]);
-  const featureOpacity = useTransform(sceneProgress, [0.46, 0.72], [0, 1]);
-  const featureY = useTransform(sceneProgress, [0.44, 0.73], [24, 0]);
-  const portraitOneY = useTransform(sceneProgress, [0.47, 0.74], [24, 0]);
-  const portraitTwoY = useTransform(sceneProgress, [0.47, 0.76], [38, 0]);
-  const portraitThreeY = useTransform(sceneProgress, [0.47, 0.78], [18, 0]);
+  const coverOpacity = useTransform(sceneProgress, [0, 0.22, 0.43], [1, 1, 0]);
+  const coverPhotoScale = useTransform(sceneProgress, [0, 0.43], [1, 1.055]);
+  const coverCopyY = useTransform(sceneProgress, [0, 0.4], [0, -12]);
+  const featureOpacity = useTransform(sceneProgress, [0.22, 0.43], [0, 1]);
+  const featureY = useTransform(sceneProgress, [0.2, 0.43], [18, 0]);
+  const portraitOneY = useTransform(sceneProgress, [0.23, 0.44], [20, 0]);
+  const portraitTwoY = useTransform(sceneProgress, [0.23, 0.46], [28, 0]);
+  const portraitThreeY = useTransform(sceneProgress, [0.23, 0.45], [14, 0]);
 
   useMotionValueEvent(easedProgress, 'change', (value) => {
     if (!reducedMotion && !disableInitialAnimations) {
-      setFeatureVisible(value > 0.45);
-      setFeatureActive(value > 0.68);
+      setFeatureVisible(value > 0.2);
+      setFeatureActive(value > 0.45);
     }
   });
 
@@ -140,6 +145,22 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     const timer = window.setInterval(() => setReviewIndex((index) => (index + 1) % visibleReviews.length), 7000);
     return () => window.clearInterval(timer);
   }, [visibleReviews.length, reviewPaused, reducedMotion]);
+  useEffect(() => {
+    if (services.length < 2 || servicePaused || reducedMotion) return;
+    const timer = window.setInterval(() => {
+      setServiceDirection(1);
+      setServiceIndex((index) => (index + 1) % services.length);
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, [servicePaused, reducedMotion]);
+  const moveReview = (direction: number) => {
+    setReviewDirection(direction);
+    setReviewIndex((index) => (index + direction + visibleReviews.length) % visibleReviews.length);
+  };
+  const moveService = (direction: number) => {
+    setServiceDirection(direction);
+    setServiceIndex((index) => (index + direction + services.length) % services.length);
+  };
   const featuredReview = visibleReviews[reviewIndex];
   const reviewExcerpt = selectReviewExcerpt(featuredReview?.description || '');
   const backgroundStyle = { '--lz-backdrop': `url(${heroPhoto})` } as React.CSSProperties;
@@ -189,12 +210,17 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
             <div><p className="lz-eyebrow">THE GOOD PART</p><h2>Choose what feels right.</h2></div>
             <button onClick={() => onNavigate('services')}>See all services</button>
           </div>
-          <div className="lz-services__grid">
-            {services.map((service, index) => <motion.button className={`lz-service-card lz-service-card--${index + 1}`} key={service.name} onClick={() => onNavigate('services')} initial={reducedMotion ? false : { opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.22 }} transition={{ duration: 0.72, delay: reducedMotion ? 0 : index * 0.16, ease: [0.22, 1, 0.36, 1] }}>
-              <img src={service.image} alt={service.alt} loading="lazy" />
-              <span className="lz-service-card__shade" aria-hidden="true" />
-              <span className="lz-service-card__caption"><small>{service.detail}</small><strong>{service.name}</strong></span>
-            </motion.button>)}
+          <div className="lz-services__showcase" aria-roledescription="carousel" aria-label="Service categories" onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }}>
+            <AnimatePresence initial={false} mode="wait" custom={serviceDirection}>
+              <motion.button className="lz-service-slide" key={services[serviceIndex].name} custom={serviceDirection} onClick={() => onNavigate('services')} aria-label={`Explore ${services[serviceIndex].name} services`} initial={reducedMotion ? false : { opacity: 0, x: serviceDirection * 44 }} animate={{ opacity: 1, x: 0 }} exit={reducedMotion ? undefined : { opacity: 0, x: serviceDirection * -34 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
+                <img src={services[serviceIndex].image} alt={services[serviceIndex].alt} loading="lazy" />
+                <span className="lz-service-card__shade" aria-hidden="true" />
+                <span className="lz-service-card__caption"><small>{services[serviceIndex].detail}</small><strong>{services[serviceIndex].name}</strong></span>
+              </motion.button>
+            </AnimatePresence>
+            <button className="lz-service-arrow lz-service-arrow--prev" onClick={() => moveService(-1)} aria-label="Previous service category">‹</button>
+            <button className="lz-service-arrow lz-service-arrow--next" onClick={() => moveService(1)} aria-label="Next service category">›</button>
+            <div className="lz-service-index" aria-live="polite">{services.map((service, index) => <button key={service.name} className={index === serviceIndex ? 'is-active' : ''} onClick={() => { setServiceDirection(index > serviceIndex ? 1 : -1); setServiceIndex(index); }} aria-label={`Show ${service.name}`} aria-current={index === serviceIndex ? 'true' : undefined} />)}</div>
           </div>
         </section>
 
@@ -202,14 +228,14 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
           <div className="lz-review__scrim" aria-hidden="true" />
           <div className="lz-review__content"><p className="lz-eyebrow">KIND WORDS FROM OUR GUESTS</p>
             <AnimatePresence mode="wait">
-              <motion.div key={`${reviewIndex}-${featuredReview.title}`} className="lz-review__quote" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+              <motion.div key={`${reviewIndex}-${featuredReview.title}`} className="lz-review__quote" initial={reducedMotion ? false : { opacity: 0, x: reviewDirection * 20 }} animate={{ opacity: 1, x: 0 }} exit={reducedMotion ? undefined : { opacity: 0, x: reviewDirection * -20 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
                 <span className="lz-review__rating" aria-label={`${featuredReview.rating ?? 5} out of 5 stars`}>{'★'.repeat(Math.max(0, Math.min(5, featuredReview.rating ?? 5)))}</span>
                 <blockquote>“{reviewExcerpt}”</blockquote>
                 <p className="lz-review__author">{featuredReview.title}</p>
               </motion.div>
             </AnimatePresence>
-            {visibleReviews.length > 1 && <div className="lz-review__controls" aria-label="Review controls"><button onClick={() => setReviewIndex((index) => (index - 1 + visibleReviews.length) % visibleReviews.length)} aria-label="Previous review">Previous</button><span>{String(reviewIndex + 1).padStart(2, '0')} / {String(visibleReviews.length).padStart(2, '0')}</span><button onClick={() => setReviewIndex((index) => (index + 1) % visibleReviews.length)} aria-label="Next review">Next</button></div>}
           </div>
+          {visibleReviews.length > 1 && <><button className="lz-review__arrow lz-review__arrow--prev" onClick={() => moveReview(-1)} aria-label="Previous review">‹</button><button className="lz-review__arrow lz-review__arrow--next" onClick={() => moveReview(1)} aria-label="Next review">›</button></>}
         </section>}
       </main>
 
