@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'motion/react';
-import hairPhoto from '../assets/haircolor.jpg';
-import makeupPhoto from '../assets/makeup.jpg';
-import bridalPhoto from '../assets/bridal.jpg';
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react';
+import hairPhoto from '../assets/salon-blowout.jpg';
+import haircutPhoto from '../assets/salon-haircut.jpg';
+import washPhoto from '../assets/salon-wash.jpg';
+import bridalPhoto from '../assets/salon-bridal.jpg';
+import finishPhoto from '../assets/salon-finish.jpg';
+import brandLogo from '../assets/logo.png';
 import './homepage-editorial.css';
 
 export interface HomePageReview {
@@ -21,22 +24,21 @@ interface HomePageProps {
 }
 
 const bookingUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
-const skinPhoto = '/facial-skin.jpg';
 const menuItems = [
   { label: 'Services', href: '#services' },
   { label: 'The lounge', href: '#lounge' },
-  { label: 'Visit', href: '#visit' },
+  { label: 'Find us', href: '#visit' },
 ];
 const services = [
-  { name: 'Hair', detail: 'Cut · colour · care', image: hairPhoto, alt: 'Hair colour service in progress' },
-  { name: 'Skin & body', detail: 'Facials · massage', image: skinPhoto, alt: 'A facial skin treatment' },
-  { name: 'Makeup', detail: 'Bridal · occasion', image: makeupPhoto, alt: 'Makeup being applied at the salon' },
-  { name: 'Bridal', detail: 'Hair · makeup · nails', image: bridalPhoto, alt: 'A finished bridal hair and makeup look' },
+  { name: 'Hair', detail: 'Cut, colour and care', image: hairPhoto, alt: 'Stylist blow drying long dark hair' },
+  { name: 'Skin and body', detail: 'A softer kind of reset', image: washPhoto, alt: 'Guest relaxing at the salon wash basin' },
+  { name: 'Makeup', detail: 'For the days that matter', image: finishPhoto, alt: 'Finished blonde hairstyle in the salon' },
+  { name: 'Bridal', detail: 'Made for your moment', image: bridalPhoto, alt: 'Stylist finishing a delicate bridal updo' },
 ];
 
 function Wordmark({ inverse = false }: { inverse?: boolean }) {
   return <a className={`lz-wordmark${inverse ? ' lz-wordmark--inverse' : ''}`} href="#top" aria-label="Layali Al Zahra home">
-    <span>LAYALI AL ZAHRA</span><small>BEAUTY LOUNGE</small>
+    <img src={brandLogo} alt="Layali Al Zahra Beauty Salon" />
   </a>;
 }
 
@@ -47,13 +49,13 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
   setMenuOpen: (open: boolean) => void;
 }) {
   return <div className={`lz-panel-header${inverse ? ' lz-panel-header--inverse' : ''}`}>
-    <Wordmark inverse={inverse} />
+    <Wordmark />
     <nav className="lz-panel-nav" aria-label="Main navigation">
       {menuItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
       <button onClick={() => onNavigate('packages')}>Packages</button>
       <button onClick={() => onNavigate('offers')}>Offers</button>
     </nav>
-    <a className="lz-panel-book" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit <span aria-hidden="true">↗</span></a>
+    <a className="lz-panel-book" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit</a>
     <button className="lz-menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls={`lz-mobile-nav${inverse ? '-open' : ''}`}>
       {menuOpen ? 'Close' : 'Menu'}
     </button>
@@ -61,7 +63,7 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
       {menuItems.map((item) => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
       <button onClick={() => { onNavigate('packages'); setMenuOpen(false); }}>Packages</button>
       <button onClick={() => { onNavigate('offers'); setMenuOpen(false); }}>Offers</button>
-      <a href={bookingUrl} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Book a visit ↗</a>
+      <a href={bookingUrl} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Book a visit</a>
     </nav>}
   </div>;
 }
@@ -73,31 +75,31 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [featureActive, setFeatureActive] = useState(false);
   const [featureVisible, setFeatureVisible] = useState(false);
   const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
+  const [reviewIndex, setReviewIndex] = useState(0);
+  const [reviewPaused, setReviewPaused] = useState(false);
   const { scrollYProgress } = useScroll({ target: openingTrack, offset: ['start start', 'end end'] });
-  const sceneProgress = useTransform(scrollYProgress, (value) => (reducedMotion || disableInitialAnimations ? 0 : value));
-  const cardScale = useTransform(sceneProgress, [0, 0.78], [0.91, 0.99]);
-  const cardRotateY = useTransform(sceneProgress, [0, 0.62], [-4, 0]);
-  const cardRotateX = useTransform(sceneProgress, [0, 0.62], [2.1, 0]);
-  const cardLift = useTransform(sceneProgress, [0, 0.78], [14, 0]);
-  const cardRadius = useTransform(sceneProgress, [0, 0.78], [30, 16]);
-  const coverOpacity = useTransform(sceneProgress, [0, 0.27, 0.48], [1, 1, 0]);
-  const featureOpacity = useTransform(sceneProgress, [0.31, 0.5], [0, 1]);
-  const portraitOneY = useTransform(sceneProgress, [0.34, 0.68], [56, 0]);
-  const portraitTwoY = useTransform(sceneProgress, [0.34, 0.7], [82, 0]);
-  const portraitThreeY = useTransform(sceneProgress, [0.34, 0.72], [42, 0]);
+  const easedProgress = useSpring(scrollYProgress, { stiffness: 48, damping: 24, mass: 0.9 });
+  const sceneProgress = useTransform(easedProgress, (value) => (reducedMotion || disableInitialAnimations ? 0 : value));
+  const cardScale = useTransform(sceneProgress, [0, 0.8], [0.94, 1]);
+  const cardRotateY = useTransform(sceneProgress, [0, 0.6], [-2, 0]);
+  const cardRotateX = useTransform(sceneProgress, [0, 0.6], [1, 0]);
+  const cardLift = useTransform(sceneProgress, [0, 0.8], [9, 0]);
+  const cardRadius = useTransform(sceneProgress, [0, 0.8], [26, 14]);
+  const coverOpacity = useTransform(sceneProgress, [0, 0.29, 0.52], [1, 1, 0]);
+  const featureOpacity = useTransform(sceneProgress, [0.33, 0.53], [0, 1]);
+  const portraitOneY = useTransform(sceneProgress, [0.36, 0.7], [35, 0]);
+  const portraitTwoY = useTransform(sceneProgress, [0.36, 0.72], [54, 0]);
+  const portraitThreeY = useTransform(sceneProgress, [0.36, 0.74], [27, 0]);
 
-  useMotionValueEvent(scrollYProgress, 'change', (value) => {
+  useMotionValueEvent(easedProgress, 'change', (value) => {
     if (!reducedMotion && !disableInitialAnimations) {
-      setFeatureVisible(value > 0.31);
-      setFeatureActive(value > 0.47);
+      setFeatureVisible(value > 0.33);
+      setFeatureActive(value > 0.5);
     }
   });
 
   useEffect(() => {
-    if (reviews !== undefined) {
-      setPublicReviews(reviews);
-      return;
-    }
+    if (reviews !== undefined) { setPublicReviews(reviews); return; }
     let active = true;
     fetch('/api/published-google-reviews')
       .then((response) => response.json())
@@ -114,10 +116,19 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     return () => { active = false; };
   }, [reviews]);
 
-  const featuredReview = publicReviews?.find((review) => review.isPublished !== false && review.description.trim());
+  const visibleReviews = (publicReviews || []).filter((review) => review.isPublished !== false && review.description.trim());
+  useEffect(() => {
+    setReviewIndex(0);
+  }, [visibleReviews.length]);
+  useEffect(() => {
+    if (visibleReviews.length < 2 || reviewPaused || reducedMotion) return;
+    const timer = window.setInterval(() => setReviewIndex((index) => (index + 1) % visibleReviews.length), 7000);
+    return () => window.clearInterval(timer);
+  }, [visibleReviews.length, reviewPaused, reducedMotion]);
+  const featuredReview = visibleReviews[reviewIndex];
   const reviewText = featuredReview?.description.trim() || '';
-  const reviewExcerpt = reviewText.length > 170 ? `${reviewText.slice(0, 167).replace(/\s+\S*$/, '')}…` : reviewText;
-  const backgroundStyle = { '--lz-backdrop': `url(${bridalPhoto})` } as React.CSSProperties;
+  const reviewExcerpt = reviewText.length > 260 ? `${reviewText.slice(0, 257).replace(/\s+\S*$/, '')}…` : reviewText;
+  const backgroundStyle = { '--lz-backdrop': `url(${hairPhoto})` } as React.CSSProperties;
 
   return (
     <div className="layali-home-page" id="top" style={backgroundStyle}>
@@ -125,34 +136,32 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
         <div className="lz-opening-stage">
           <div className="lz-atmosphere" aria-hidden="true" />
           <div className="lz-atmosphere-word" aria-hidden="true">LAYALI AL ZAHRA</div>
-          <motion.article
-            className="lz-scene-card"
-            style={{ scale: cardScale, rotateY: cardRotateY, rotateX: cardRotateX, y: cardLift, borderRadius: cardRadius }}
-          >
+          <motion.article className="lz-scene-card" style={{ scale: cardScale, rotateY: cardRotateY, rotateX: cardRotateX, y: cardLift, borderRadius: cardRadius }}>
             <motion.section className="lz-cover" style={{ opacity: coverOpacity, visibility: featureActive ? 'hidden' : 'visible' }} aria-hidden={featureActive}>
-              <img className="lz-cover__photo" src={skinPhoto} alt="A guest receiving a facial skin treatment" fetchpriority="high" />
+              <img className="lz-cover__photo" src={hairPhoto} alt="Stylist creating a smooth blowout at Layali Al Zahra" fetchpriority="high" />
               <div className="lz-cover__shade" aria-hidden="true" />
               <PanelHeader onNavigate={onNavigate} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
               <div className="lz-cover__copy">
-                <h1>Beauty.<br />Personalized.</h1>
-                <a className="lz-cover__cta" href={bookingUrl} target="_blank" rel="noreferrer">Book your visit <span aria-hidden="true">↗</span></a>
+                <p className="lz-eyebrow">LAYALI AL ZAHRA, AL BARSHA</p>
+                <h1>A little time.<br />All yours.</h1>
+                <p className="lz-cover__intro">Come in as you are. Leave feeling like yourself.</p>
+                <a className="lz-cover__cta" href={bookingUrl} target="_blank" rel="noreferrer">Book your visit</a>
               </div>
-              <a className="lz-scroll-cue" href="#services"><span>Scroll to explore</span><i aria-hidden="true" /></a>
+              <a className="lz-scroll-cue" href="#services"><span>Discover the lounge</span><i aria-hidden="true" /></a>
             </motion.section>
 
             <motion.section className="lz-fit-panel" style={{ opacity: featureOpacity, visibility: featureVisible ? 'visible' : 'hidden' }} aria-hidden={!featureActive}>
               <PanelHeader onNavigate={onNavigate} inverse menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
               <div className="lz-fit-panel__body">
                 <div className="lz-fit-panel__copy">
-                  <p className="lz-eyebrow">BEAUTY, YOUR WAY</p>
-                  <h2>One size<br />doesn’t fit all.</h2>
-                  <a className="lz-fit-panel__cta" href="#services">Find your service <span aria-hidden="true">↗</span></a>
-                  <svg className="lz-wave" viewBox="0 0 500 52" preserveAspectRatio="none" aria-hidden="true"><path d="M0 28 C72 2 119 53 192 27 S316 3 374 29 453 45 500 20" /></svg>
+                  <p className="lz-eyebrow">MADE AROUND YOU</p>
+                  <h2>Good care.<br />Your way.</h2>
+                  <a className="lz-fit-panel__cta" href="#services">Explore our services</a>
                 </div>
                 <div className="lz-fit-panel__portraits" aria-label="Hair, skin and bridal services">
-                  <motion.figure style={{ y: portraitOneY }}><img src={hairPhoto} alt="Hair colour service" /><figcaption>Hair</figcaption></motion.figure>
-                  <motion.figure style={{ y: portraitTwoY }}><img src={makeupPhoto} alt="Makeup service" /><figcaption>Makeup</figcaption></motion.figure>
-                  <motion.figure style={{ y: portraitThreeY }}><img src={skinPhoto} alt="Skin treatment" /><figcaption>Skin</figcaption></motion.figure>
+                  <motion.figure style={{ y: portraitOneY }}><img src={haircutPhoto} alt="Haircut in progress" /><figcaption>Hair</figcaption></motion.figure>
+                  <motion.figure style={{ y: portraitTwoY }}><img src={finishPhoto} alt="Freshly styled blonde hair" /><figcaption>Style</figcaption></motion.figure>
+                  <motion.figure style={{ y: portraitThreeY }}><img src={bridalPhoto} alt="Bridal hair detail" /><figcaption>Bridal</figcaption></motion.figure>
                 </div>
               </div>
             </motion.section>
@@ -162,30 +171,42 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
 
       <main>
         <section className="lz-services" id="services">
-          <div className="lz-services__top"><p className="lz-eyebrow">A FEW OF OUR FAVOURITES</p><button onClick={() => onNavigate('services')}>View all services <span aria-hidden="true">↗</span></button></div>
+          <div className="lz-services__heading">
+            <div><p className="lz-eyebrow">THE GOOD PART</p><h2>Choose what feels right.</h2></div>
+            <button onClick={() => onNavigate('services')}>See all services</button>
+          </div>
           <div className="lz-services__grid">
-            {services.map((service) => <button className="lz-service-card" key={service.name} onClick={() => onNavigate('services')}>
-              <span className="lz-service-card__image"><img src={service.image} alt={service.alt} loading="lazy" /></span>
-              <span className="lz-service-card__caption"><strong>{service.name}</strong><small>{service.detail}</small><i aria-hidden="true">↗</i></span>
+            {services.map((service, index) => <button className={`lz-service-card lz-service-card--${index + 1}`} key={service.name} onClick={() => onNavigate('services')}>
+              <img src={service.image} alt={service.alt} loading="lazy" />
+              <span className="lz-service-card__shade" aria-hidden="true" />
+              <span className="lz-service-card__caption"><small>{service.detail}</small><strong>{service.name}</strong></span>
             </button>)}
           </div>
         </section>
 
-        {featuredReview && <section className="lz-review" aria-label="Guest review">
-          <span className="lz-review__rating">{'★'.repeat(Math.max(0, Math.min(5, featuredReview.rating ?? 5)))}</span>
-          <blockquote>“{reviewExcerpt}”</blockquote>
-          <p>{featuredReview.title}</p>
+        {featuredReview && <section className="lz-review" aria-label="Guest reviews" style={{ '--lz-review-image': `url(${washPhoto})` } as React.CSSProperties} onMouseEnter={() => setReviewPaused(true)} onMouseLeave={() => setReviewPaused(false)} onFocus={() => setReviewPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setReviewPaused(false); }}>
+          <div className="lz-review__scrim" aria-hidden="true" />
+          <div className="lz-review__content"><p className="lz-eyebrow">KIND WORDS FROM OUR GUESTS</p>
+            <AnimatePresence mode="wait">
+              <motion.div key={`${reviewIndex}-${featuredReview.title}`} className="lz-review__quote" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0, y: -8 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+                <span className="lz-review__rating" aria-label={`${featuredReview.rating ?? 5} out of 5 stars`}>{'★'.repeat(Math.max(0, Math.min(5, featuredReview.rating ?? 5)))}</span>
+                <blockquote>“{reviewExcerpt}”</blockquote>
+                <p className="lz-review__author">{featuredReview.title}</p>
+              </motion.div>
+            </AnimatePresence>
+            {visibleReviews.length > 1 && <div className="lz-review__controls" aria-label="Review controls"><button onClick={() => setReviewIndex((index) => (index - 1 + visibleReviews.length) % visibleReviews.length)} aria-label="Previous review">Previous</button><span>{String(reviewIndex + 1).padStart(2, '0')} / {String(visibleReviews.length).padStart(2, '0')}</span><button onClick={() => setReviewIndex((index) => (index + 1) % visibleReviews.length)} aria-label="Next review">Next</button></div>}
+          </div>
         </section>}
       </main>
 
       <footer className="lz-footer" id="visit">
-        <div className="lz-footer__top"><div><Wordmark inverse /><p>Beauty, without a formula.</p></div><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Book your visit <span aria-hidden="true">↗</span></a></div>
+        <div className="lz-footer__top"><div><Wordmark /><p>A beauty lounge in the heart of Al Barsha.</p></div><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Make an appointment</a></div>
         <div className="lz-footer__details" id="lounge">
-          <div><span>FIND US</span><a href="https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx" target="_blank" rel="noreferrer">Shop 1, Al Telal 11 · Al Barsha 1 · Dubai ↗</a></div>
-          <div><span>CALL</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
-          <div><span>HOURS</span><p>Daily, 10 am – 9 pm<br />Friday, 1 pm – 8:30 pm</p></div>
+          <div><span>VISIT</span><a href="https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx" target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Al Barsha 1, Dubai</a></div>
+          <div><span>GET IN TOUCH</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
+          <div><span>OPENING HOURS</span><p>Monday to Sunday, 10 am to 9 pm<br />Friday, 1 pm to 8:30 pm</p></div>
         </div>
-        <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} Layali Al Zahra Beauty Salon LLC</span><button onClick={() => onNavigate('contact')}>Contact <span aria-hidden="true">↗</span></button></div>
+        <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} Layali Al Zahra Beauty Salon LLC</span><button onClick={() => onNavigate('contact')}>Contact us</button></div>
       </footer>
     </div>
   );
