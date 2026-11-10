@@ -10,7 +10,7 @@
   --lz-rule: rgba(63, 51, 41, .19);
   --lz-wine: #765147;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: clip;
   background: var(--lz-paper);
   color: var(--lz-ink);
   font-family: Montserrat, Arial, sans-serif;
