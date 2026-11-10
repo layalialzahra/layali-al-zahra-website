@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { useEffect, useState } from 'react';
 import hairPhoto from '../assets/haircolor.jpg';
-import treatmentPhoto from '../assets/hairtreatement.jpg';
-import bridalPhoto from '../assets/bridal.jpg';
 import skinPhoto from '../assets/spa.jpg';
+import bridalPhoto from '../assets/bridal.jpg';
 import './homepage-editorial.css';
 
 export interface HomePageReview {
@@ -22,41 +20,21 @@ interface HomePageProps {
 }
 
 const bookingUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
-const navItems = [
-  { label: 'The salon', href: '#salon' },
-  { label: 'Services', href: '#services' },
-  { label: 'Visit us', href: '#visit' },
+const services = [
+  { name: 'Hair', descriptor: 'Cut · colour · care', image: hairPhoto, alt: 'Hair colour being applied in a salon' },
+  { name: 'Skin', descriptor: 'Facials · massage', image: skinPhoto, alt: 'A guest enjoying a facial treatment' },
+  { name: 'Occasion', descriptor: 'Bridal · makeup', image: bridalPhoto, alt: 'Bridal hair and makeup styling' },
 ];
 
-const rituals = [
-  { name: 'Hair', note: 'Cut · colour · care', image: hairPhoto, alt: 'Colour work in progress at the salon' },
-  { name: 'Skin', note: 'Facials · skin rituals', image: skinPhoto, alt: 'A facial and spa treatment' },
-  { name: 'Bridal', note: 'Hair · makeup · occasion', image: bridalPhoto, alt: 'Bridal hair and makeup styling' },
-  { name: 'Body', note: 'Massage · waxing · care', image: treatmentPhoto, alt: 'A hair treatment at the salon' },
-];
-
-function Brand({ compact = false }: { compact?: boolean }) {
-  return <a className={`lz-brand${compact ? ' lz-brand--compact' : ''}`} href="#top" aria-label="Layali Al Zahra, home">
-    <span><strong>LAYALI AL ZAHRA</strong><small>BEAUTY LOUNGE · DUBAI</small></span>
+function Brand() {
+  return <a className="lz-brand" href="#top" aria-label="Layali Al Zahra, home">
+    <img src="/logo.png" alt="Layali Al Zahra Beauty Salon" />
   </a>;
 }
 
-export default function HomePage({ onNavigate, reviews, disableInitialAnimations: _disableInitialAnimations = false }: HomePageProps) {
-  const openingRef = useRef<HTMLElement>(null);
-  const prefersReducedMotion = useReducedMotion();
-  const [isMobile, setIsMobile] = useState(false);
+export default function HomePage({ onNavigate, reviews, disableInitialAnimations = false }: HomePageProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedRitual, setSelectedRitual] = useState(0);
   const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
-  const reduceMotion = Boolean(prefersReducedMotion);
-
-  useEffect(() => {
-    const query = window.matchMedia('(max-width: 760px)');
-    const sync = () => setIsMobile(query.matches);
-    sync();
-    query.addEventListener('change', sync);
-    return () => query.removeEventListener('change', sync);
-  }, []);
 
   useEffect(() => {
     if (reviews !== undefined) {
@@ -79,138 +57,82 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     return () => { active = false; };
   }, [reviews]);
 
-  const { scrollYProgress } = useScroll({ target: openingRef, offset: ['start start', 'end end'] });
-  const pageTurn = useTransform(scrollYProgress, [0, 0.9], [0, reduceMotion ? 0 : isMobile ? -8 : -62]);
-  const pageLift = useTransform(scrollYProgress, [0, 0.9], [0, reduceMotion ? 0 : -36]);
-  const pageScale = useTransform(scrollYProgress, [0, 0.9], [1, reduceMotion ? 1 : 0.94]);
-  const pageTilt = useTransform(scrollYProgress, [0, 0.9], [0, reduceMotion ? 0 : 2.4]);
-  const selectedReview = publicReviews?.find((review) => review.isPublished !== false && review.description.trim());
-  const pageArtwork = { '--lz-atmosphere': `url(${skinPhoto})`, '--lz-booking-image': `url(${treatmentPhoto})` } as CSSProperties;
-
+  const featuredReview = publicReviews?.find((review) => review.isPublished !== false && review.description.trim());
+  const reviewText = featuredReview?.description.trim() || '';
+  const reviewExcerpt = reviewText.length > 205 ? `${reviewText.slice(0, 202).replace(/\s+\S*$/, '')}…` : reviewText;
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <div className="layali-home-page" id="top" style={pageArtwork}>
-      <section className="lz-opening-track" ref={openingRef} aria-label="Layali Al Zahra Beauty Lounge">
-        <div className="lz-opening-stage">
-          <div className="lz-opening-atmosphere" aria-hidden="true" />
-          <div className="lz-under-page" aria-hidden="true">
-            <div className="lz-under-page__copy">
-              <span>LAYALI AL ZAHRA · AL BARSHA 1</span>
-              <p>Layali<br />Al Zahra.</p>
-              <small>HAIR · SKIN · NAILS · BODY</small>
-            </div>
-            <img src={treatmentPhoto} alt="" />
-          </div>
-          <motion.article
-            className="lz-cover-page"
-            style={{ rotateY: pageTurn, rotateX: pageTilt, y: pageLift, scale: pageScale }}
-          >
-            <div className="lz-cover-page__top">
-              <Brand />
-              <nav className="lz-desktop-nav" aria-label="Main navigation">
-                {navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
-                <button className="lz-nav-text" onClick={() => onNavigate('packages')}>Packages</button>
-                <button className="lz-nav-text" onClick={() => onNavigate('offers')}>Offers</button>
-              </nav>
-              <a className="lz-book lz-book--top" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit</a>
-              <button className="lz-menu-toggle" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="lz-mobile-nav">
-                {menuOpen ? 'Close' : 'Menu'}
-              </button>
-            </div>
-            {menuOpen && <nav className="lz-mobile-nav" id="lz-mobile-nav" aria-label="Mobile navigation">
-              {navItems.map((item) => <a key={item.href} href={item.href} onClick={closeMenu}>{item.label}</a>)}
-              <button onClick={() => { onNavigate('packages'); closeMenu(); }}>Packages</button>
-              <button onClick={() => { onNavigate('offers'); closeMenu(); }}>Offers</button>
-              <a href={bookingUrl} target="_blank" rel="noreferrer" onClick={closeMenu}>Book a visit</a>
-            </nav>}
-            <div className="lz-cover-page__body">
-              <div className="lz-cover-page__message">
-                <p className="lz-kicker">A BEAUTY LOUNGE IN AL BARSHA</p>
-                <h1>A beauty lounge<br />in <em>Al Barsha.</em></h1>
-                <p className="lz-cover-page__subline">Hair · skin · nails · body</p>
-                <a className="lz-book" href={bookingUrl} target="_blank" rel="noreferrer">Book your appointment <span aria-hidden="true">↗</span></a>
-                <span className="lz-cover-page__address">AL TELAL 11 · AL BARSHA 1 · DUBAI</span>
-              </div>
-              <div className="lz-cover-page__portrait">
-                <img src={bridalPhoto} alt="A bride with her finished hair and makeup look" fetchPriority="high" />
-              </div>
-            </div>
-            <div className="lz-cover-page__bottom"><span>EST. IN DUBAI</span><span>SCROLL TO EXPLORE</span><span>25°06′24.4″N 55°11′55.8″E</span></div>
-          </motion.article>
-        </div>
-      </section>
+    <div className={`layali-home-page${disableInitialAnimations ? ' is-still' : ''}`} id="top">
+      <header className="lz-header">
+        <Brand />
+        <nav className="lz-nav" aria-label="Main navigation">
+          <a href="#services">Services</a>
+          <a href="#salon">The salon</a>
+          <a href="#visit">Visit us</a>
+          <button onClick={() => onNavigate('packages')}>Packages</button>
+          <button onClick={() => onNavigate('offers')}>Offers</button>
+        </nav>
+        <a className="lz-book lz-book--header" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit <span aria-hidden="true">↗</span></a>
+        <button className="lz-menu-toggle" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="lz-mobile-nav">
+          {menuOpen ? 'Close' : 'Menu'}
+        </button>
+        {menuOpen && <nav className="lz-mobile-nav" id="lz-mobile-nav" aria-label="Mobile navigation">
+          <a href="#services" onClick={closeMenu}>Services</a>
+          <a href="#salon" onClick={closeMenu}>The salon</a>
+          <a href="#visit" onClick={closeMenu}>Visit us</a>
+          <button onClick={() => { onNavigate('packages'); closeMenu(); }}>Packages</button>
+          <button onClick={() => { onNavigate('offers'); closeMenu(); }}>Offers</button>
+          <a href={bookingUrl} target="_blank" rel="noreferrer" onClick={closeMenu}>Book a visit ↗</a>
+        </nav>}
+      </header>
 
-      <section className="lz-intro lz-section" id="salon">
-        <div className="lz-intro__label"><span>01 / THE SALON</span><span>AL BARSHA 1, DUBAI</span></div>
-        <div className="lz-intro__content">
-          <h2>Come in.<br /><em>Settle in.</em></h2>
-          <div className="lz-intro__aside">
-            <p>A neighbourhood beauty lounge for the rituals that make a day feel like your own.</p>
-            <a className="lz-underlined-link" href="#visit">Find us in Al Barsha <span aria-hidden="true">↗</span></a>
+      <main>
+        <section className="lz-hero" aria-label="Layali Al Zahra Beauty Lounge">
+          <div className="lz-hero__image">
+            <img src={hairPhoto} alt="A stylist applying colour to a guest's hair" decoding="async" />
+            <span className="lz-hero__image-index" aria-hidden="true">LAYALI&nbsp; / &nbsp;01</span>
           </div>
-        </div>
-        <div className="lz-intro__rule" />
-      </section>
-
-      <section className="lz-rituals lz-section" id="services">
-        <div className="lz-section-heading">
-          <span className="lz-kicker">02 / THE RITUALS</span>
-          <h2>Care, from<br /><em>every angle.</em></h2>
-        </div>
-        <div className="lz-rituals__layout">
-          <div className="lz-ritual-list" role="tablist" aria-label="Explore salon services">
-            {rituals.map((ritual, index) => (
-              <button className={`lz-ritual-row${index === selectedRitual ? ' is-selected' : ''}`} key={ritual.name} onClick={() => setSelectedRitual(index)} role="tab" aria-selected={index === selectedRitual} aria-controls="lz-ritual-image">
-                <span className="lz-ritual-row__number">0{index + 1}</span>
-                <span className="lz-ritual-row__name">{ritual.name}</span>
-                <span className="lz-ritual-row__note">{ritual.note}</span>
-                <span className="lz-ritual-row__line" aria-hidden="true" />
-              </button>
-            ))}
-            <button className="lz-underlined-link lz-all-services" onClick={() => onNavigate('services')}>Explore all services <span aria-hidden="true">↗</span></button>
+          <div className="lz-hero__copy">
+            <p className="lz-eyebrow">LAYALI AL ZAHRA · BEAUTY LOUNGE</p>
+            <h1>Beauty.<br /><em>Made personal.</em></h1>
+            <p className="lz-hero__services">Hair, skin, nails &amp; body care.</p>
+            <a className="lz-book" href={bookingUrl} target="_blank" rel="noreferrer">Reserve your visit <span aria-hidden="true">↗</span></a>
           </div>
-          <div className="lz-ritual-image-wrap" id="lz-ritual-image" role="tabpanel">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.figure
-                className="lz-ritual-image"
-                key={rituals[selectedRitual].name}
-                initial={{ opacity: 0, rotateY: reduceMotion ? 0 : 15, x: reduceMotion ? 0 : 18 }}
-                animate={{ opacity: 1, rotateY: 0, x: 0 }}
-                exit={{ opacity: 0, rotateY: reduceMotion ? 0 : -10, x: reduceMotion ? 0 : -8 }}
-                transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 0.68, 0, 1] }}
-              >
-                <img src={rituals[selectedRitual].image} alt={rituals[selectedRitual].alt} loading="lazy" />
-                <figcaption><span>LAYALI AL ZAHRA</span><span>{rituals[selectedRitual].name.toUpperCase()}</span></figcaption>
-              </motion.figure>
-            </AnimatePresence>
+          <a className="lz-hero__scroll" href="#services"><span>Discover the salon</span><i aria-hidden="true" /></a>
+        </section>
+
+        <section className="lz-services" id="services">
+          <div className="lz-section-top"><p className="lz-eyebrow">THE LAYALI EXPERIENCE</p><button onClick={() => onNavigate('services')}>All services <span aria-hidden="true">↗</span></button></div>
+          <div className="lz-services__heading"><h2>Find your<br /><em>feel-good.</em></h2><p>Considered care, from the first hello to the final touch.</p></div>
+          <div className="lz-service-grid">
+            {services.map((service, index) => <button className="lz-service-card" key={service.name} onClick={() => onNavigate('services')}>
+              <span className="lz-service-card__image"><img src={service.image} alt={service.alt} loading="lazy" /></span>
+              <span className="lz-service-card__meta"><span><strong>{service.name}</strong><small>{service.descriptor}</small></span><i aria-hidden="true">↗</i></span>
+            </button>)}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="lz-booking-band">
-        <div className="lz-booking-band__image" aria-hidden="true" />
-        <div className="lz-booking-band__content">
-          <span className="lz-kicker">A LITTLE TIME, ALL YOUR OWN</span>
-          <h2>Your chair<br /><em>is waiting.</em></h2>
-          <a className="lz-book lz-book--light" href={bookingUrl} target="_blank" rel="noreferrer">Choose a service <span aria-hidden="true">↗</span></a>
-        </div>
-      </section>
+        <section className="lz-salon" id="salon">
+          <div className="lz-salon__picture"><img src={skinPhoto} alt="A calming facial treatment at the lounge" loading="lazy" /></div>
+          <div className="lz-salon__copy"><p className="lz-eyebrow">A PLACE TO PAUSE</p><h2>A little space<br />to feel <em>like you.</em></h2><a className="lz-text-link" href="#visit">Come find us <span aria-hidden="true">↗</span></a></div>
+        </section>
 
-      {selectedReview && <section className="lz-review lz-section">
-        <span className="lz-kicker">A NOTE FROM A GUEST</span>
-        <blockquote>“{selectedReview.description}”</blockquote>
-        <p className="lz-review__byline">{selectedReview.title}<span aria-label={`${selectedReview.rating || 5} out of 5 stars`}> · {'★'.repeat(Math.max(0, Math.min(5, selectedReview.rating ?? 5)))}</span></p>
-      </section>}
+        {featuredReview && <section className="lz-review" aria-label="Guest review">
+          <div className="lz-review__stars" aria-label={`${featuredReview.rating || 5} out of 5 stars`}>{'★'.repeat(Math.max(0, Math.min(5, featuredReview.rating ?? 5)))}</div>
+          <blockquote>“{reviewExcerpt}”</blockquote>
+          <p>{featuredReview.title}</p>
+        </section>}
+      </main>
 
       <footer className="lz-footer" id="visit">
-        <div className="lz-footer__top">
-          <div className="lz-footer__brand"><Brand compact /><p>Beauty lounge · Al Barsha 1, Dubai</p></div>
-          <div><span className="lz-footer__label">FIND US</span><a href="https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx" target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Al Barsha 1, Dubai <span aria-hidden="true">↗</span></a></div>
-          <div><span className="lz-footer__label">CALL US</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
-          <div><span className="lz-footer__label">OPEN DAILY</span><p>10:00 am – 9:00 pm<br />Friday · 1:00 pm – 8:30 pm</p></div>
+        <div className="lz-footer__main"><Brand /><div className="lz-footer__message"><p>We’ll save you a seat.</p><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Book your visit <span aria-hidden="true">↗</span></a></div></div>
+        <div className="lz-footer__details">
+          <div><span>FIND US</span><a href="https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx" target="_blank" rel="noreferrer">Shop 1, Al Telal 11, Al Barsha 1, Dubai ↗</a></div>
+          <div><span>CALL</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
+          <div><span>HOURS</span><p>Daily, 10 am – 9 pm<br />Friday, 1 pm – 8:30 pm</p></div>
         </div>
-        <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} LAYALI AL ZAHRA BEAUTY SALON LLC</span><span>AL BARSHA 1 · DUBAI</span><a href={bookingUrl} target="_blank" rel="noreferrer">BOOK AN APPOINTMENT ↗</a></div>
+        <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} Layali Al Zahra Beauty Salon LLC</span><span>Dubai</span></div>
       </footer>
     </div>
   );
