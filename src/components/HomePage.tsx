@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react';
+import heroPhoto from '../assets/hero-layali.jpg';
 import hairPhoto from '../assets/salon-blowout.jpg';
 import haircutPhoto from '../assets/salon-haircut.jpg';
 import washPhoto from '../assets/salon-wash.jpg';
 import bridalPhoto from '../assets/salon-bridal.jpg';
 import finishPhoto from '../assets/salon-finish.jpg';
-import brandLogo from '../assets/logo.png';
+import makeupPhoto from '../assets/makeup.jpg';
+import brandLogo from '../assets/logo-transparent.png';
+import brandLogoLight from '../assets/logo-transparent-light.png';
 import './homepage-editorial.css';
 
 export interface HomePageReview {
@@ -32,13 +35,23 @@ const menuItems = [
 const services = [
   { name: 'Hair', detail: 'Cut, colour and care', image: hairPhoto, alt: 'Stylist blow drying long dark hair' },
   { name: 'Skin and body', detail: 'A softer kind of reset', image: washPhoto, alt: 'Guest relaxing at the salon wash basin' },
-  { name: 'Makeup', detail: 'For the days that matter', image: finishPhoto, alt: 'Finished blonde hairstyle in the salon' },
+  { name: 'Makeup', detail: 'For the days that matter', image: makeupPhoto, alt: 'Makeup artist applying blush at the salon' },
   { name: 'Bridal', detail: 'Made for your moment', image: bridalPhoto, alt: 'Stylist finishing a delicate bridal updo' },
 ];
 
+function selectReviewExcerpt(text: string) {
+  const normalized = text.trim().replace(/\s+/g, ' ');
+  if (!normalized) return '';
+  const sentences = normalized.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map((part) => part.trim()) || [];
+  const excerpt = sentences.find((part) => part.length >= 34 && part.length <= 100) || sentences.find((part) => part.length > 18 && part.length <= 100);
+  if (excerpt) return excerpt;
+  if (normalized.length <= 100) return normalized;
+  return `${normalized.slice(0, 97).replace(/\s+\S*$/, '')}…`;
+}
+
 function Wordmark({ inverse = false }: { inverse?: boolean }) {
   return <a className={`lz-wordmark${inverse ? ' lz-wordmark--inverse' : ''}`} href="#top" aria-label="Layali Al Zahra home">
-    <img src={brandLogo} alt="Layali Al Zahra Beauty Salon" />
+    <img src={inverse ? brandLogoLight : brandLogo} alt="Layali Al Zahra Beauty Salon" />
   </a>;
 }
 
@@ -49,15 +62,16 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
   setMenuOpen: (open: boolean) => void;
 }) {
   return <div className={`lz-panel-header${inverse ? ' lz-panel-header--inverse' : ''}`}>
-    <Wordmark />
+    <Wordmark inverse={inverse} />
     <nav className="lz-panel-nav" aria-label="Main navigation">
       {menuItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
       <button onClick={() => onNavigate('packages')}>Packages</button>
       <button onClick={() => onNavigate('offers')}>Offers</button>
     </nav>
     <a className="lz-panel-book" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit</a>
-    <button className="lz-menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls={`lz-mobile-nav${inverse ? '-open' : ''}`}>
-      {menuOpen ? 'Close' : 'Menu'}
+    <button className="lz-menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls={`lz-mobile-nav${inverse ? '-open' : ''}`}>
+      <span className={`lz-menu-glyph${menuOpen ? ' lz-menu-glyph--open' : ''}`} aria-hidden="true"><i /><i /></span>
+      <span>{menuOpen ? 'Close' : 'Menu'}</span>
     </button>
     {menuOpen && <nav className="lz-mobile-nav" id={`lz-mobile-nav${inverse ? '-open' : ''}`} aria-label="Mobile navigation">
       {menuItems.map((item) => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
@@ -78,23 +92,24 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [reviewIndex, setReviewIndex] = useState(0);
   const [reviewPaused, setReviewPaused] = useState(false);
   const { scrollYProgress } = useScroll({ target: openingTrack, offset: ['start start', 'end end'] });
-  const easedProgress = useSpring(scrollYProgress, { stiffness: 48, damping: 24, mass: 0.9 });
+  const easedProgress = useSpring(scrollYProgress, { stiffness: 32, damping: 30, mass: 1.05 });
   const sceneProgress = useTransform(easedProgress, (value) => (reducedMotion || disableInitialAnimations ? 0 : value));
-  const cardScale = useTransform(sceneProgress, [0, 0.8], [0.94, 1]);
-  const cardRotateY = useTransform(sceneProgress, [0, 0.6], [-2, 0]);
-  const cardRotateX = useTransform(sceneProgress, [0, 0.6], [1, 0]);
-  const cardLift = useTransform(sceneProgress, [0, 0.8], [9, 0]);
-  const cardRadius = useTransform(sceneProgress, [0, 0.8], [26, 14]);
-  const coverOpacity = useTransform(sceneProgress, [0, 0.29, 0.52], [1, 1, 0]);
-  const featureOpacity = useTransform(sceneProgress, [0.33, 0.53], [0, 1]);
-  const portraitOneY = useTransform(sceneProgress, [0.36, 0.7], [35, 0]);
-  const portraitTwoY = useTransform(sceneProgress, [0.36, 0.72], [54, 0]);
-  const portraitThreeY = useTransform(sceneProgress, [0.36, 0.74], [27, 0]);
+  const cardScale = useTransform(sceneProgress, [0, 0.9], [0.975, 1]);
+  const cardLift = useTransform(sceneProgress, [0, 0.9], [5, 0]);
+  const cardRadius = useTransform(sceneProgress, [0, 0.9], [24, 14]);
+  const coverOpacity = useTransform(sceneProgress, [0, 0.42, 0.72], [1, 1, 0]);
+  const coverPhotoScale = useTransform(sceneProgress, [0, 0.72], [1, 1.055]);
+  const coverCopyY = useTransform(sceneProgress, [0, 0.68], [0, -18]);
+  const featureOpacity = useTransform(sceneProgress, [0.46, 0.72], [0, 1]);
+  const featureY = useTransform(sceneProgress, [0.44, 0.73], [24, 0]);
+  const portraitOneY = useTransform(sceneProgress, [0.47, 0.74], [24, 0]);
+  const portraitTwoY = useTransform(sceneProgress, [0.47, 0.76], [38, 0]);
+  const portraitThreeY = useTransform(sceneProgress, [0.47, 0.78], [18, 0]);
 
   useMotionValueEvent(easedProgress, 'change', (value) => {
     if (!reducedMotion && !disableInitialAnimations) {
-      setFeatureVisible(value > 0.33);
-      setFeatureActive(value > 0.5);
+      setFeatureVisible(value > 0.45);
+      setFeatureActive(value > 0.68);
     }
   });
 
@@ -126,9 +141,8 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     return () => window.clearInterval(timer);
   }, [visibleReviews.length, reviewPaused, reducedMotion]);
   const featuredReview = visibleReviews[reviewIndex];
-  const reviewText = featuredReview?.description.trim() || '';
-  const reviewExcerpt = reviewText.length > 260 ? `${reviewText.slice(0, 257).replace(/\s+\S*$/, '')}…` : reviewText;
-  const backgroundStyle = { '--lz-backdrop': `url(${hairPhoto})` } as React.CSSProperties;
+  const reviewExcerpt = selectReviewExcerpt(featuredReview?.description || '');
+  const backgroundStyle = { '--lz-backdrop': `url(${heroPhoto})` } as React.CSSProperties;
 
   return (
     <div className="layali-home-page" id="top" style={backgroundStyle}>
@@ -136,21 +150,21 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
         <div className="lz-opening-stage">
           <div className="lz-atmosphere" aria-hidden="true" />
           <div className="lz-atmosphere-word" aria-hidden="true">LAYALI AL ZAHRA</div>
-          <motion.article className="lz-scene-card" style={{ scale: cardScale, rotateY: cardRotateY, rotateX: cardRotateX, y: cardLift, borderRadius: cardRadius }}>
+          <motion.article className="lz-scene-card" style={{ scale: cardScale, y: cardLift, borderRadius: cardRadius }}>
             <motion.section className="lz-cover" style={{ opacity: coverOpacity, visibility: featureActive ? 'hidden' : 'visible' }} aria-hidden={featureActive}>
-              <img className="lz-cover__photo" src={hairPhoto} alt="Stylist creating a smooth blowout at Layali Al Zahra" fetchpriority="high" />
+              <motion.img className="lz-cover__photo" src={heroPhoto} alt="A guest enjoying a quiet moment in a warm, softly lit salon" fetchpriority="high" style={{ scale: coverPhotoScale }} />
               <div className="lz-cover__shade" aria-hidden="true" />
               <PanelHeader onNavigate={onNavigate} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-              <div className="lz-cover__copy">
+              <motion.div className="lz-cover__copy" style={{ y: coverCopyY }}>
                 <p className="lz-eyebrow">LAYALI AL ZAHRA, AL BARSHA</p>
                 <h1>A little time.<br />All yours.</h1>
                 <p className="lz-cover__intro">Come in as you are. Leave feeling like yourself.</p>
                 <a className="lz-cover__cta" href={bookingUrl} target="_blank" rel="noreferrer">Book your visit</a>
-              </div>
+              </motion.div>
               <a className="lz-scroll-cue" href="#services"><span>Discover the lounge</span><i aria-hidden="true" /></a>
             </motion.section>
 
-            <motion.section className="lz-fit-panel" style={{ opacity: featureOpacity, visibility: featureVisible ? 'visible' : 'hidden' }} aria-hidden={!featureActive}>
+            <motion.section className="lz-fit-panel" style={{ opacity: featureOpacity, y: featureY, visibility: featureVisible ? 'visible' : 'hidden' }} aria-hidden={!featureActive}>
               <PanelHeader onNavigate={onNavigate} inverse menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
               <div className="lz-fit-panel__body">
                 <div className="lz-fit-panel__copy">
@@ -176,11 +190,11 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
             <button onClick={() => onNavigate('services')}>See all services</button>
           </div>
           <div className="lz-services__grid">
-            {services.map((service, index) => <button className={`lz-service-card lz-service-card--${index + 1}`} key={service.name} onClick={() => onNavigate('services')}>
+            {services.map((service, index) => <motion.button className={`lz-service-card lz-service-card--${index + 1}`} key={service.name} onClick={() => onNavigate('services')} initial={reducedMotion ? false : { opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.22 }} transition={{ duration: 0.72, delay: reducedMotion ? 0 : index * 0.16, ease: [0.22, 1, 0.36, 1] }}>
               <img src={service.image} alt={service.alt} loading="lazy" />
               <span className="lz-service-card__shade" aria-hidden="true" />
               <span className="lz-service-card__caption"><small>{service.detail}</small><strong>{service.name}</strong></span>
-            </button>)}
+            </motion.button>)}
           </div>
         </section>
 
@@ -200,7 +214,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
       </main>
 
       <footer className="lz-footer" id="visit">
-        <div className="lz-footer__top"><div><Wordmark /><p>A beauty lounge in the heart of Al Barsha.</p></div><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Make an appointment</a></div>
+        <div className="lz-footer__top"><div><a className="lz-footer__name" href="#top">Layali Al Zahra<small>Beauty Salon LLC</small></a><p>A beauty lounge in the heart of Al Barsha.</p></div><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Make an appointment</a></div>
         <div className="lz-footer__details" id="lounge">
           <div><span>VISIT</span><a href="https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx" target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Al Barsha 1, Dubai</a></div>
           <div><span>GET IN TOUCH</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
