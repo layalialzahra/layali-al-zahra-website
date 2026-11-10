@@ -69,17 +69,22 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
       <button onClick={() => onNavigate('offers')}>Offers</button>
     </nav>
     <a className="lz-panel-book" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit</a>
-    <button className="lz-menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls={`lz-mobile-nav${inverse ? '-open' : ''}`}>
-      <span>{menuOpen ? 'Close' : 'Index'}</span>
-      <i aria-hidden="true" />
+    <button className={`lz-menu-toggle${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls={`lz-mobile-nav${inverse ? '-open' : ''}`}>
+      <svg viewBox="0 0 44 34" aria-hidden="true" focusable="false">
+        <defs><linearGradient id={`lz-ribbon${inverse ? '-light' : ''}`} x1="0" x2="1"><stop stopColor="#245a86" /><stop offset="1" stopColor="#c63f78" /></linearGradient></defs>
+        <path d="M4 10C12 2 23 5 40 13" stroke={`url(#lz-ribbon${inverse ? '-light' : ''})`} />
+        <path d="M4 18C14 26 26 25 40 18" stroke={`url(#lz-ribbon${inverse ? '-light' : ''})`} />
+        <path d="M10 27C19 31 29 29 37 24" stroke={`url(#lz-ribbon${inverse ? '-light' : ''})`} />
+      </svg>
     </button>
-    {menuOpen && <nav className="lz-mobile-nav" id={`lz-mobile-nav${inverse ? '-open' : ''}`} aria-label="Mobile navigation">
-      <p className="lz-mobile-nav__kicker">A visit at Layali</p>
+    <AnimatePresence>
+    {menuOpen && <motion.nav className="lz-mobile-nav" id={`lz-mobile-nav${inverse ? '-open' : ''}`} aria-label="Mobile navigation" initial={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }} animate={{ opacity: 1, clipPath: 'inset(0 0 0% 0)' }} exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }} transition={{ duration: 0.52, ease: [0.7, 0, 0.2, 1] }}>
       {menuItems.map((item) => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
       <button onClick={() => { onNavigate('packages'); setMenuOpen(false); }}>Packages</button>
       <button onClick={() => { onNavigate('offers'); setMenuOpen(false); }}>Offers</button>
       <a href={bookingUrl} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Book a visit</a>
-    </nav>}
+    </motion.nav>}
+    </AnimatePresence>
   </div>;
 }
 
@@ -157,10 +162,6 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     setReviewDirection(direction);
     setReviewIndex((index) => (index + direction + visibleReviews.length) % visibleReviews.length);
   };
-  const moveService = (direction: number) => {
-    setServiceDirection(direction);
-    setServiceIndex((index) => (index + direction + services.length) % services.length);
-  };
   const featuredReview = visibleReviews[reviewIndex];
   const reviewExcerpt = selectReviewExcerpt(featuredReview?.description || '');
   const backgroundStyle = { '--lz-backdrop': `url(${heroPhoto})` } as React.CSSProperties;
@@ -210,17 +211,21 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
             <div><p className="lz-eyebrow">THE GOOD PART</p><h2>Choose what feels right.</h2></div>
             <button onClick={() => onNavigate('services')}>See all services</button>
           </div>
-          <div className="lz-services__showcase" aria-roledescription="carousel" aria-label="Service categories" onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }}>
-            <AnimatePresence initial={false} mode="wait" custom={serviceDirection}>
-              <motion.button className="lz-service-slide" key={services[serviceIndex].name} custom={serviceDirection} onClick={() => onNavigate('services')} aria-label={`Explore ${services[serviceIndex].name} services`} initial={reducedMotion ? false : { opacity: 0, x: serviceDirection * 44 }} animate={{ opacity: 1, x: 0 }} exit={reducedMotion ? undefined : { opacity: 0, x: serviceDirection * -34 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
-                <img src={services[serviceIndex].image} alt={services[serviceIndex].alt} loading="lazy" />
-                <span className="lz-service-card__shade" aria-hidden="true" />
-                <span className="lz-service-card__caption"><small>{services[serviceIndex].detail}</small><strong>{services[serviceIndex].name}</strong></span>
-              </motion.button>
-            </AnimatePresence>
-            <button className="lz-service-arrow lz-service-arrow--prev" onClick={() => moveService(-1)} aria-label="Previous service category">‹</button>
-            <button className="lz-service-arrow lz-service-arrow--next" onClick={() => moveService(1)} aria-label="Next service category">›</button>
-            <div className="lz-service-index" aria-live="polite">{services.map((service, index) => <button key={service.name} className={index === serviceIndex ? 'is-active' : ''} onClick={() => { setServiceDirection(index > serviceIndex ? 1 : -1); setServiceIndex(index); }} aria-label={`Show ${service.name}`} aria-current={index === serviceIndex ? 'true' : undefined} />)}</div>
+          <div className="lz-services__catalogue" aria-label="Service categories" onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }}>
+            <div className="lz-services__categories" role="group" aria-label="Choose a service category">
+              {services.map((service, index) => <button className={`lz-services__category${index === serviceIndex ? ' is-active' : ''}`} key={service.name} id={`lz-service-tab-${index}`} aria-pressed={index === serviceIndex} aria-controls="lz-service-image" onClick={() => { setServiceDirection(index > serviceIndex ? 1 : -1); setServiceIndex(index); }}>
+                <span>{service.name}</span><i aria-hidden="true" />
+              </button>)}
+            </div>
+            <div className="lz-services__visual" id="lz-service-image" role="tabpanel" aria-labelledby={`lz-service-tab-${serviceIndex}`}>
+              <AnimatePresence initial={false} mode="wait" custom={serviceDirection}>
+                <motion.div className="lz-service-slide" key={services[serviceIndex].name} custom={serviceDirection} initial={reducedMotion ? false : { opacity: 0, clipPath: serviceDirection > 0 ? 'inset(0 0 0 16%)' : 'inset(0 16% 0 0)' }} animate={{ opacity: 1, clipPath: 'inset(0 0 0 0)' }} exit={reducedMotion ? undefined : { opacity: 0, clipPath: serviceDirection > 0 ? 'inset(0 16% 0 0)' : 'inset(0 0 0 16%)' }} transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}>
+                  <img src={services[serviceIndex].image} alt={services[serviceIndex].alt} loading="lazy" />
+                  <span className="lz-service-card__shade" aria-hidden="true" />
+                  <span className="lz-service-card__caption"><small>{services[serviceIndex].detail}</small></span>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </section>
 
