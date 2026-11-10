@@ -1,381 +1,218 @@
-import React, { useState, useEffect } from 'react';
-  import { motion, AnimatePresence } from 'motion/react';
-  import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-  import { Button } from './ui/button';
-  import { legacyHomepageReviews as reviewsData } from '../data/legacy-reviews.js';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import hairPhoto from '../assets/haircolor.jpg';
+import treatmentPhoto from '../assets/hairtreatement.jpg';
+import bridalPhoto from '../assets/bridal.jpg';
+import skinPhoto from '../assets/spa.jpg';
+import './homepage-editorial.css';
 
-  const servicesData = [
-    {
-      title: 'Hair Cuts',
-      description: 'Precision cuts tailored to your style and face shape',
-      image: '/hair-cuts.webp',
-    },
-    {
-      title: 'Hair Treatments',
-      description: 'Keratin, Botox, protein and luxury spa treatments for healthy hair',
-      image: '/hair-treatments.webp',
-    },
-    {
-      title: 'Hair Extensions',
-      description: 'Clip, tape and stitch extensions for added length and volume',
-      image: 'https://images.unsplash.com/photo-1634449571017-5fecfd26ad76?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
-    },
-    {
-      title: 'Color & Highlights',
-      description: 'Balayage, ombre, highlights and full color services by expert stylists',
-      image: 'https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=774',
-    },
-    {
-      title: 'Hand & Foot Care',
-      description: 'Classic, French, paraffin and luxury spa manicure and pedicure',
-      image: '/hand-foot-care.webp',
-    },
-    {
-      title: 'Gelish & Gel Nails',
-      description: 'Long-lasting gelish, gel extensions, BIAB and Russian manicure',
-      image: '/gelish.webp',
-    },
-    {
-      title: 'Acrylic & Nail Art',
-      description: 'Full sets, refills and creative nail art in acrylic and soft gel',
-      image: '/acrylic-nails.webp',
-    },
-    {
-      title: 'Eyelash & Brow',
-      description: 'Lash extensions, lifting, lamination, threading and tinting',
-      image: '/eyelash-brow.webp',
-    },
-    {
-      title: 'Hair Removal',
-      description: 'Halawa, waxing and bleaching for silky smooth skin',
-      image: '/hair-removal.webp',
-    },
-    {
-      title: 'Facial & Skin',
-      description: 'Hydra facials, Skyendor, Bioesthe and signature glow treatments',
-      image: '/facial-skin.webp',
-    },
-    {
-      title: 'Massage Services',
-      description: 'Head, back, foot, body and Ayurvedic massages for total relaxation',
-      image: '/massage-services.webp',
-    },
-    {
-      title: 'Makeup Services',
-      description: 'Day, party, evening and bridal makeup by professional artists',
-      image: 'https://images.unsplash.com/photo-1614006659838-d4ca51cbd117?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=2670',
-    },
-    {
-      title: 'Henna & Mehandi',
-      description: 'Traditional and Eid henna designs for hands and hair',
-      image: '/henna-mehandi.webp',
-    },
-    {
-      title: 'Little Ladies',
-      description: 'Gentle, fun beauty services specially designed for girls under 10',
-      image: '/little-ladies.webp',
-    },
-  ];
+export interface HomePageReview {
+  title: string;
+  initials: string;
+  description: string;
+  image?: string;
+  isPublished?: boolean;
+  rating?: number | null;
+}
 
-  const packagesData = [
-    {
-      title: 'Beauty Package – Bud',
-      description: 'A fresh introduction to our signature beauty treatments',
-      validUntil: 'AED 229',
-      image: '/beauty-package-bud.webp',
-    },
-    {
-      title: 'Beauty Package – Blossom',
-      description: 'Step up your glow with this popular mid-tier package',
-      validUntil: 'AED 279',
-      image: '/beauty-package-blossom.webp',
-    },
-    {
-      title: 'Beauty Package – Petal',
-      description: 'A curated selection of our most-loved beauty services',
-      validUntil: 'AED 319',
-      image: '/beauty-package-petal.webp',
-    },
-    {
-      title: 'Beauty Package – Bloom',
-      description: 'A premium full-day indulgence with our top-tier services',
-      validUntil: 'AED 499',
-      image: '/beauty-package-bloom.webp',
-    },
-    {
-      title: 'Beauty Package – Flourish',
-      description: 'Our ultimate luxury head-to-toe pampering session',
-      validUntil: 'AED 599',
-      image: '/beauty-package-flourish.webp',
-    },
-    {
-      title: 'Gelish Mani + Pedi + Foot Massage',
-      description: 'Gelish manicure, gelish pedicure and relaxing foot massage combo',
-      validUntil: 'AED 300',
-      image: '/gelish-mani-pedi.webp',
-    },
-    {
-      title: 'Silk Smooth Full Glow',
-      description: 'Full arms + half legs + underarms waxing combo — silky smooth',
-      validUntil: 'AED 208.95',
-      image: '/silk-smooth-full-glow.webp',
-    },
-    {
-      title: 'Midday Glow – Relaxing Body Massage',
-      description: 'A one-hour full body relaxation massage at a special midday price',
-      validUntil: 'AED 200',
-      image: '/midday-body-massage.webp',
-    },
-  ];
+interface HomePageProps {
+  onNavigate: (page: string) => void;
+  reviews?: HomePageReview[];
+  disableInitialAnimations?: boolean;
+}
 
-  const offersData = [
-    {
-      title: 'Monday Offer – Acrylic Mani + Pedi',
-      description: 'Treat yourself every Monday with our unbeatable acrylic mani & pedi combo',
-      validUntil: 'Every Monday – AED 105',
-      image: '/monday-acrylic-mani-pedi.webp',
-    },
-    {
-      title: 'Monday Offer – Hair Wash + Blow Dry',
-      description: 'Start your week looking fabulous with a luxurious wash and blow dry',
-      validUntil: 'Every Monday – AED 99',
-      image: '/monday-hair-wash-blow-dry.webp',
-    },
-    {
-      title: 'Monday Offer – Acrylic Full Set (Color)',
-      description: 'Get stunning full color acrylic nails at our exclusive Monday price',
-      validUntil: 'Every Monday – AED 269',
-      image: '/monday-acrylic-full-set.webp',
-    },
-    {
-      title: 'Midday Offer – Relaxing Body Massage',
-      description: 'Recharge your afternoon with a soothing body massage at a special price',
-      validUntil: 'Midday Special – AED 178.50',
-      image: '/midday-relaxing-body-massage.webp',
-    },
-    {
-      title: 'Midday Offer – Hot Oil Head Massage',
-      description: 'Unwind midday with our nourishing hot oil head massage',
-      validUntil: 'Midday Special – AED 84',
-      image: '/midday-offer-hot-oil.webp',
-    },
-  ];
+const bookingUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
+const navItems = [
+  { label: 'The salon', href: '#salon' },
+  { label: 'Services', href: '#services' },
+  { label: 'Visit us', href: '#visit' },
+];
 
-  const tipsData = [
-    {
-      title: 'Winter Hair Care',
-      description: 'Keep your hair hydrated and healthy during dry winter months',
-      image: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
-    },
-    {
-      title: 'Nail Care Essentials',
-      description: 'Daily tips for maintaining beautiful, healthy nails',
-      image: 'https://images.unsplash.com/photo-1633955726992-2b7c0d2d2a69?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=928',
-    },
-    {
-      title: 'Skincare Routine',
-      description: 'Essential steps for glowing, healthy skin',
-      image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=1740',
-    },
-    {
-      title: 'Makeup Application Tips',
-      description: 'Professional techniques for flawless makeup',
-      image: 'https://images.unsplash.com/photo-1614006659838-d4ca51cbd117?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=2670',
-    },
-  ];
+const rituals = [
+  { name: 'Hair', note: 'Cut · colour · care', image: hairPhoto, alt: 'Colour work in progress at the salon' },
+  { name: 'Skin', note: 'Facials · skin rituals', image: skinPhoto, alt: 'A facial and spa treatment' },
+  { name: 'Bridal', note: 'Hair · makeup · occasion', image: bridalPhoto, alt: 'Bridal hair and makeup styling' },
+  { name: 'Body', note: 'Massage · waxing · care', image: treatmentPhoto, alt: 'A hair treatment at the salon' },
+];
 
-  export interface HomePageReview {
-    title: string;
-    initials: string;
-    description: string;
-    image?: string;
-    isPublished?: boolean;
-    rating?: number | null;
-  }
+function Brand({ compact = false }: { compact?: boolean }) {
+  return <a className={`lz-brand${compact ? ' lz-brand--compact' : ''}`} href="#top" aria-label="Layali Al Zahra, home">
+    <span><strong>LAYALI AL ZAHRA</strong><small>BEAUTY LOUNGE · DUBAI</small></span>
+  </a>;
+}
 
-  interface HomePageProps {
-    onNavigate: (page: string) => void;
-    reviews?: HomePageReview[];
-    disableInitialAnimations?: boolean;
-  }
+export default function HomePage({ onNavigate, reviews, disableInitialAnimations: _disableInitialAnimations = false }: HomePageProps) {
+  const openingRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedRitual, setSelectedRitual] = useState(0);
+  const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
+  const reduceMotion = Boolean(prefersReducedMotion);
 
-  function AutoCarousel({ items, title, isReview = false, disableInitialAnimation = false }: { items: any[]; title: string; isReview?: boolean; disableInitialAnimation?: boolean }) {
-    const [currentIndex, setCurrentIndex] = useState(0);
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 760px)');
+    const sync = () => setIsMobile(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % items.length);
-      }, 4000);
-      return () => clearInterval(interval);
-    }, [items.length]);
+  useEffect(() => {
+    if (reviews !== undefined) {
+      setPublicReviews(reviews);
+      return;
+    }
+    let active = true;
+    fetch('/api/published-google-reviews')
+      .then((response) => response.json())
+      .then((data) => {
+        if (!active) return;
+        const items = Array.isArray(data.items) ? data.items : [];
+        setPublicReviews(items.map((item: any) => {
+          const title = typeof item.authorName === 'string' && item.authorName.trim() ? item.authorName.trim() : 'Client';
+          const initials = title.split(/\s+/).slice(0, 2).map((part: string) => part[0] || '').join('').toUpperCase();
+          return { title, initials, description: String(item.reviewText || ''), rating: Number.isInteger(item.rating) ? item.rating : null, isPublished: true };
+        }));
+      })
+      .catch(() => { if (active) setPublicReviews([]); });
+    return () => { active = false; };
+  }, [reviews]);
 
-    const handleNext = () => setCurrentIndex((prev) => (prev + 1) % items.length);
-    const handlePrev = () => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  const { scrollYProgress } = useScroll({ target: openingRef, offset: ['start start', 'end end'] });
+  const pageTurn = useTransform(scrollYProgress, [0, 0.9], [0, reduceMotion ? 0 : isMobile ? -8 : -62]);
+  const pageLift = useTransform(scrollYProgress, [0, 0.9], [0, reduceMotion ? 0 : -36]);
+  const pageScale = useTransform(scrollYProgress, [0, 0.9], [1, reduceMotion ? 1 : 0.94]);
+  const pageTilt = useTransform(scrollYProgress, [0, 0.9], [0, reduceMotion ? 0 : 2.4]);
+  const selectedReview = publicReviews?.find((review) => review.isPublished !== false && review.description.trim());
+  const pageArtwork = { '--lz-atmosphere': `url(${skinPhoto})`, '--lz-booking-image': `url(${treatmentPhoto})` } as CSSProperties;
 
-    const getVisibleItems = () => (typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 3);
-    const [itemsToShow, setItemsToShow] = useState(3);
+  const closeMenu = () => setMenuOpen(false);
 
-    useEffect(() => {
-      const handleResize = () => setItemsToShow(getVisibleItems());
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }, []);
+  return (
+    <div className="layali-home-page" id="top" style={pageArtwork}>
+      <section className="lz-opening-track" ref={openingRef} aria-label="Layali Al Zahra Beauty Lounge">
+        <div className="lz-opening-stage">
+          <div className="lz-opening-atmosphere" aria-hidden="true" />
+          <div className="lz-under-page" aria-hidden="true">
+            <div className="lz-under-page__copy">
+              <span>LAYALI AL ZAHRA · AL BARSHA 1</span>
+              <p>Layali<br />Al Zahra.</p>
+              <small>HAIR · SKIN · NAILS · BODY</small>
+            </div>
+            <img src={treatmentPhoto} alt="" />
+          </div>
+          <motion.article
+            className="lz-cover-page"
+            style={{ rotateY: pageTurn, rotateX: pageTilt, y: pageLift, scale: pageScale }}
+          >
+            <div className="lz-cover-page__top">
+              <Brand />
+              <nav className="lz-desktop-nav" aria-label="Main navigation">
+                {navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
+                <button className="lz-nav-text" onClick={() => onNavigate('packages')}>Packages</button>
+                <button className="lz-nav-text" onClick={() => onNavigate('offers')}>Offers</button>
+              </nav>
+              <a className="lz-book lz-book--top" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit</a>
+              <button className="lz-menu-toggle" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="lz-mobile-nav">
+                {menuOpen ? 'Close' : 'Menu'}
+              </button>
+            </div>
+            {menuOpen && <nav className="lz-mobile-nav" id="lz-mobile-nav" aria-label="Mobile navigation">
+              {navItems.map((item) => <a key={item.href} href={item.href} onClick={closeMenu}>{item.label}</a>)}
+              <button onClick={() => { onNavigate('packages'); closeMenu(); }}>Packages</button>
+              <button onClick={() => { onNavigate('offers'); closeMenu(); }}>Offers</button>
+              <a href={bookingUrl} target="_blank" rel="noreferrer" onClick={closeMenu}>Book a visit</a>
+            </nav>}
+            <div className="lz-cover-page__body">
+              <div className="lz-cover-page__message">
+                <p className="lz-kicker">A BEAUTY LOUNGE IN AL BARSHA</p>
+                <h1>A beauty lounge<br />in <em>Al Barsha.</em></h1>
+                <p className="lz-cover-page__subline">Hair · skin · nails · body</p>
+                <a className="lz-book" href={bookingUrl} target="_blank" rel="noreferrer">Book your appointment <span aria-hidden="true">↗</span></a>
+                <span className="lz-cover-page__address">AL TELAL 11 · AL BARSHA 1 · DUBAI</span>
+              </div>
+              <div className="lz-cover-page__portrait">
+                <img src={bridalPhoto} alt="A bride with her finished hair and makeup look" fetchPriority="high" />
+              </div>
+            </div>
+            <div className="lz-cover-page__bottom"><span>EST. IN DUBAI</span><span>SCROLL TO EXPLORE</span><span>25°06′24.4″N 55°11′55.8″E</span></div>
+          </motion.article>
+        </div>
+      </section>
 
-    return (
-      <div className="relative">
-        <h2 className="font-tangerine text-5xl md:text-7xl text-rose-900 text-center mb-12">{title}</h2>
-        <div className="relative max-w-6xl mx-auto">
-          <div className={`grid gap-6 ${itemsToShow === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
-            <AnimatePresence mode="wait" initial={!disableInitialAnimation}>
-              {Array.from({ length: itemsToShow }).map((_, offset) => {
-                const index = (currentIndex + offset) % items.length;
-                const item = items[index];
-                return (
-                  <motion.div
-                    key={`${title}-${index}`}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    transition={{ duration: 0.5, delay: offset * 0.1 }}
-                    className="bg-white rounded-lg overflow-hidden shadow-lg"
-                  >
-                    {isReview ? (
-                      <div className="p-6">
-                        <div className="flex items-center mb-4">
-                          <div className="w-12 h-12 bg-rose-200 rounded-full flex items-center justify-center text-rose-700 mr-3 font-semibold">
-                            {item.initials}
-                          </div>
-                          <div>
-                            <h4 className="text-gray-900">{item.title}</h4>
-                            <div className="flex text-amber-500">
-                              {Array.from({ length: Number.isInteger(item.rating) ? Math.max(0, Math.min(5, item.rating)) : item.rating === null ? 0 : 5 }, (_, i) => <span key={i}>★</span>)}
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-gray-600 text-sm">{item.description}</p>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="h-64 overflow-hidden">
-                          <img src={item.image} alt={item.title} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
-                        </div>
-                        <div className="p-6">
-                          <h3 className="text-rose-900 mb-2">{item.title}</h3>
-                          <p className="text-gray-600 mb-2">{item.description}</p>
-                          {item.validUntil && <p className="text-amber-600 text-sm">{item.validUntil}</p>}
-                        </div>
-                      </>
-                    )}
-                  </motion.div>
-                );
-              })}
+      <section className="lz-intro lz-section" id="salon">
+        <div className="lz-intro__label"><span>01 / THE SALON</span><span>AL BARSHA 1, DUBAI</span></div>
+        <div className="lz-intro__content">
+          <h2>Come in.<br /><em>Settle in.</em></h2>
+          <div className="lz-intro__aside">
+            <p>A neighbourhood beauty lounge for the rituals that make a day feel like your own.</p>
+            <a className="lz-underlined-link" href="#visit">Find us in Al Barsha <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div className="lz-intro__rule" />
+      </section>
+
+      <section className="lz-rituals lz-section" id="services">
+        <div className="lz-section-heading">
+          <span className="lz-kicker">02 / THE RITUALS</span>
+          <h2>Care, from<br /><em>every angle.</em></h2>
+        </div>
+        <div className="lz-rituals__layout">
+          <div className="lz-ritual-list" role="tablist" aria-label="Explore salon services">
+            {rituals.map((ritual, index) => (
+              <button className={`lz-ritual-row${index === selectedRitual ? ' is-selected' : ''}`} key={ritual.name} onClick={() => setSelectedRitual(index)} role="tab" aria-selected={index === selectedRitual} aria-controls="lz-ritual-image">
+                <span className="lz-ritual-row__number">0{index + 1}</span>
+                <span className="lz-ritual-row__name">{ritual.name}</span>
+                <span className="lz-ritual-row__note">{ritual.note}</span>
+                <span className="lz-ritual-row__line" aria-hidden="true" />
+              </button>
+            ))}
+            <button className="lz-underlined-link lz-all-services" onClick={() => onNavigate('services')}>Explore all services <span aria-hidden="true">↗</span></button>
+          </div>
+          <div className="lz-ritual-image-wrap" id="lz-ritual-image" role="tabpanel">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.figure
+                className="lz-ritual-image"
+                key={rituals[selectedRitual].name}
+                initial={{ opacity: 0, rotateY: reduceMotion ? 0 : 15, x: reduceMotion ? 0 : 18 }}
+                animate={{ opacity: 1, rotateY: 0, x: 0 }}
+                exit={{ opacity: 0, rotateY: reduceMotion ? 0 : -10, x: reduceMotion ? 0 : -8 }}
+                transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 0.68, 0, 1] }}
+              >
+                <img src={rituals[selectedRitual].image} alt={rituals[selectedRitual].alt} loading="lazy" />
+                <figcaption><span>LAYALI AL ZAHRA</span><span>{rituals[selectedRitual].name.toUpperCase()}</span></figcaption>
+              </motion.figure>
             </AnimatePresence>
           </div>
-
-          <button onClick={handlePrev} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 bg-white rounded-full p-2 md:p-3 shadow-lg hover:bg-rose-100 transition-colors z-10" aria-label="Previous">
-            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-rose-500" />
-          </button>
-          <button onClick={handleNext} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 bg-white rounded-full p-2 md:p-3 shadow-lg hover:bg-rose-100 transition-colors z-10" aria-label="Next">
-            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-rose-500" />
-          </button>
         </div>
-      </div>
-    );
-  }
+      </section>
 
-  export default function HomePage({ onNavigate, reviews, disableInitialAnimations = false }: HomePageProps) {
-    const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
-    useEffect(() => {
-      if (reviews !== undefined) {
-        setPublicReviews(reviews);
-        return;
-      }
-      let active = true;
-      fetch('/api/published-google-reviews')
-        .then((response) => response.json())
-        .then((data) => {
-          if (!active) return;
-          const items = Array.isArray(data.items) ? data.items : [];
-          setPublicReviews(items.map((item: any) => {
-            const title = typeof item.authorName === 'string' && item.authorName.trim() ? item.authorName.trim() : 'Client';
-            const initials = title.split(/\s+/).slice(0, 2).map((part: string) => part[0] || '').join('').toUpperCase();
-            return { title, initials, description: String(item.reviewText || ''), rating: Number.isInteger(item.rating) ? item.rating : null, isPublished: true };
-          }));
-        })
-        .catch(() => { if (active) setPublicReviews([]); });
-      return () => { active = false; };
-    }, [reviews]);
-    const eligibleReviews = publicReviews?.filter((review) => review.isPublished !== false);
-    const reviewItems = eligibleReviews || [];
+      <section className="lz-booking-band">
+        <div className="lz-booking-band__image" aria-hidden="true" />
+        <div className="lz-booking-band__content">
+          <span className="lz-kicker">A LITTLE TIME, ALL YOUR OWN</span>
+          <h2>Your chair<br /><em>is waiting.</em></h2>
+          <a className="lz-book lz-book--light" href={bookingUrl} target="_blank" rel="noreferrer">Choose a service <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
 
-    return (
-      <div className="min-h-screen">
-        {/* Hero Section */}
-        <section className="relative h-[600px]">
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYWxvbiUyMGludGVyaW9yJTIwZWxlZ2FudHxlbnwxfHx8fDE3NjA1MjgwNDd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral')" }}>
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
-          </div>
-          <div className="relative z-10 h-full flex items-center justify-center text-center px-4">
-            <div>
-              <h1 className="sr-only">Luxury Ladies Beauty Salon in Al Barsha 1, Dubai | Layali Al Zahra</h1>
-              <h2 className="font-tangerine text-6xl md:text-8xl lg:text-9xl text-white mb-6 drop-shadow-lg">Where Beauty Meets Luxury</h2>
-              <p className="text-white text-lg md:text-xl mb-8 max-w-2xl mx-auto">Experience world-class beauty services in the heart of Dubai</p>
-            </div>
-          </div>
-        </section>
+      {selectedReview && <section className="lz-review lz-section">
+        <span className="lz-kicker">A NOTE FROM A GUEST</span>
+        <blockquote>“{selectedReview.description}”</blockquote>
+        <p className="lz-review__byline">{selectedReview.title}<span aria-label={`${selectedReview.rating || 5} out of 5 stars`}> · {'★'.repeat(Math.max(0, Math.min(5, selectedReview.rating ?? 5)))}</span></p>
+      </section>}
 
-        {/* Services Section */}
-        <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
-          <div className="container mx-auto px-4">
-            <AutoCarousel items={servicesData} title="Our Services" disableInitialAnimation={disableInitialAnimations} />
-            <div className="text-center mt-10">
-              <Button onClick={() => onNavigate('services')} className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3">
-                View All Services
-              </Button>
-            </div>
-          </div>
-        </section>
+      <footer className="lz-footer" id="visit">
+        <div className="lz-footer__top">
+          <div className="lz-footer__brand"><Brand compact /><p>Beauty lounge · Al Barsha 1, Dubai</p></div>
+          <div><span className="lz-footer__label">FIND US</span><a href="https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx" target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Al Barsha 1, Dubai <span aria-hidden="true">↗</span></a></div>
+          <div><span className="lz-footer__label">CALL US</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
+          <div><span className="lz-footer__label">OPEN DAILY</span><p>10:00 am – 9:00 pm<br />Friday · 1:00 pm – 8:30 pm</p></div>
+        </div>
+        <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} LAYALI AL ZAHRA BEAUTY SALON LLC</span><span>AL BARSHA 1 · DUBAI</span><a href={bookingUrl} target="_blank" rel="noreferrer">BOOK AN APPOINTMENT ↗</a></div>
+      </footer>
+    </div>
+  );
+}
 
-        {/* Packages Section */}
-        <section className="py-20 bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100">
-          <div className="container mx-auto px-4">
-            <AutoCarousel items={packagesData} title="Combos & Packages" disableInitialAnimation={disableInitialAnimations} />
-            <div className="text-center mt-10">
-              <Button onClick={() => onNavigate('packages')} className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3">
-                View All Packages
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Offers Section */}
-        <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
-          <div className="container mx-auto px-4">
-            <AutoCarousel items={offersData} title="Special Offers" disableInitialAnimation={disableInitialAnimations} />
-            <div className="text-center mt-10">
-              <Button onClick={() => onNavigate('offers')} className="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3">
-                View All Offers
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Tips Section */}
-        <section className="py-20 bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100">
-          <div className="container mx-auto px-4">
-            <AutoCarousel items={tipsData} title="Beauty Tips" disableInitialAnimation={disableInitialAnimations} />
-          </div>
-        </section>
-
-        {/* Reviews Section */}
-        {reviewItems.length > 0 && (
-          <section className="py-20 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100">
-            <div className="container mx-auto px-4">
-              <AutoCarousel items={reviewItems} title="What Our Clients Say" isReview={true} disableInitialAnimation={disableInitialAnimations} />
-            </div>
-          </section>
-        )}
-      </div>
-    );
-  }
-  
