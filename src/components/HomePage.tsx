@@ -82,7 +82,7 @@ const serviceCarouselStyles = `
 .lz-services__heading { padding-bottom: 10px; }
 .lz-services__stage { --service-card-width: clamp(140px,12.2vw,232px); position: relative; display: block; width: 100vw; max-width: none; height: clamp(430px,38vw,500px); overflow: visible; margin-left: calc(50% - 50vw); padding: 0; border: 0 !important; border-radius: 0; outline: 0; background: transparent !important; box-shadow: none; perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; -webkit-mask-image: linear-gradient(90deg,transparent 0,#000 4%,#000 96%,transparent 100%); mask-image: linear-gradient(90deg,transparent 0,#000 4%,#000 96%,transparent 100%); }
 .lz-services__stage::before,.lz-services__stage::after { display: none; }
-.lz-service-slot { position: absolute; top: 50%; left: 50%; width: var(--service-card-width); transform-style: preserve-3d; will-change: transform,opacity; }
+.lz-service-slot { position: absolute; top: 50%; left: 50%; width: var(--service-card-width); margin-left: calc(var(--service-card-width) / -2); transform-style: preserve-3d; will-change: transform,opacity; }
 .lz-service-card { position: relative; display: block; width: 100%; aspect-ratio: .62; overflow: hidden; padding: 0; border: 1px solid rgba(255,248,241,.3); border-radius: 16px; background: #5a423d; color: #fffaf7; cursor: pointer; isolation: isolate; text-align: left; box-shadow: 0 22px 48px rgba(8,5,4,.32); transition: border-color .35s ease,filter .35s ease; }
 .lz-service-slot[data-offset='0'] .lz-service-card { box-shadow: 0 18px 40px rgba(8,5,4,.2); }
 .lz-service-card:hover,.lz-service-card:focus-visible { border-color: rgba(255,248,241,.72); filter: brightness(1.06); }
