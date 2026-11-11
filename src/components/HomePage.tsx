@@ -94,13 +94,11 @@ const serviceCarouselStyles = `
 .lz-service-card__caption small { color: rgba(255,250,247,.84); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
 .lz-service-card__caption strong { font-family: Georgia,'Times New Roman',serif; font-size: clamp(17px,1.8vw,25px); font-weight: 400; letter-spacing: -.045em; line-height: 1.02; text-wrap: balance; }
 .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(24px,2.5vw,36px); }
-.lz-services__controls { display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 2px; }
-.lz-service-arrow { position: relative; display: grid; width: 44px; height: 44px; flex: none; place-items: center; padding: 0; border: 1px solid rgba(255,250,247,.78); border-radius: 50%; background: transparent; color: #fffaf7; cursor: pointer; transition: color .25s ease,background .25s ease,border-color .25s ease,transform .25s ease; }
-.lz-service-arrow--previous { width: 32px; height: 32px; border-color: rgba(255,250,247,.52); }
-.lz-service-arrow--next { width: 44px; height: 44px; margin-left: 0; }
+.lz-services__controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 2px; }
+.lz-service-arrow { position: relative; display: grid; width: 44px; height: 44px; flex: none; place-items: center; padding: 0; border: 1px solid rgba(255,250,247,.62); border-radius: 50%; background: rgba(255,250,247,.025); color: #fffaf7; cursor: pointer; transform: scale(1); transition: color .25s ease,background .25s ease,border-color .25s ease,box-shadow .25s ease,transform .25s ease; }
+.lz-service-arrow--previous,.lz-service-arrow--next { width: 44px; height: 44px; }
 .lz-service-arrow svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.2; }
-.lz-service-arrow--previous svg { width: 12px; height: 12px; }
-.lz-service-arrow:hover { transform: scale(1.08); border-color: #fffaf7; background: rgba(255,250,247,.16); color: #fffaf7; }
+.lz-service-arrow:hover,.lz-service-arrow:focus-visible { z-index: 1; transform: scale(1.14); border-color: #fffaf7; background: rgba(255,250,247,.18); box-shadow: 0 0 0 4px rgba(255,250,247,.08),0 8px 24px rgba(8,5,4,.2); color: #fffaf7; outline: none; }
 .lz-review { min-height: 410px; height: 410px; padding-top: 36px; padding-bottom: 36px; background: transparent; }
 .lz-review::before { background: none; filter: none; transform: none; }
 .lz-review__scrim { background: transparent; }
@@ -117,11 +115,11 @@ const serviceCarouselStyles = `
   .lz-cover__copy { right: 16px; left: 16px; }
   .lz-services { padding: 20px 0 30px; }
   .lz-services__heading { padding-right: 20px; padding-left: 20px; }
-  .lz-services__stage { --service-card-width: min(58vw,232px); height: clamp(370px,96vw,420px); }
+  .lz-services__stage { --service-card-width: min(50vw,210px); height: clamp(335px,90vw,372px); }
   .lz-service-card { border-radius: 13px; }
   .lz-service-card__caption { right: 17px; bottom: 22px; left: 17px; gap: 7px; }
-  .lz-service-card__caption strong { font-size: clamp(23px,6.7vw,32px); }
-  .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(28px,7.6vw,36px); }
+  .lz-service-card__caption strong { font-size: clamp(22px,6vw,27px); }
+  .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(25px,7vw,30px); }
   .lz-services__controls { margin-top: 8px; }
   .lz-review { height: 380px; min-height: 380px; padding: 34px 22px; }
 }
@@ -199,7 +197,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [serviceStageWidth, setServiceStageWidth] = useState(0);
   const compactServiceStage = serviceStageWidth > 0 && serviceStageWidth <= 1000;
   const serviceOffsets = compactServiceStage ? [-2, -1, 0, 1, 2] : services.length >= 9 ? [-4, -3, -2, -1, 0, 1, 2, 3, 4] : services.length >= 7 ? [-3, -2, -1, 0, 1, 2, 3] : services.length >= 5 ? [-2, -1, 0, 1, 2] : services.map((_, index) => index - Math.floor((services.length - 1) / 2));
-  const serviceStep = serviceStageWidth * (serviceStageWidth <= 700 ? 0.4 : compactServiceStage ? 0.27 : 0.132);
+  const serviceStep = serviceStageWidth * (serviceStageWidth <= 700 ? 0.44 : compactServiceStage ? 0.27 : 0.132);
   const visibleServiceCards = serviceOffsets.map((offset) => ({
     offset,
     index: (serviceIndex + offset + services.length) % services.length,
@@ -360,18 +358,24 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
           </motion.div>
           {visibleServiceCards.length > 0 && <motion.div className="lz-services__carousel" role="group" aria-roledescription="carousel" aria-label="Service categories" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 55 }} animate={servicesInView ? { opacity: 1, y: 0 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0 } : { opacity: 0, y: 34 }} transition={{ duration: 0.88, delay: 0.08, ease: [0.2, 0.75, 0.2, 1] }} onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); moveService(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); moveService(1); } }}>
             <div className="lz-services__stage" ref={serviceStage}>
-              {visibleServiceCards.map(({ service, offset }) => {
+              {visibleServiceCards.map(({ service, offset, index }) => {
                 const pose = servicePose(offset);
+                const floatDelay = Math.abs(offset) * 0.2 + (index % 3) * 0.12;
                 const entryOffset = serviceRevealPlayed && Math.abs(offset) === (compactServiceStage ? 2 : 3) && Math.sign(offset) === serviceDirection ? offset + serviceDirection : offset;
                 const initialPose = serviceRevealPlayed
                   ? { ...pose, x: entryOffset * serviceStep, opacity: entryOffset === offset ? pose.opacity : 0 }
                   : { ...pose, y: 72, scale: 0.78, opacity: 0, rotateY: -offset * 4, rotateZ: 0 };
                 return <motion.div className="lz-service-slot" data-offset={offset} key={service.id} initial={reducedMotion || disableInitialAnimations ? false : initialPose} animate={servicesInView ? pose : reducedMotion || disableInitialAnimations ? pose : { ...pose, y: pose.y + 18, opacity: 0 }} transition={{ x: { duration: reducedMotion ? 0.01 : 0.46, ease: [0.22, 1, 0.36, 1] }, y: { duration: reducedMotion ? 0.01 : 0.52, ease: [0.22, 1, 0.36, 1] }, scale: { duration: reducedMotion ? 0.01 : 0.52, ease: [0.22, 1, 0.36, 1] }, rotateY: { duration: reducedMotion ? 0.01 : 0.52, ease: [0.22, 1, 0.36, 1] }, rotateZ: { duration: reducedMotion ? 0.01 : 0.52, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: reducedMotion ? 0.01 : 0.4, ease: [0.22, 1, 0.36, 1] } }}>
-                  <button className="lz-service-card" type="button" tabIndex={Math.abs(offset) > (compactServiceStage ? 1 : 3) ? -1 : 0} onClick={() => { if (offset === 0) onNavigate('services'); else { setServiceDirection(Math.sign(offset)); setServiceIndex((index) => (index + offset + services.length) % services.length); } }} aria-current={offset === 0 ? 'true' : undefined} aria-label={offset === 0 ? `Explore ${service.name} services` : `Bring ${service.name} to the centre`}>
+                  <motion.button className="lz-service-card" type="button" tabIndex={Math.abs(offset) > (compactServiceStage ? 1 : 3) ? -1 : 0} onClick={() => { if (offset === 0) onNavigate('services'); else { setServiceDirection(Math.sign(offset)); setServiceIndex((index) => (index + offset + services.length) % services.length); } }} aria-current={offset === 0 ? 'true' : undefined} aria-label={offset === 0 ? `Explore ${service.name} services` : `Bring ${service.name} to the centre`}
+                    animate={reducedMotion ? { y: 0, rotateZ: 0 } : { y: [0, -6, 0, 6, 0], rotateZ: [0, 0.4, 0, -0.4, 0] }}
+                    transition={reducedMotion ? { duration: 0.01 } : { y: { duration: 5.2, ease: 'easeInOut', repeat: Infinity, delay: floatDelay }, rotateZ: { duration: 6.2, ease: 'easeInOut', repeat: Infinity, delay: floatDelay } }}
+                    whileHover={reducedMotion ? undefined : { y: -10, scale: 1.035, transition: { duration: 0.24, ease: [0.2, 0.75, 0.2, 1] } }}
+                    whileFocus={reducedMotion ? undefined : { y: -7, scale: 1.02 }}
+                    whileTap={reducedMotion ? undefined : { scale: 0.985 }}>
                     <img className="lz-service-card__photo" src={service.image} alt={service.alt} loading="lazy" />
                     <span className="lz-service-card__shade" aria-hidden="true" />
                     <span className="lz-service-card__caption">{service.detail && <small>{service.detail}</small>}<strong>{service.name}</strong></span>
-                  </button>
+                  </motion.button>
                 </motion.div>;
               })}
             </div>
