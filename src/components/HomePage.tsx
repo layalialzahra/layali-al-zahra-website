@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react';
 import heroPhoto from '../assets/hero-layali.jpg';
 import haircutPhoto from '../assets/salon-haircut.jpg';
@@ -9,7 +9,9 @@ import makeupPhoto from '../assets/makeup.jpg';
 import brandLogo from '../assets/logo-transparent.png';
 import brandLogoLight from '../assets/logo-transparent-light.png';
 import { legacyServicesData } from '../data/legacy-services.js';
-import { loadPublicServices } from '../data/managed-content-public';
+import { legacyPackagesData } from '../data/legacy-packages.js';
+import { legacyOffersData } from '../data/legacy-offers.js';
+import { loadPublicPackages, loadPublicOffers, loadPublicServices } from '../data/managed-content-public';
 import './homepage-editorial.css';
 
 export interface HomePageReview {
@@ -30,8 +32,10 @@ interface HomePageProps {
 const bookingUrl = 'https://store.zylu.co/business/layali-al-zahra-beauty-salon-llc/services';
 const menuItems = [
   { label: 'Services', href: '#services' },
+  { label: 'Packages', href: '#packages' },
+  { label: 'Offers', href: '#offers' },
   { label: 'The lounge', href: '#lounge' },
-  { label: 'Find us', href: '#visit' },
+  { label: 'Find us', href: '#contact' },
 ];
 interface ServiceCategoryCard {
   id: string;
@@ -58,6 +62,16 @@ function mapServiceCategories(items: any[]): ServiceCategoryCard[] {
 }
 
 const fallbackServiceCategories = mapServiceCategories(legacyServicesData);
+
+type HomePackage = (typeof legacyPackagesData)[number] & { bookingUrl?: string };
+type HomeOffer = (typeof legacyOffersData)[number] & { bookingUrl?: string };
+
+const packageCategories = (items: HomePackage[]) => [...new Set(items.map((item) => item.category))]
+  .map((category) => ({ category, item: items.find((item) => item.category === category)! }))
+  .filter(({ item }) => item && item.title && item.image)
+  .slice(0, 5);
+
+const mapUrl = 'https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx';
 
 const serviceCarouselStyles = `
 .layali-home-active { position: relative; isolation: isolate; background: transparent !important; }
@@ -106,9 +120,52 @@ const serviceCarouselStyles = `
 .lz-review__quote { flex: none; height: 230px; }
 .lz-review__rating { flex: none; margin: 0 0 10px; }
 .lz-footer { background: transparent; }
+.lz-packages { position: relative; isolation: isolate; overflow: visible; padding: clamp(26px,3vw,44px) max(24px,calc((100vw - 1310px)/2)) clamp(30px,4vw,56px); color: #fffaf7; scroll-margin-top: 30px; }
+.lz-packages__heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: clamp(28px,4vw,54px); }
+.lz-packages__heading .lz-eyebrow,.lz-packages__offer-title { color: rgba(255,250,247,.7); }
+.lz-packages__heading h2 { margin: 12px 0 0; font-family: Georgia,'Times New Roman',serif; font-size: clamp(32px,4.3vw,56px); font-weight: 400; letter-spacing: -.05em; line-height: 1.02; }
+.lz-packages__heading p { max-width: 260px; margin: 0 0 3px; color: rgba(255,250,247,.76); font-size: 12px; line-height: 1.6; }
+.lz-packages__circles { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; justify-items: center; gap: clamp(12px,2.4vw,34px); }
+.lz-package-orbit { display: grid; width: 100%; place-items: center; }
+.lz-package-circle { position: relative; display: flex; width: clamp(142px,15vw,204px); aspect-ratio: 1; flex-direction: column; align-items: flex-start; justify-content: flex-end; overflow: hidden; padding: clamp(17px,2vw,26px); border: 1px solid rgba(255,250,247,.44); border-radius: 50%; background-position: center; background-size: cover; color: #fffaf7; cursor: pointer; isolation: isolate; text-align: left; box-shadow: 0 20px 48px rgba(7,4,4,.25); }
+.lz-package-circle::before { position: absolute; z-index: -1; inset: 0; background: linear-gradient(0deg,rgba(18,12,11,.74),rgba(18,12,11,.12) 65%,rgba(18,12,11,.06)); content: ''; transition: opacity .5s ease; }
+.lz-package-orbit:nth-child(even) { transform: translateY(22px); }
+.lz-package-circle small { max-width: 100%; margin-bottom: 8px; color: rgba(255,250,247,.84); font-size: 8px; letter-spacing: .13em; line-height: 1.3; text-transform: uppercase; }
+.lz-package-circle strong { max-width: 100%; font-family: Georgia,'Times New Roman',serif; font-size: clamp(17px,1.75vw,23px); font-weight: 400; letter-spacing: -.045em; line-height: 1.04; text-wrap: balance; }
+.lz-package-circle:hover::before,.lz-package-circle:focus-visible::before { opacity: .72; }
+.lz-packages__offers { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: 28px; margin-top: clamp(46px,6vw,82px); padding-top: 22px; border-top: 1px solid rgba(255,250,247,.2); scroll-margin-top: 26px; }
+.lz-packages__offer-title { min-width: 125px; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
+.lz-packages__offer-list { display: flex; justify-content: flex-end; gap: 14px; }
+.lz-packages__offer { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 5px; padding-left: 14px; border-left: 1px solid rgba(255,250,247,.24); }
+.lz-packages__offer strong { overflow: hidden; color: #fffaf7; font-family: Georgia,'Times New Roman',serif; font-size: 15px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+.lz-packages__offer span { color: rgba(255,250,247,.7); font-size: 10px; }
+.lz-package-overlay { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 22px; background: rgba(19,13,12,.34); backdrop-filter: blur(18px) saturate(.78); -webkit-backdrop-filter: blur(18px) saturate(.78); }
+.lz-package-detail { position: relative; display: grid; width: min(850px,100%); min-height: min(390px,calc(100dvh - 44px)); max-height: min(430px,calc(100dvh - 44px)); grid-template-columns: 1fr .94fr; overflow: hidden; border: 1px solid rgba(255,250,247,.38); border-radius: 4px; background: #2d211f; color: #fffaf7; box-shadow: 0 32px 100px rgba(0,0,0,.42); }
+.lz-package-detail__copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(28px,5vw,58px); }
+.lz-package-detail__copy .lz-eyebrow { color: #d8bcb1; }
+.lz-package-detail__copy h3 { margin: 16px 0 13px; font-family: Georgia,'Times New Roman',serif; font-size: clamp(30px,4vw,48px); font-weight: 400; letter-spacing: -.05em; line-height: 1.02; }
+.lz-package-detail__copy p { max-width: 330px; margin: 0; color: rgba(255,250,247,.78); font-size: 12px; line-height: 1.65; }
+.lz-package-detail__price { margin-top: 18px; color: #e8c7b7; font-size: 13px; letter-spacing: .04em; }
+.lz-package-detail__book { display: inline-flex; min-height: 44px; align-items: center; margin-top: 24px; padding: 0 16px; border: 1px solid rgba(255,250,247,.7); color: #fffaf7; font-size: 11px; transition: background .25s ease,color .25s ease; }
+.lz-package-detail__book:hover { background: #fffaf7; color: #281d1b; }
+.lz-package-detail__photo { width: 100%; height: 100%; min-height: 330px; object-fit: cover; }
+.lz-package-detail__close { position: absolute; z-index: 2; top: 12px; right: 12px; display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(255,250,247,.65); border-radius: 50%; background: rgba(31,22,20,.25); color: #fffaf7; cursor: pointer; font-size: 23px; line-height: 1; }
+.lz-footer { scroll-margin-top: 20px; padding-top: 46px; }
+.lz-footer__contact-title { margin: 0 0 8px; color: #fffaf7; font-family: Georgia,'Times New Roman',serif; font-size: clamp(25px,3.3vw,42px); font-weight: 400; letter-spacing: -.045em; }
+.lz-footer__top > div { display: grid; grid-template-columns: 70px minmax(190px,auto) minmax(180px,1fr); align-items: center; column-gap: 20px; }
+.lz-footer__logo { display: block; width: 66px; height: 62px; object-fit: contain; }
+.lz-footer__top > div > p { max-width: 260px; margin: 0 0 2px; }
+.lz-footer__details { grid-template-columns: 1.2fr 1.15fr 1fr 1fr; }
+.lz-footer__social { display: inline-block !important; margin-top: 7px !important; color: #e6c9bd !important; }
+html { scroll-behavior: smooth; }
 @media (max-width: 1000px) {
   .lz-services__stage { --service-card-width: min(26vw,238px); height: 410px; }
   .lz-service-slot[data-offset='-2'] .lz-service-card,.lz-service-slot[data-offset='2'] .lz-service-card { visibility: hidden; }
+  .lz-packages__circles { grid-template-columns: repeat(3,minmax(0,1fr)); row-gap: 26px; }
+  .lz-package-orbit:nth-child(even) { transform: translateY(0); }
+  .lz-package-orbit:nth-child(2),.lz-package-orbit:nth-child(5) { transform: translateY(18px); }
+  .lz-package-circle { width: clamp(150px,23vw,200px); }
+  .lz-footer__details { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
   .lz-opening-track { height: 112svh; }
@@ -121,6 +178,33 @@ const serviceCarouselStyles = `
   .lz-service-card__caption strong { font-size: clamp(22px,6vw,27px); }
   .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(25px,7vw,30px); }
   .lz-services__controls { margin-top: 8px; }
+  .lz-packages { padding: 24px 20px 36px; }
+  .lz-packages__heading { align-items: flex-start; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .lz-packages__heading h2 { font-size: clamp(31px,9vw,42px); }
+  .lz-packages__heading p { max-width: 280px; }
+  .lz-packages__circles { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px 8px; }
+  .lz-package-orbit:nth-child(2),.lz-package-orbit:nth-child(5) { transform: none; }
+  .lz-package-orbit:nth-child(even) { transform: translateY(20px); }
+  .lz-package-circle { width: min(42vw,174px); padding: 16px; }
+  .lz-package-circle strong { font-size: clamp(15px,4.4vw,20px); }
+  .lz-package-circle small { font-size: 7px; }
+  .lz-packages__offers { grid-template-columns: 1fr; gap: 13px; margin-top: 42px; }
+  .lz-packages__offer-list { justify-content: flex-start; overflow-x: auto; padding-bottom: 4px; }
+  .lz-packages__offer { min-width: 145px; }
+  .lz-package-overlay { padding: 12px; }
+  .lz-package-detail { width: min(420px,100%); min-height: 0; max-height: calc(100dvh - 24px); grid-template-columns: 1fr; grid-template-rows: minmax(155px,30vh) auto; overflow-y: auto; border-radius: 3px; }
+  .lz-package-detail__photo { grid-row: 1; min-height: 0; max-height: 230px; }
+  .lz-package-detail__copy { grid-row: 2; padding: 23px 24px 26px; }
+  .lz-package-detail__copy h3 { margin: 11px 0 8px; font-size: 30px; }
+  .lz-package-detail__copy p { font-size: 11px; }
+  .lz-package-detail__price { margin-top: 12px; }
+  .lz-package-detail__book { min-height: 40px; margin-top: 15px; }
+  .lz-package-detail__close { top: 9px; right: 9px; width: 34px; height: 34px; background: rgba(31,22,20,.55); }
+  .lz-footer__top > div { display: grid; grid-template-columns: 50px minmax(0,1fr); align-items: center; gap: 10px 13px; }
+  .lz-footer__logo { width: 48px; height: 48px; }
+  .lz-footer__top > div > p { grid-column: 1 / -1; margin: 0; }
+  .lz-footer__contact-title { font-size: 29px; }
+  .lz-footer__details { grid-template-columns: 1fr 1fr; gap: 18px 14px; }
   .lz-review { height: 380px; min-height: 380px; padding: 34px 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -144,8 +228,7 @@ function Wordmark({ inverse = false }: { inverse?: boolean }) {
   </a>;
 }
 
-function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
-  onNavigate: (page: string) => void;
+function PanelHeader({ inverse = false, menuOpen, setMenuOpen }: {
   inverse?: boolean;
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
@@ -154,8 +237,6 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
     <Wordmark inverse={inverse} />
     <nav className="lz-panel-nav" aria-label="Main navigation">
       {menuItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
-      <button onClick={() => onNavigate('packages')}>Packages</button>
-      <button onClick={() => onNavigate('offers')}>Offers</button>
     </nav>
     <a className="lz-panel-book" href={bookingUrl} target="_blank" rel="noreferrer">Book a visit</a>
     <button className={`lz-menu-toggle${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls={`lz-mobile-nav${inverse ? '-open' : ''}`}>
@@ -169,8 +250,6 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
     <AnimatePresence>
     {menuOpen && <motion.nav className="lz-mobile-nav" id={`lz-mobile-nav${inverse ? '-open' : ''}`} aria-label="Mobile navigation" initial={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }} animate={{ opacity: 1, clipPath: 'inset(0 0 0% 0)' }} exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }} transition={{ duration: 0.52, ease: [0.7, 0, 0.2, 1] }}>
       {menuItems.map((item) => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
-      <button onClick={() => { onNavigate('packages'); setMenuOpen(false); }}>Packages</button>
-      <button onClick={() => { onNavigate('offers'); setMenuOpen(false); }}>Offers</button>
       <a href={bookingUrl} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Book a visit</a>
     </motion.nav>}
     </AnimatePresence>
@@ -186,6 +265,9 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [featureActive, setFeatureActive] = useState(false);
   const [featureVisible, setFeatureVisible] = useState(false);
   const [services, setServices] = useState<ServiceCategoryCard[]>(fallbackServiceCategories);
+  const [packages, setPackages] = useState<HomePackage[]>(legacyPackagesData);
+  const [offers, setOffers] = useState<HomeOffer[]>(legacyOffersData);
+  const [selectedPackage, setSelectedPackage] = useState<HomePackage | null>(null);
   const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
   const [reviewIndex, setReviewIndex] = useState(0);
   const [reviewPaused, setReviewPaused] = useState(false);
@@ -232,6 +314,30 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     });
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (!selectedPackage) return;
+    const previousOverflow = document.body.style.overflow;
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setSelectedPackage(null); };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [selectedPackage]);
+
+  useEffect(() => {
+    let active = true;
+    void Promise.all([loadPublicPackages(), loadPublicOffers()]).then(([loadedPackages, loadedOffers]) => {
+      if (!active) return;
+      setPackages(loadedPackages as HomePackage[]);
+      setOffers(loadedOffers as HomeOffer[]);
+    });
+    return () => { active = false; };
+  }, []);
+
+  const featuredPackages = useMemo(() => packageCategories(packages), [packages]);
 
   useEffect(() => {
     const stage = serviceStage.current;
@@ -321,7 +427,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
             <motion.section className="lz-cover" style={{ opacity: coverOpacity, visibility: featureActive ? 'hidden' : 'visible' }} aria-hidden={featureActive}>
               <motion.img className="lz-cover__photo" src={heroPhoto} alt="A guest enjoying a quiet moment in a warm, softly lit salon" fetchpriority="high" style={{ scale: coverPhotoScale }} />
               <div className="lz-cover__shade" aria-hidden="true" />
-              <PanelHeader onNavigate={onNavigate} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+              <PanelHeader menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
               <motion.div className="lz-cover__copy" style={{ y: coverCopyY }}>
                 <p className="lz-eyebrow">LAYALI AL ZAHRA, AL BARSHA</p>
                 <h1>A little time.<br />All yours.</h1>
@@ -331,7 +437,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
             </motion.section>
 
             <motion.section className="lz-fit-panel" style={{ opacity: featureOpacity, y: featureY, visibility: featureVisible ? 'visible' : 'hidden' }} aria-hidden={!featureActive}>
-              <PanelHeader onNavigate={onNavigate} inverse menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+              <PanelHeader inverse menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
               <div className="lz-fit-panel__body">
                 <div className="lz-fit-panel__copy">
                   <p className="lz-eyebrow">MADE AROUND YOU</p>
@@ -386,6 +492,42 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
           </motion.div>}
         </section>
 
+        <section className="lz-packages" id="packages" aria-labelledby="lz-packages-title">
+          <div className="lz-packages__heading">
+            <div><p className="lz-eyebrow">A LITTLE MORE TO LOVE</p><h2 id="lz-packages-title">Good things, together.</h2></div>
+            <p>Thoughtful combinations for the days you want to make more of.</p>
+          </div>
+          <div className="lz-packages__circles" role="list" aria-label="Package collections">
+            {featuredPackages.map(({ category, item }, index) => <motion.div className="lz-package-orbit" key={`${category}-${item.id}`} role="listitem" animate={reducedMotion ? { y: 0 } : { y: [0, index % 2 ? -7 : -10, 0, index % 2 ? 6 : 8, 0] }} transition={reducedMotion ? { duration: .01 } : { duration: 6.2 + (index % 3) * .7, delay: index * .32, ease: 'easeInOut', repeat: Infinity }}>
+              <motion.button className="lz-package-circle" type="button" layoutId={`layali-package-${item.id}`} onClick={() => setSelectedPackage(item)} whileHover={reducedMotion ? undefined : { scale: 1.045, y: -5 }} whileTap={reducedMotion ? undefined : { scale: .98 }} aria-label={`View ${item.title}, ${item.price}`} style={{ backgroundImage: `url("${item.image}")` }}>
+                <small>{category}</small><strong>{item.title}</strong>
+              </motion.button>
+            </motion.div>)}
+          </div>
+          <div className="lz-packages__offers" id="offers">
+            <div className="lz-packages__offer-title">A little extra</div>
+            <div className="lz-packages__offer-list">
+              {offers.slice(0, 3).map((offer) => <div className="lz-packages__offer" key={offer.id}><strong>{offer.title.replace(/^Monday Offer – |^Midday Offer – /, '')}</strong><span>{offer.badge || offer.validUntil}</span></div>)}
+            </div>
+          </div>
+        </section>
+
+        <AnimatePresence>
+          {selectedPackage && <motion.div className="lz-package-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? .01 : .3 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedPackage(null); }}>
+            <motion.div className="lz-package-detail" layoutId={`layali-package-${selectedPackage.id}`} transition={{ type: 'spring', stiffness: 210, damping: 27, mass: .9 }} role="dialog" aria-modal="true" aria-labelledby="lz-package-detail-title">
+              <button className="lz-package-detail__close" type="button" aria-label="Close package details" onClick={() => setSelectedPackage(null)}>×</button>
+              <div className="lz-package-detail__copy">
+                <p className="lz-eyebrow">{selectedPackage.category}</p>
+                <h3 id="lz-package-detail-title">{selectedPackage.title}</h3>
+                <p>{selectedPackage.description}</p>
+                <strong className="lz-package-detail__price">{selectedPackage.price}</strong>
+                <a className="lz-package-detail__book" href={selectedPackage.bookingUrl || bookingUrl} target="_blank" rel="noreferrer">Book this package</a>
+              </div>
+              <img className="lz-package-detail__photo" src={selectedPackage.image} alt={`${selectedPackage.title} at Layali Al Zahra Beauty Salon`} />
+            </motion.div>
+          </motion.div>}
+        </AnimatePresence>
+
         {featuredReview && <section className="lz-review" aria-label="Guest reviews" onMouseEnter={() => setReviewPaused(true)} onMouseLeave={() => setReviewPaused(false)} onFocus={() => setReviewPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setReviewPaused(false); }}>
           <div className="lz-review__scrim" aria-hidden="true" />
           <div className="lz-review__content"><p className="lz-eyebrow">KIND WORDS FROM OUR GUESTS</p>
@@ -401,14 +543,15 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
         </section>}
       </main>
 
-      <footer className="lz-footer" id="visit">
-        <div className="lz-footer__top"><div><a className="lz-footer__name" href="#top">Layali Al Zahra<small>Beauty Salon LLC</small></a><p>A beauty lounge in the heart of Al Barsha.</p></div><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Make an appointment</a></div>
+      <footer className="lz-footer" id="contact">
+        <div className="lz-footer__top" id="visit"><div><img className="lz-footer__logo" src={brandLogoLight} alt="Layali Al Zahra Beauty Salon" /><div><a className="lz-footer__name" href="#top">Layali Al Zahra<small>Beauty Salon LLC</small></a><p className="lz-footer__contact-title">A good visit starts here.</p></div><p>Thoughtful beauty care in Al Barsha, Dubai.</p></div><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Make an appointment</a></div>
         <div className="lz-footer__details" id="lounge">
-          <div><span>VISIT</span><a href="https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx" target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Al Barsha 1, Dubai</a></div>
-          <div><span>GET IN TOUCH</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
-          <div><span>OPENING HOURS</span><p>Monday to Sunday, 10 am to 9 pm<br />Friday, 1 pm to 8:30 pm</p></div>
+          <div><span>COME BY</span><a href={mapUrl} target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Near Westzone Supermarket<br />Al Barsha 1, Dubai</a></div>
+          <div><span>CALL OR WRITE</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="tel:+97143475545">+971 4 347 5545</a><a href="tel:+97143571060">+971 4 357 1060</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
+          <div><span>OPENING HOURS</span><p>Monday to Sunday<br />10 am to 9 pm</p><p>Friday<br />1 pm to 8:30 pm</p></div>
+          <div><span>STAY IN TOUCH</span><a href="https://wa.me/971523706025" target="_blank" rel="noreferrer">WhatsApp</a><a className="lz-footer__social" href="https://www.instagram.com/alzahrabeauty.dubai/" target="_blank" rel="noreferrer">Instagram</a></div>
         </div>
-        <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} Layali Al Zahra Beauty Salon LLC</span><button onClick={() => onNavigate('contact')}>Contact us</button></div>
+        <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} Layali Al Zahra Beauty Salon LLC</span><a href="#top">Back to the beginning</a></div>
       </footer>
     </div>
   );
