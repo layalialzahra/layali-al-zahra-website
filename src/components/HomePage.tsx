@@ -66,6 +66,9 @@ const serviceCarouselStyles = `
 .layali-home-page > .lz-opening-track,.layali-home-page > main,.layali-home-page > .lz-footer { position: relative; z-index: 1; }
 .lz-opening-track { height: 120svh; }
 .lz-opening-track { background: transparent; }
+.lz-opening-stage { background: transparent; }
+.lz-opening-stage::after { background: transparent; }
+.lz-opening-stage > .lz-atmosphere { display: none; }
 .lz-services { position: relative; isolation: isolate; overflow: visible; padding-top: clamp(30px,4vw,58px); background: transparent; color: #fffaf7; }
 .lz-services::before,.lz-services::after { display: none; }
 .lz-services__heading,.lz-services__carousel { position: relative; z-index: 1; }
