@@ -10,8 +10,7 @@ import brandLogo from '../assets/logo-transparent.png';
 import brandLogoLight from '../assets/logo-transparent-light.png';
 import { legacyServicesData } from '../data/legacy-services.js';
 import { legacyPackagesData } from '../data/legacy-packages.js';
-import { legacyOffersData } from '../data/legacy-offers.js';
-import { loadPublicPackages, loadPublicOffers, loadPublicServices } from '../data/managed-content-public';
+import { loadPublicPackages, loadPublicServices } from '../data/managed-content-public';
 import './homepage-editorial.css';
 
 export interface HomePageReview {
@@ -64,12 +63,7 @@ function mapServiceCategories(items: any[]): ServiceCategoryCard[] {
 const fallbackServiceCategories = mapServiceCategories(legacyServicesData);
 
 type HomePackage = (typeof legacyPackagesData)[number] & { bookingUrl?: string };
-type HomeOffer = (typeof legacyOffersData)[number] & { bookingUrl?: string };
-
-const packageCategories = (items: HomePackage[]) => [...new Set(items.map((item) => item.category))]
-  .map((category) => ({ category, item: items.find((item) => item.category === category)! }))
-  .filter(({ item }) => item && item.title && item.image)
-  .slice(0, 5);
+const packageCarouselItems = (items: HomePackage[]) => items.filter((item) => item?.title && item.image);
 
 const mapUrl = 'https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx';
 
@@ -120,25 +114,22 @@ const serviceCarouselStyles = `
 .lz-review__quote { flex: none; height: 230px; }
 .lz-review__rating { flex: none; margin: 0 0 10px; }
 .lz-footer { background: transparent; }
-.lz-packages { position: relative; isolation: isolate; overflow: visible; padding: clamp(26px,3vw,44px) max(24px,calc((100vw - 1310px)/2)) clamp(30px,4vw,56px); color: #fffaf7; scroll-margin-top: 30px; }
-.lz-packages__heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: clamp(28px,4vw,54px); }
-.lz-packages__heading .lz-eyebrow,.lz-packages__offer-title { color: rgba(255,250,247,.7); }
-.lz-packages__heading h2 { margin: 12px 0 0; font-family: Georgia,'Times New Roman',serif; font-size: clamp(32px,4.3vw,56px); font-weight: 400; letter-spacing: -.05em; line-height: 1.02; }
-.lz-packages__heading p { max-width: 260px; margin: 0 0 3px; color: rgba(255,250,247,.76); font-size: 12px; line-height: 1.6; }
-.lz-packages__circles { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; justify-items: center; gap: clamp(12px,2.4vw,34px); }
-.lz-package-orbit { display: grid; width: 100%; place-items: center; }
-.lz-package-circle { position: relative; display: flex; width: clamp(142px,15vw,204px); aspect-ratio: 1; flex-direction: column; align-items: flex-start; justify-content: flex-end; overflow: hidden; padding: clamp(17px,2vw,26px); border: 1px solid rgba(255,250,247,.44); border-radius: 50%; background-position: center; background-size: cover; color: #fffaf7; cursor: pointer; isolation: isolate; text-align: left; box-shadow: 0 20px 48px rgba(7,4,4,.25); }
+.lz-packages { position: relative; isolation: isolate; overflow: visible; padding: clamp(20px,2.4vw,34px) max(24px,calc((100vw - 1310px)/2)) clamp(18px,2.2vw,32px); color: #fffaf7; scroll-margin-top: 30px; }
+.lz-packages__heading { display: flex; justify-content: center; margin-bottom: clamp(22px,3vw,42px); text-align: center; }
+.lz-packages__heading h2 { margin: 0; font-family: Georgia,'Times New Roman',serif; font-size: clamp(34px,4.3vw,56px); font-weight: 400; letter-spacing: -.05em; line-height: 1.02; }
+.lz-packages__stage { position: relative; height: clamp(300px,29vw,382px); overflow: visible; perspective: 1100px; touch-action: pan-y; }
+.lz-packages__circles { position: absolute; inset: 0; overflow: visible; }
+.lz-package-orbit { position: absolute; top: 50%; left: 50%; display: grid; width: max-content; place-items: center; translate: -50% -50%; transform-style: preserve-3d; }
+.lz-package-circle { position: relative; display: flex; width: clamp(146px,15vw,204px); aspect-ratio: 1; flex-direction: column; align-items: flex-start; justify-content: flex-end; overflow: hidden; padding: clamp(17px,2vw,26px); border: 1px solid rgba(255,250,247,.44); border-radius: 50%; background-position: center; background-size: cover; color: #fffaf7; cursor: pointer; isolation: isolate; text-align: left; box-shadow: 0 20px 48px rgba(7,4,4,.25); transition: box-shadow .35s ease,border-color .35s ease; }
+.lz-package-circle[aria-current='true'] { border-color: rgba(255,250,247,.82); box-shadow: 0 28px 70px rgba(7,4,4,.36),0 0 0 1px rgba(255,250,247,.1); }
 .lz-package-circle::before { position: absolute; z-index: -1; inset: 0; background: linear-gradient(0deg,rgba(18,12,11,.74),rgba(18,12,11,.12) 65%,rgba(18,12,11,.06)); content: ''; transition: opacity .5s ease; }
-.lz-package-orbit:nth-child(even) { transform: translateY(22px); }
 .lz-package-circle small { max-width: 100%; margin-bottom: 8px; color: rgba(255,250,247,.84); font-size: 8px; letter-spacing: .13em; line-height: 1.3; text-transform: uppercase; }
 .lz-package-circle strong { max-width: 100%; font-family: Georgia,'Times New Roman',serif; font-size: clamp(17px,1.75vw,23px); font-weight: 400; letter-spacing: -.045em; line-height: 1.04; text-wrap: balance; }
 .lz-package-circle:hover::before,.lz-package-circle:focus-visible::before { opacity: .72; }
-.lz-packages__offers { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: 28px; margin-top: clamp(46px,6vw,82px); padding-top: 22px; border-top: 1px solid rgba(255,250,247,.2); scroll-margin-top: 26px; }
-.lz-packages__offer-title { min-width: 125px; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
-.lz-packages__offer-list { display: flex; justify-content: flex-end; gap: 14px; }
-.lz-packages__offer { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 5px; padding-left: 14px; border-left: 1px solid rgba(255,250,247,.24); }
-.lz-packages__offer strong { overflow: hidden; color: #fffaf7; font-family: Georgia,'Times New Roman',serif; font-size: 15px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
-.lz-packages__offer span { color: rgba(255,250,247,.7); font-size: 10px; }
+.lz-packages__controls { display: flex; justify-content: center; gap: 14px; margin-top: 12px; }
+.lz-package-arrow { display: grid; width: 48px; height: 48px; place-items: center; padding: 0; border: 1px solid rgba(255,250,247,.56); border-radius: 50%; background: transparent; color: #fffaf7; cursor: pointer; transition: width .24s ease,height .24s ease,background .24s ease,color .24s ease,border-color .24s ease; }
+.lz-package-arrow svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.lz-package-arrow:hover,.lz-package-arrow:focus-visible { width: 56px; height: 56px; margin: -4px; border-color: #f0d3bd; background: #f0d3bd; color: #2b1b17; }
 .lz-package-overlay { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 22px; background: rgba(19,13,12,.34); backdrop-filter: blur(18px) saturate(.78); -webkit-backdrop-filter: blur(18px) saturate(.78); }
 .lz-package-detail { position: relative; display: grid; width: min(850px,100%); min-height: min(390px,calc(100dvh - 44px)); max-height: min(430px,calc(100dvh - 44px)); grid-template-columns: 1fr .94fr; overflow: hidden; border: 1px solid rgba(255,250,247,.38); border-radius: 4px; background: #2d211f; color: #fffaf7; box-shadow: 0 32px 100px rgba(0,0,0,.42); }
 .lz-package-detail__copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(28px,5vw,58px); }
@@ -150,7 +141,24 @@ const serviceCarouselStyles = `
 .lz-package-detail__book:hover { background: #fffaf7; color: #281d1b; }
 .lz-package-detail__photo { width: 100%; height: 100%; min-height: 330px; object-fit: cover; }
 .lz-package-detail__close { position: absolute; z-index: 2; top: 12px; right: 12px; display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(255,250,247,.65); border-radius: 50%; background: rgba(31,22,20,.25); color: #fffaf7; cursor: pointer; font-size: 23px; line-height: 1; }
-.lz-footer { scroll-margin-top: 20px; padding-top: 46px; }
+.lz-footer { scroll-margin-top: 20px; padding-top: clamp(26px,4vw,54px); }
+.lz-contact { display: grid; grid-template-columns: minmax(0,.86fr) minmax(420px,1.14fr); gap: clamp(34px,7vw,110px); align-items: center; padding: clamp(34px,6vw,78px); border: 1px solid rgba(255,250,247,.16); background: linear-gradient(115deg,rgba(37,25,23,.78),rgba(27,21,20,.55)),var(--lz-page-backdrop) center 48%/cover; box-shadow: 0 30px 95px rgba(0,0,0,.17); }
+.lz-contact__intro { max-width: 430px; }
+.lz-contact__intro .lz-eyebrow { color: #d9b6a7; }
+.lz-contact__intro h2 { margin: 15px 0 18px; color: #fffaf7; font-family: Georgia,'Times New Roman',serif; font-size: clamp(42px,5.2vw,70px); font-weight: 400; letter-spacing: -.055em; line-height: .98; }
+.lz-contact__intro > p { max-width: 340px; margin: 0 0 30px; color: rgba(255,250,247,.78); font-size: 13px; line-height: 1.7; }
+.lz-contact__meta { display: grid; gap: 17px; }
+.lz-contact__meta span,.lz-contact__meta a,.lz-contact__meta p { display: block; margin: 0; color: #fffaf7; font-size: 11px; line-height: 1.65; }
+.lz-contact__meta span { margin-bottom: 4px; color: #d9b6a7; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; }
+.lz-contact__form { display: grid; gap: 15px; padding: clamp(22px,3.4vw,42px); border: 1px solid rgba(255,250,247,.22); background: rgba(31,24,22,.66); backdrop-filter: blur(10px); }
+.lz-contact__form label { display: grid; gap: 7px; color: rgba(255,250,247,.76); font-size: 10px; letter-spacing: .04em; }
+.lz-contact__form input,.lz-contact__form textarea { width: 100%; border: 0; border-bottom: 1px solid rgba(255,250,247,.36); border-radius: 0; padding: 9px 0; outline: none; background: transparent; color: #fffaf7; font: inherit; font-size: 12px; resize: vertical; }
+.lz-contact__form input:focus,.lz-contact__form textarea:focus { border-color: #e3bfae; }
+.lz-contact__form input::placeholder,.lz-contact__form textarea::placeholder { color: rgba(255,250,247,.43); }
+.lz-contact__send { justify-self: start; min-height: 45px; margin-top: 3px; padding: 0 20px; border: 1px solid rgba(255,250,247,.72); background: transparent; color: #fffaf7; cursor: pointer; font: inherit; font-size: 10px; letter-spacing: .06em; transition: background .2s ease,color .2s ease; }
+.lz-contact__send:hover { background: #f0d3bd; color: #2b1b17; }
+.lz-contact__status { margin: 0; color: #f0d3bd; font-size: 11px; }
+.lz-contact__success { color: #d6e6d0; }
 .lz-footer__contact-title { margin: 0 0 8px; color: #fffaf7; font-family: Georgia,'Times New Roman',serif; font-size: clamp(25px,3.3vw,42px); font-weight: 400; letter-spacing: -.045em; }
 .lz-footer__top > div { display: grid; grid-template-columns: 70px minmax(190px,auto) minmax(180px,1fr); align-items: center; column-gap: 20px; }
 .lz-footer__logo { display: block; width: 66px; height: 62px; object-fit: contain; }
@@ -161,10 +169,8 @@ html { scroll-behavior: smooth; }
 @media (max-width: 1000px) {
   .lz-services__stage { --service-card-width: min(26vw,238px); height: 410px; }
   .lz-service-slot[data-offset='-2'] .lz-service-card,.lz-service-slot[data-offset='2'] .lz-service-card { visibility: hidden; }
-  .lz-packages__circles { grid-template-columns: repeat(3,minmax(0,1fr)); row-gap: 26px; }
-  .lz-package-orbit:nth-child(even) { transform: translateY(0); }
-  .lz-package-orbit:nth-child(2),.lz-package-orbit:nth-child(5) { transform: translateY(18px); }
-  .lz-package-circle { width: clamp(150px,23vw,200px); }
+  .lz-package-circle { width: clamp(146px,23vw,192px); }
+  .lz-contact { grid-template-columns: minmax(0,.85fr) minmax(350px,1.15fr); gap: 36px; padding: 34px; }
   .lz-footer__details { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
@@ -178,19 +184,15 @@ html { scroll-behavior: smooth; }
   .lz-service-card__caption strong { font-size: clamp(22px,6vw,27px); }
   .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(25px,7vw,30px); }
   .lz-services__controls { margin-top: 8px; }
-  .lz-packages { padding: 24px 20px 36px; }
-  .lz-packages__heading { align-items: flex-start; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .lz-packages { padding: 19px 0 25px; }
+  .lz-packages__heading { margin-bottom: 13px; }
   .lz-packages__heading h2 { font-size: clamp(31px,9vw,42px); }
-  .lz-packages__heading p { max-width: 280px; }
-  .lz-packages__circles { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px 8px; }
-  .lz-package-orbit:nth-child(2),.lz-package-orbit:nth-child(5) { transform: none; }
-  .lz-package-orbit:nth-child(even) { transform: translateY(20px); }
-  .lz-package-circle { width: min(42vw,174px); padding: 16px; }
+  .lz-packages__stage { height: min(76vw,312px); min-height: 258px; }
+  .lz-package-circle { width: min(46vw,190px); padding: 16px; }
   .lz-package-circle strong { font-size: clamp(15px,4.4vw,20px); }
   .lz-package-circle small { font-size: 7px; }
-  .lz-packages__offers { grid-template-columns: 1fr; gap: 13px; margin-top: 42px; }
-  .lz-packages__offer-list { justify-content: flex-start; overflow-x: auto; padding-bottom: 4px; }
-  .lz-packages__offer { min-width: 145px; }
+  .lz-package-arrow { width: 44px; height: 44px; }
+  .lz-package-arrow:hover,.lz-package-arrow:focus-visible { width: 50px; height: 50px; }
   .lz-package-overlay { padding: 12px; }
   .lz-package-detail { width: min(420px,100%); min-height: 0; max-height: calc(100dvh - 24px); grid-template-columns: 1fr; grid-template-rows: minmax(155px,30vh) auto; overflow-y: auto; border-radius: 3px; }
   .lz-package-detail__photo { grid-row: 1; min-height: 0; max-height: 230px; }
@@ -200,6 +202,12 @@ html { scroll-behavior: smooth; }
   .lz-package-detail__price { margin-top: 12px; }
   .lz-package-detail__book { min-height: 40px; margin-top: 15px; }
   .lz-package-detail__close { top: 9px; right: 9px; width: 34px; height: 34px; background: rgba(31,22,20,.55); }
+  .lz-contact { grid-template-columns: 1fr; gap: 26px; padding: 26px 20px; }
+  .lz-contact__intro h2 { font-size: 44px; }
+  .lz-contact__intro > p { margin-bottom: 22px; font-size: 12px; }
+  .lz-contact__meta { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .lz-contact__form { gap: 12px; padding: 20px 17px; }
+  .lz-contact__form textarea { min-height: 66px; }
   .lz-footer__top > div { display: grid; grid-template-columns: 50px minmax(0,1fr); align-items: center; gap: 10px 13px; }
   .lz-footer__logo { width: 48px; height: 48px; }
   .lz-footer__top > div > p { grid-column: 1 / -1; margin: 0; }
@@ -259,6 +267,8 @@ function PanelHeader({ inverse = false, menuOpen, setMenuOpen }: {
 export default function HomePage({ onNavigate, reviews, disableInitialAnimations = false }: HomePageProps) {
   const openingTrack = useRef<HTMLElement>(null);
   const serviceStage = useRef<HTMLDivElement>(null);
+  const packageStage = useRef<HTMLDivElement>(null);
+  const packageCarouselInteracted = useRef(false);
   const reducedMotion = Boolean(useReducedMotion());
   const servicesInView = useInView(serviceStage, { amount: 0.12, margin: '0px 0px -12% 0px' });
   const [menuOpen, setMenuOpen] = useState(false);
@@ -266,8 +276,14 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [featureVisible, setFeatureVisible] = useState(false);
   const [services, setServices] = useState<ServiceCategoryCard[]>(fallbackServiceCategories);
   const [packages, setPackages] = useState<HomePackage[]>(legacyPackagesData);
-  const [offers, setOffers] = useState<HomeOffer[]>(legacyOffersData);
   const [selectedPackage, setSelectedPackage] = useState<HomePackage | null>(null);
+  const [packageIndex, setPackageIndex] = useState(0);
+  const [packageDirection, setPackageDirection] = useState(1);
+  const [packageStageWidth, setPackageStageWidth] = useState(0);
+  const [packagePaused, setPackagePaused] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [contactSubmitting, setContactSubmitting] = useState(false);
+  const [contactStatus, setContactStatus] = useState<{ message: string; success: boolean } | null>(null);
   const [publicReviews, setPublicReviews] = useState<HomePageReview[] | undefined>(reviews);
   const [reviewIndex, setReviewIndex] = useState(0);
   const [reviewPaused, setReviewPaused] = useState(false);
@@ -329,15 +345,43 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
 
   useEffect(() => {
     let active = true;
-    void Promise.all([loadPublicPackages(), loadPublicOffers()]).then(([loadedPackages, loadedOffers]) => {
+    void loadPublicPackages().then((loadedPackages) => {
       if (!active) return;
       setPackages(loadedPackages as HomePackage[]);
-      setOffers(loadedOffers as HomeOffer[]);
     });
     return () => { active = false; };
   }, []);
 
-  const featuredPackages = useMemo(() => packageCategories(packages), [packages]);
+  const featuredPackages = useMemo(() => packageCarouselItems(packages), [packages]);
+
+  const compactPackageCarousel = packageStageWidth > 0 && packageStageWidth <= 700;
+  const packageCardCount = compactPackageCarousel ? 3 : 5;
+  const packageOffsets = featuredPackages.length < packageCardCount
+    ? Array.from({ length: featuredPackages.length }, (_, index) => index - Math.floor((featuredPackages.length - 1) / 2))
+    : compactPackageCarousel ? [-1, 0, 1] : [-2, -1, 0, 1, 2];
+  const packageStep = compactPackageCarousel ? packageStageWidth * 0.34 : Math.min(packageStageWidth * 0.2, 244);
+  const visiblePackageCards = packageOffsets.map((offset) => ({
+    offset,
+    item: featuredPackages[(packageIndex + offset + featuredPackages.length) % featuredPackages.length],
+  })).filter(({ item }) => item);
+
+  useEffect(() => {
+    const stage = packageStage.current;
+    if (!stage) return;
+    const measure = () => setPackageStageWidth(stage.getBoundingClientRect().width);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => { setPackageIndex(0); }, [featuredPackages.length]);
+
+  useEffect(() => {
+    if (featuredPackages.length < 2 || packagePaused || reducedMotion || selectedPackage) return;
+    const timer = window.setInterval(() => movePackageRef.current(1), 5600);
+    return () => window.clearInterval(timer);
+  }, [featuredPackages.length, packagePaused, reducedMotion, selectedPackage]);
 
   useEffect(() => {
     const stage = serviceStage.current;
@@ -399,6 +443,14 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     setServiceDirection(direction);
     setServiceIndex((index) => (index + direction + services.length) % services.length);
   };
+  const movePackage = (direction: number) => {
+    if (featuredPackages.length < 2) return;
+    packageCarouselInteracted.current = true;
+    setPackageDirection(direction || 1);
+    setPackageIndex((index) => (index + direction + featuredPackages.length) % featuredPackages.length);
+  };
+  const movePackageRef = useRef(movePackage);
+  movePackageRef.current = movePackage;
   const moveServiceRef = useRef(moveService);
   moveServiceRef.current = moveService;
   const featuredReview = visibleReviews[reviewIndex];
@@ -414,6 +466,17 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
       rotateY: compactServiceStage ? -offset * 12 : -offset * 9,
       rotateZ: compactServiceStage ? -offset * 1.2 : -offset * 1.7,
       opacity,
+    };
+  };
+  const packagePose = (offset: number) => {
+    const distance = Math.abs(offset);
+    return {
+      x: offset * packageStep,
+      y: distance * (compactPackageCarousel ? 13 : 20),
+      scale: distance === 0 ? 1 : compactPackageCarousel ? .72 : distance === 1 ? .84 : .68,
+      rotateZ: compactPackageCarousel ? -offset * 2.3 : -offset * 2.8,
+      rotateY: -offset * 7,
+      opacity: distance === 0 ? 1 : compactPackageCarousel ? .56 : distance === 1 ? .88 : .58,
     };
   };
 
@@ -493,22 +556,35 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
         </section>
 
         <section className="lz-packages" id="packages" aria-labelledby="lz-packages-title">
-          <div className="lz-packages__heading">
-            <div><p className="lz-eyebrow">A LITTLE MORE TO LOVE</p><h2 id="lz-packages-title">Good things, together.</h2></div>
-            <p>Thoughtful combinations for the days you want to make more of.</p>
+          <div className="lz-packages__heading" id="offers">
+            <h2 id="lz-packages-title">Good things, together.</h2>
           </div>
-          <div className="lz-packages__circles" role="list" aria-label="Package collections">
-            {featuredPackages.map(({ category, item }, index) => <motion.div className="lz-package-orbit" key={`${category}-${item.id}`} role="listitem" animate={reducedMotion ? { y: 0 } : { y: [0, index % 2 ? -7 : -10, 0, index % 2 ? 6 : 8, 0] }} transition={reducedMotion ? { duration: .01 } : { duration: 6.2 + (index % 3) * .7, delay: index * .32, ease: 'easeInOut', repeat: Infinity }}>
-              <motion.button className="lz-package-circle" type="button" layoutId={`layali-package-${item.id}`} onClick={() => setSelectedPackage(item)} whileHover={reducedMotion ? undefined : { scale: 1.045, y: -5 }} whileTap={reducedMotion ? undefined : { scale: .98 }} aria-label={`View ${item.title}, ${item.price}`} style={{ backgroundImage: `url("${item.image}")` }}>
-                <small>{category}</small><strong>{item.title}</strong>
-              </motion.button>
-            </motion.div>)}
-          </div>
-          <div className="lz-packages__offers" id="offers">
-            <div className="lz-packages__offer-title">A little extra</div>
-            <div className="lz-packages__offer-list">
-              {offers.slice(0, 3).map((offer) => <div className="lz-packages__offer" key={offer.id}><strong>{offer.title.replace(/^Monday Offer – |^Midday Offer – /, '')}</strong><span>{offer.badge || offer.validUntil}</span></div>)}
+          <div className="lz-packages__stage" ref={packageStage} role="group" aria-roledescription="carousel" aria-label="Salon packages" onMouseEnter={() => setPackagePaused(true)} onMouseLeave={() => setPackagePaused(false)} onFocus={() => setPackagePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setPackagePaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); movePackage(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); movePackage(1); } }}>
+            <div className="lz-packages__circles">
+              <AnimatePresence custom={packageDirection} initial={false}>
+                {visiblePackageCards.map(({ offset, item }) => {
+                  const itemIndex = featuredPackages.findIndex((candidate) => candidate.id === item.id);
+                  const priorCenter = (packageIndex - packageDirection + featuredPackages.length) % featuredPackages.length;
+                  let priorOffset = (itemIndex - priorCenter + featuredPackages.length) % featuredPackages.length;
+                  if (priorOffset > Math.floor(featuredPackages.length / 2)) priorOffset -= featuredPackages.length;
+                  const distance = Math.abs(offset);
+                  const pose = packagePose(offset);
+                  const previousPose = packagePose(priorOffset);
+                  const initialPose = priorOffset > Math.max(...packageOffsets) || priorOffset < Math.min(...packageOffsets)
+                    ? { ...previousPose, opacity: 0 }
+                    : previousPose;
+                  return <motion.div className="lz-package-orbit" key={item.id} role="listitem" aria-label={item.title} initial={packageCarouselInteracted.current ? initialPose : false} animate={pose} exit={(direction: number) => ({ x: (offset - direction) * packageStep, opacity: 0, scale: .5, transition: { duration: reducedMotion ? .01 : .42, ease: [0.22, 1, 0.36, 1] } })} transition={reducedMotion ? { duration: .01 } : { type: 'spring', stiffness: 105, damping: 20, mass: .8 }} style={{ zIndex: 10 - distance }}>
+                    <motion.button className="lz-package-circle" type="button" layoutId={`layali-package-${item.id}`} onClick={() => offset === 0 ? setSelectedPackage(item) : movePackage(offset)} animate={reducedMotion ? { y: 0, rotateZ: 0 } : { y: [0, -5, 0, 4, 0], rotateZ: [0, .28, 0, -.28, 0] }} transition={reducedMotion ? { duration: .01 } : { y: { duration: 5.2, ease: 'easeInOut', repeat: Infinity, delay: itemIndex * .055 }, rotateZ: { duration: 6.3, ease: 'easeInOut', repeat: Infinity, delay: itemIndex * .055 } }} whileHover={reducedMotion ? undefined : { scale: pose.scale * 1.045, y: -8 }} whileTap={reducedMotion ? undefined : { scale: pose.scale * .98 }} aria-current={offset === 0 ? 'true' : undefined} aria-label={offset === 0 ? `View ${item.title}, ${item.price}` : `Show ${item.title} in the centre`} style={{ backgroundImage: `url("${item.image}")` }}>
+                      <small>{item.category}</small><strong>{item.title}</strong>
+                    </motion.button>
+                  </motion.div>;
+                })}
+              </AnimatePresence>
             </div>
+          </div>
+          <div className="lz-packages__controls" aria-label="Package carousel controls">
+            <button className="lz-package-arrow" type="button" onClick={() => movePackage(-1)} aria-label="Previous package"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13 10H6m0 0 3.5-3.5M6 10l3.5 3.5" /></svg></button>
+            <button className="lz-package-arrow" type="button" onClick={() => movePackage(1)} aria-label="Next package"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 10h7m0 0-3.5-3.5M14 10l-3.5 3.5" /></svg></button>
           </div>
         </section>
 
@@ -544,13 +620,43 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
       </main>
 
       <footer className="lz-footer" id="contact">
-        <div className="lz-footer__top" id="visit"><div><img className="lz-footer__logo" src={brandLogoLight} alt="Layali Al Zahra Beauty Salon" /><div><a className="lz-footer__name" href="#top">Layali Al Zahra<small>Beauty Salon LLC</small></a><p className="lz-footer__contact-title">A good visit starts here.</p></div><p>Thoughtful beauty care in Al Barsha, Dubai.</p></div><a className="lz-footer__book" href={bookingUrl} target="_blank" rel="noreferrer">Make an appointment</a></div>
-        <div className="lz-footer__details" id="lounge">
-          <div><span>COME BY</span><a href={mapUrl} target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Near Westzone Supermarket<br />Al Barsha 1, Dubai</a></div>
-          <div><span>CALL OR WRITE</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="tel:+97143475545">+971 4 347 5545</a><a href="tel:+97143571060">+971 4 357 1060</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
-          <div><span>OPENING HOURS</span><p>Monday to Sunday<br />10 am to 9 pm</p><p>Friday<br />1 pm to 8:30 pm</p></div>
-          <div><span>STAY IN TOUCH</span><a href="https://wa.me/971523706025" target="_blank" rel="noreferrer">WhatsApp</a><a className="lz-footer__social" href="https://www.instagram.com/alzahrabeauty.dubai/" target="_blank" rel="noreferrer">Instagram</a></div>
-        </div>
+        <section className="lz-contact" aria-labelledby="lz-contact-title">
+          <div className="lz-contact__intro">
+            <img className="lz-footer__logo" src={brandLogoLight} alt="Layali Al Zahra Beauty Salon" />
+            <p className="lz-eyebrow">A MOMENT, JUST FOR YOU</p>
+            <h2 id="lz-contact-title">Contact us.</h2>
+            <p>Tell us what you have in mind. We’ll help you find the right treatment and a time that works.</p>
+            <div className="lz-contact__meta">
+              <div id="lounge"><span>VISIT THE LOUNGE</span><a href={mapUrl} target="_blank" rel="noreferrer">Shop 1, Al Telal 11<br />Al Barsha 1, Dubai</a></div>
+              <div><span>CALL OR WRITE</span><a href="tel:+971523706025">+971 52 370 6025</a><a href="mailto:info@layalialzahra.com">info@layalialzahra.com</a></div>
+              <div><span>OPENING HOURS</span><p>Daily, 10 am to 9 pm<br />Friday, 1 pm to 8:30 pm</p></div>
+              <div><span>DIRECT MESSAGE</span><a href="https://wa.me/971523706025" target="_blank" rel="noreferrer">WhatsApp</a></div>
+            </div>
+          </div>
+          <form className="lz-contact__form" onSubmit={async (event) => {
+            event.preventDefault();
+            setContactSubmitting(true);
+            setContactStatus(null);
+            try {
+              const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify({ access_key: '020bb06c-0030-4a16-8ce7-6c9224cd5079', subject: 'New enquiry from Layali Al Zahra website', from_name: contactForm.name, ...contactForm }),
+              });
+              const result = await response.json();
+              if (!result.success) throw new Error('Submission failed');
+              setContactStatus({ message: 'Thank you. Your message has been sent.', success: true });
+              setContactForm({ name: '', email: '', message: '' });
+            } catch {
+              setContactStatus({ message: 'We could not send that just now. Please contact us by WhatsApp or phone.', success: false });
+            } finally { setContactSubmitting(false); }
+          }}>
+            <label htmlFor="lz-contact-name">Your name<input id="lz-contact-name" name="name" autoComplete="name" placeholder="Name" required value={contactForm.name} onChange={(event) => setContactForm({ ...contactForm, name: event.target.value })} /></label>
+            <label htmlFor="lz-contact-email">Email address<input id="lz-contact-email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required value={contactForm.email} onChange={(event) => setContactForm({ ...contactForm, email: event.target.value })} /></label>
+            <label htmlFor="lz-contact-message">How can we help?<textarea id="lz-contact-message" name="message" rows={3} placeholder="Your message" required value={contactForm.message} onChange={(event) => setContactForm({ ...contactForm, message: event.target.value })} /></label>
+            {contactStatus && <p className={`lz-contact__status${contactStatus.success ? ' lz-contact__success' : ''}`} role="status">{contactStatus.message}</p>}
+            <button className="lz-contact__send" type="submit" disabled={contactSubmitting}>{contactSubmitting ? 'Sending…' : 'Send an enquiry'}</button>
+          </form>
+        </section>
         <div className="lz-footer__bottom"><span>© {new Date().getFullYear()} Layali Al Zahra Beauty Salon LLC</span><a href="#top">Back to the beginning</a></div>
       </footer>
     </div>
