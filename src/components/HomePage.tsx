@@ -61,7 +61,7 @@ const fallbackServiceCategories = mapServiceCategories(legacyServicesData);
 
 const serviceCarouselStyles = `
 .layali-home-active { position: relative; isolation: isolate; background: transparent !important; }
-.layali-home-page { position: relative; isolation: isolate; overflow: clip; background: transparent; }
+.layali-home-page { position: relative; isolation: isolate; overflow: visible; background: transparent; }
 .layali-home-page::before { position: fixed; z-index: 0; inset: -32px; background-image: linear-gradient(0deg,rgba(35,22,20,.76),rgba(48,29,25,.57)),radial-gradient(ellipse at 50% 38%,rgba(149,90,70,.24),transparent 64%),var(--lz-page-backdrop); background-position: center,center,center 46%; background-size: cover,cover,cover; background-repeat: no-repeat; content: ''; filter: blur(27px) saturate(.8); transform: scale(1.08); pointer-events: none; }
 .layali-home-page > .lz-opening-track,.layali-home-page > main,.layali-home-page > .lz-footer { position: relative; z-index: 1; }
 .lz-opening-track { height: 120svh; }
@@ -75,8 +75,9 @@ const serviceCarouselStyles = `
 .lz-services__heading .lz-eyebrow { color: rgba(255,250,247,.76); }
 .lz-services__heading h2 { color: #fffaf7; }
 .lz-services__heading button { color: #fffaf7; border-color: rgba(255,250,247,.5); }
-.lz-services__carousel { position: relative; }
-.lz-services__stage { position: relative; display: grid; width: 100vw; max-width: none; min-height: clamp(470px,47vw,620px); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; gap: clamp(9px,1.25vw,18px); overflow: hidden; margin-left: calc(50% - 50vw); padding: clamp(30px,4vw,58px) 0 clamp(24px,3vw,42px); border: 0 !important; border-radius: 0; outline: 0; background: transparent !important; box-shadow: none; perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; -webkit-mask-image: linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%); mask-image: linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%); }
+.lz-services__carousel { position: relative; border: 0 !important; outline: 0 !important; background: transparent !important; box-shadow: none !important; }
+.lz-services__carousel::before,.lz-services__carousel::after { display: none !important; }
+.lz-services__stage { position: relative; display: grid; width: 100vw; max-width: none; min-height: clamp(470px,47vw,620px); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; gap: clamp(9px,1.25vw,18px); overflow: visible; margin-left: calc(50% - 50vw); padding: clamp(30px,4vw,58px) 0 clamp(24px,3vw,42px); border: 0 !important; border-radius: 0; outline: 0; background: transparent !important; box-shadow: none; perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; -webkit-mask-image: linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%); mask-image: linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%); }
 .lz-services__stage::before,.lz-services__stage::after { display: none; }
 .lz-service-slot { position: relative; min-width: 0; grid-row: 1; transform-style: preserve-3d; will-change: transform; }
 .lz-service-slot[data-offset='-2'] { grid-column: 1; }
@@ -112,8 +113,9 @@ const serviceCarouselStyles = `
 .lz-review { background: transparent; }
 .lz-review::before { background: none; filter: none; transform: none; }
 .lz-review__scrim { background: linear-gradient(90deg,rgba(31,21,20,.22),rgba(31,21,20,.08),rgba(31,21,20,.22)); }
-.lz-review__content > .lz-eyebrow { margin-bottom: 38px; }
-.lz-review__rating { margin: 0 0 10px; }
+.lz-review__content > .lz-eyebrow { flex: none; margin: 0 0 34px !important; }
+.lz-review__quote { flex: none; height: 230px; }
+.lz-review__rating { flex: none; margin: 0 0 10px; }
 .lz-footer { background: transparent; }
 @media (max-width: 1000px) {
   .lz-services__stage { min-height: 470px; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; padding: 34px 0 30px; }
