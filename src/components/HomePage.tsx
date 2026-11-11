@@ -349,7 +349,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
       </section>
 
       <main>
-        <section className="lz-services" id="services" style={servicesStyle}>
+        <section className="lz-services" id="services">
           <style>{serviceCarouselStyles}</style>
           <motion.div className="lz-services__heading" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 26 }} animate={servicesInView ? { opacity: 1, y: 0 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }} transition={{ duration: 0.9, ease: [0.2, 0.75, 0.2, 1] }}>
             <div><p className="lz-eyebrow">THE GOOD PART</p><h2>Choose what feels right.</h2></div>
