@@ -60,17 +60,20 @@ function mapServiceCategories(items: any[]): ServiceCategoryCard[] {
 const fallbackServiceCategories = mapServiceCategories(legacyServicesData);
 
 const serviceCarouselStyles = `
+.layali-home-active { background: transparent !important; }
+.layali-home-page { position: relative; isolation: isolate; overflow: visible; background: transparent; }
+.layali-home-page::before { position: fixed; z-index: -1; inset: -32px; background: linear-gradient(0deg,rgba(35,22,20,.76),rgba(48,29,25,.57)),radial-gradient(ellipse at 50% 38%,rgba(149,90,70,.24),transparent 64%),var(--lz-page-backdrop) center 46%/cover no-repeat; content: ''; filter: blur(27px) saturate(.8); transform: scale(1.08); pointer-events: none; }
 .lz-opening-track { height: 120svh; }
-.lz-services { position: relative; isolation: isolate; overflow: hidden; padding-top: clamp(30px,4vw,58px); background: transparent; color: #fffaf7; }
-.lz-services::before { position: absolute; z-index: -1; inset: -28px; background: linear-gradient(0deg,rgba(24,14,12,.46),rgba(27,17,15,.32)),radial-gradient(ellipse at 45% 44%,rgba(133,80,66,.35),transparent 70%),var(--service-backdrop) center 42%/cover no-repeat; content: ''; filter: blur(22px); transform: scale(1.08); }
-.lz-services::after { position: absolute; z-index: 0; inset: 0; background: linear-gradient(100deg,rgba(33,20,18,.34),rgba(38,23,21,.12) 52%,rgba(29,18,16,.38)); content: ''; pointer-events: none; }
+.lz-opening-track { background: transparent; }
+.lz-services { position: relative; isolation: isolate; overflow: visible; padding-top: clamp(30px,4vw,58px); background: transparent; color: #fffaf7; }
+.lz-services::before,.lz-services::after { display: none; }
 .lz-services__heading,.lz-services__carousel { position: relative; z-index: 1; }
 .lz-services__heading .lz-eyebrow { color: rgba(255,250,247,.76); }
 .lz-services__heading h2 { color: #fffaf7; }
 .lz-services__heading button { color: #fffaf7; border-color: rgba(255,250,247,.5); }
 .lz-services__carousel { position: relative; }
-.lz-services__stage { position: relative; display: grid; min-height: clamp(470px,47vw,620px); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; gap: clamp(9px,1.25vw,18px); overflow: hidden; padding: clamp(30px,4vw,58px) clamp(20px,3.2vw,48px) clamp(24px,3vw,42px); perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; }
-.lz-services__stage::after { position: absolute; z-index: 6; inset: 0; background: linear-gradient(90deg,rgba(28,17,15,.42),transparent 13%,transparent 87%,rgba(28,17,15,.42)); content: ''; pointer-events: none; }
+.lz-services__stage { position: relative; display: grid; width: 100vw; max-width: none; min-height: clamp(470px,47vw,620px); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; gap: clamp(9px,1.25vw,18px); overflow: hidden; margin-left: calc(50% - 50vw); padding: clamp(30px,4vw,58px) clamp(18px,2.7vw,42px) clamp(24px,3vw,42px); border: 0; border-radius: 0; background: transparent; perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; -webkit-mask-image: linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%); mask-image: linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%); }
+.lz-services__stage::before,.lz-services__stage::after { display: none; }
 .lz-service-slot { position: relative; min-width: 0; grid-row: 1; transform-style: preserve-3d; will-change: transform; }
 .lz-service-slot[data-offset='-2'] { grid-column: 1; }
 .lz-service-slot[data-offset='-1'] { grid-column: 2; }
@@ -97,10 +100,17 @@ const serviceCarouselStyles = `
 .lz-service-card__caption small { color: rgba(255,250,247,.84); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
 .lz-service-card__caption strong { font-family: Georgia,'Times New Roman',serif; font-size: clamp(17px,1.8vw,25px); font-weight: 400; letter-spacing: -.045em; line-height: 1.02; text-wrap: balance; }
 .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(24px,2.5vw,36px); }
-.lz-services__controls { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
-.lz-service-arrow { display: grid; width: 38px; height: 38px; place-items: center; padding: 0; border: 1px solid rgba(255,250,247,.55); border-radius: 50%; background: transparent; color: #fffaf7; cursor: pointer; transition: color .25s ease,background .25s ease,border-color .25s ease,transform .5s cubic-bezier(.22,1,.36,1); }
-.lz-service-arrow svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.35; }
+.lz-services__controls { display: flex; justify-content: center; gap: 0; margin-top: 15px; }
+.lz-service-arrow { position: relative; display: grid; width: 38px; height: 38px; place-items: center; padding: 0; border: 1px solid rgba(255,250,247,.34); border-radius: 50%; background: rgba(23,14,13,.12); color: rgba(255,250,247,.68); cursor: pointer; transition: color .25s ease,background .25s ease,border-color .25s ease,transform .5s cubic-bezier(.22,1,.36,1); }
+.lz-service-arrow + .lz-service-arrow { z-index: 1; margin-left: -4px; border-color: rgba(255,250,247,.78); color: #fffaf7; }
+.lz-service-arrow svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.2; }
 .lz-service-arrow:hover { transform: scale(1.08); border-color: #fffaf7; background: rgba(255,250,247,.16); color: #fffaf7; }
+.lz-review { background: transparent; }
+.lz-review::before { background: none; filter: none; transform: none; }
+.lz-review__scrim { background: linear-gradient(90deg,rgba(31,21,20,.22),rgba(31,21,20,.08),rgba(31,21,20,.22)); }
+.lz-review__content > .lz-eyebrow { margin-bottom: 24px; }
+.lz-review__rating { margin: 0 0 10px; }
+.lz-footer { background: transparent; }
 @media (max-width: 1000px) {
   .lz-services__stage { min-height: 470px; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; padding: 34px 7vw 30px; }
   .lz-service-card { height: clamp(320px,42vw,440px); }
@@ -297,8 +307,8 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   moveServiceRef.current = moveService;
   const featuredReview = visibleReviews[reviewIndex];
   const reviewExcerpt = selectReviewExcerpt(featuredReview?.description || '');
-  const backgroundStyle = { '--lz-backdrop': `url(${heroPhoto})` } as React.CSSProperties;
-  const servicesStyle = { '--service-backdrop': `url(${washPhoto})`, '--service-motion-duration': `${serviceMotionDuration}s` } as React.CSSProperties;
+  const backgroundStyle = { '--lz-backdrop': `url(${heroPhoto})`, '--lz-page-backdrop': `url(${washPhoto})` } as React.CSSProperties;
+  const servicesStyle = { '--service-motion-duration': `${serviceMotionDuration}s` } as React.CSSProperties;
 
   return (
     <div className="layali-home-page" id="top" style={backgroundStyle}>
@@ -359,13 +369,13 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
               </AnimatePresence>
             </div>
             {services.length > 1 && <div className="lz-services__controls" aria-label="Carousel controls">
-              <button className="lz-service-arrow" type="button" onClick={() => moveService(-1)} aria-label="Previous service category"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" /></svg></button>
-              <button className="lz-service-arrow" type="button" onClick={() => moveService(1)} aria-label="Next service category"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg></button>
+              <button className="lz-service-arrow" type="button" onClick={() => moveService(-1)} aria-label="Previous service category"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13.5 10H6.5m0 0 3.2-3.2M6.5 10l3.2 3.2" /></svg></button>
+              <button className="lz-service-arrow" type="button" onClick={() => moveService(1)} aria-label="Next service category"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.5 10h7m0 0-3.2-3.2m3.2 3.2-3.2 3.2" /></svg></button>
             </div>}
           </motion.div>}
         </section>
 
-        {featuredReview && <section className="lz-review" aria-label="Guest reviews" style={{ '--lz-review-image': `url(${washPhoto})` } as React.CSSProperties} onMouseEnter={() => setReviewPaused(true)} onMouseLeave={() => setReviewPaused(false)} onFocus={() => setReviewPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setReviewPaused(false); }}>
+        {featuredReview && <section className="lz-review" aria-label="Guest reviews" onMouseEnter={() => setReviewPaused(true)} onMouseLeave={() => setReviewPaused(false)} onFocus={() => setReviewPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setReviewPaused(false); }}>
           <div className="lz-review__scrim" aria-hidden="true" />
           <div className="lz-review__content"><p className="lz-eyebrow">KIND WORDS FROM OUR GUESTS</p>
             <AnimatePresence mode="wait">
