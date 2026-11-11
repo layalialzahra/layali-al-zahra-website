@@ -112,7 +112,7 @@ const serviceCarouselStyles = `
 .lz-service-arrow:hover { transform: scale(1.08); border-color: #fffaf7; background: rgba(255,250,247,.16); color: #fffaf7; }
 .lz-review { background: transparent; }
 .lz-review::before { background: none; filter: none; transform: none; }
-.lz-review__scrim { background: linear-gradient(90deg,rgba(31,21,20,.22),rgba(31,21,20,.08),rgba(31,21,20,.22)); }
+.lz-review__scrim { background: transparent; }
 .lz-review__content > .lz-eyebrow { flex: none; margin: 0 0 34px !important; }
 .lz-review__quote { flex: none; height: 230px; }
 .lz-review__rating { flex: none; margin: 0 0 10px; }
