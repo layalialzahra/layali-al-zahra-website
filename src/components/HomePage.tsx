@@ -61,52 +61,65 @@ const fallbackServiceCategories = mapServiceCategories(legacyServicesData);
 
 const serviceCarouselStyles = `
 .lz-services__carousel { position: relative; }
-.lz-services__stage { display: grid; min-height: 510px; grid-template-columns: minmax(0,.82fr) minmax(0,.98fr) minmax(0,1.13fr) minmax(0,.98fr) minmax(0,.82fr); align-items: center; gap: clamp(8px,1vw,16px); perspective: 1500px; }
-.lz-service-slot { min-width: 0; grid-row: 1; transform-style: preserve-3d; }
+.lz-services__stage { position: relative; display: grid; min-height: clamp(470px,47vw,620px); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; gap: clamp(9px,1.25vw,18px); overflow: hidden; padding: clamp(30px,4vw,58px) clamp(20px,3.2vw,48px) clamp(24px,3vw,42px); border: 1px solid rgba(244,232,222,.12); border-radius: 3px; background: radial-gradient(ellipse at 50% 44%,rgba(104,69,58,.23),transparent 62%),#211715; perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; }
+.lz-service-slot { min-width: 0; grid-row: 1; transform-style: preserve-3d; will-change: transform; }
 .lz-service-slot[data-offset='-2'] { grid-column: 1; }
 .lz-service-slot[data-offset='-1'] { grid-column: 2; }
 .lz-service-slot[data-offset='0'] { grid-column: 3; }
 .lz-service-slot[data-offset='1'] { grid-column: 4; }
 .lz-service-slot[data-offset='2'] { grid-column: 5; }
-.lz-service-card { --card-scale: .82; --card-turn: 11deg; --card-lift: 10px; position: relative; display: block; width: 100%; height: clamp(290px,29vw,390px); overflow: hidden; padding: 0; border: 0; border-radius: 46% 46% 7px 7px / 28% 28% 7px 7px; background: #5a423d; color: #fffaf7; cursor: pointer; isolation: isolate; text-align: left; transform: perspective(1200px) translateY(var(--card-lift)) rotateY(var(--card-turn)) scale(var(--card-scale)); transform-origin: 50% 58%; transition: height .85s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1),box-shadow .7s ease; box-shadow: 0 20px 44px rgba(42,28,25,.14); }
-.lz-service-slot[data-offset='-1'] .lz-service-card,.lz-service-slot[data-offset='1'] .lz-service-card { --card-scale: .92; --card-turn: 5deg; --card-lift: 0px; height: clamp(340px,34vw,440px); }
-.lz-service-slot[data-offset='1'] .lz-service-card { --card-turn: -5deg; }
-.lz-service-slot[data-offset='0'] .lz-service-card { --card-scale: 1; --card-turn: 0deg; --card-lift: -8px; height: clamp(390px,40vw,490px); box-shadow: 0 34px 64px rgba(42,28,25,.25); }
-.lz-service-card:hover,.lz-service-card:focus-visible { --card-lift: -15px; box-shadow: 0 38px 70px rgba(42,28,25,.26); }
+.lz-service-slot[data-offset='-2'] { z-index: 1; }
+.lz-service-slot[data-offset='-1'] { z-index: 2; }
+.lz-service-slot[data-offset='0'] { z-index: 4; }
+.lz-service-slot[data-offset='1'] { z-index: 2; }
+.lz-service-slot[data-offset='2'] { z-index: 1; }
+.lz-service-card { --card-scale: .78; --card-turn: 27deg; --card-roll: -5deg; position: relative; display: block; width: 100%; height: clamp(290px,31vw,410px); overflow: hidden; padding: 0; border: 1px solid rgba(255,248,241,.24); border-radius: 16px; background: #5a423d; color: #fffaf7; cursor: pointer; isolation: isolate; text-align: left; transform: rotateY(var(--card-turn)) rotateZ(var(--card-roll)) scale(var(--card-scale)); transform-origin: 50% 56%; transition: height 1s cubic-bezier(.22,1,.36,1),transform 1.08s cubic-bezier(.2,.75,.2,1),box-shadow .8s ease,border-color .6s ease; box-shadow: 0 26px 55px rgba(8,5,4,.4); translate: 0 0; animation: lz-service-hover 5.2s ease-in-out infinite; }
+.lz-service-slot[data-offset='-2'] .lz-service-card { --card-scale: .72; --card-turn: 31deg; --card-roll: -6deg; animation-delay: -1.1s; }
+.lz-service-slot[data-offset='-1'] .lz-service-card { --card-scale: .88; --card-turn: 15deg; --card-roll: -2.5deg; height: clamp(330px,36vw,465px); animation-delay: -.55s; }
+.lz-service-slot[data-offset='1'] .lz-service-card { --card-scale: .88; --card-turn: -15deg; --card-roll: 2.5deg; height: clamp(330px,36vw,465px); animation-delay: -.8s; }
+.lz-service-slot[data-offset='2'] .lz-service-card { --card-scale: .72; --card-turn: -31deg; --card-roll: 6deg; animation-delay: -1.35s; }
+.lz-service-slot[data-offset='0'] .lz-service-card { --card-scale: 1.02; --card-turn: 0deg; --card-roll: 0deg; height: clamp(390px,42vw,520px); box-shadow: 0 38px 80px rgba(8,5,4,.55); animation-delay: -.25s; }
+.lz-service-card:hover,.lz-service-card:focus-visible { --card-scale: 1.045; box-shadow: 0 44px 86px rgba(8,5,4,.62); border-color: rgba(255,248,241,.52); animation-play-state: paused; }
 .lz-service-card__photo,.lz-service-card__shade { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lz-service-card__photo { z-index: -2; display: block; object-fit: cover; object-position: center; transition: transform 1.3s cubic-bezier(.22,1,.36,1),filter .8s ease; }
-.lz-service-card:hover .lz-service-card__photo,.lz-service-card:focus-visible .lz-service-card__photo { transform: scale(1.055); }
-.lz-service-card__shade { z-index: -1; background: linear-gradient(0deg,rgba(24,16,15,.78),rgba(24,16,15,.08) 46%,rgba(24,16,15,.04)),linear-gradient(90deg,rgba(24,16,15,.15),transparent 65%); }
+.lz-service-card__photo { z-index: -2; display: block; object-fit: cover; object-position: center; transform: scale(1.03); transition: transform 1.35s cubic-bezier(.22,1,.36,1),filter .8s ease; }
+.lz-service-card:hover .lz-service-card__photo,.lz-service-card:focus-visible .lz-service-card__photo { transform: scale(1.1); }
+.lz-service-card__shade { z-index: -1; background: linear-gradient(0deg,rgba(20,13,12,.86),rgba(20,13,12,.12) 42%,rgba(20,13,12,.04)),linear-gradient(90deg,rgba(20,13,12,.12),transparent 72%); }
 .lz-service-card__caption { position: absolute; right: clamp(13px,1.7vw,24px); bottom: clamp(18px,2vw,29px); left: clamp(13px,1.7vw,24px); display: flex; flex-direction: column; gap: 8px; color: #fffaf7; text-shadow: 0 2px 14px rgba(0,0,0,.36); }
-.lz-service-card__caption small { color: rgba(255,250,247,.88); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
-.lz-service-card__caption strong { font-family: Georgia,'Times New Roman',serif; font-size: clamp(19px,2vw,30px); font-weight: 400; letter-spacing: -.045em; line-height: 1.02; text-wrap: balance; }
-.lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(25px,2.7vw,39px); }
-.lz-services__controls { display: flex; justify-content: center; gap: 10px; margin-top: 6px; }
+.lz-service-card__caption small { color: rgba(255,250,247,.84); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+.lz-service-card__caption strong { font-family: Georgia,'Times New Roman',serif; font-size: clamp(17px,1.8vw,25px); font-weight: 400; letter-spacing: -.045em; line-height: 1.02; text-wrap: balance; }
+.lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(24px,2.5vw,36px); }
+.lz-services__controls { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
 .lz-service-arrow { display: grid; width: 38px; height: 38px; place-items: center; padding: 0; border: 1px solid rgba(74,52,46,.34); border-radius: 50%; background: transparent; color: #493733; cursor: pointer; transition: color .25s ease,background .25s ease,border-color .25s ease,transform .5s cubic-bezier(.22,1,.36,1); }
 .lz-service-arrow svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.35; }
 .lz-service-arrow:hover { transform: scale(1.08); border-color: #493733; background: #493733; color: #fffaf7; }
 @media (max-width: 1000px) {
-  .lz-services__stage { min-height: 450px; grid-template-columns: minmax(0,1fr) minmax(0,1.12fr) minmax(0,1fr); gap: 12px; }
+  .lz-services__stage { min-height: 470px; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; padding: 34px 7vw 30px; }
+  .lz-service-card { height: clamp(320px,42vw,440px); }
+  .lz-service-slot[data-offset='0'] .lz-service-card { height: clamp(390px,48vw,500px); }
   .lz-service-slot[data-offset='-2'],.lz-service-slot[data-offset='2'] { display: none; }
   .lz-service-slot[data-offset='-1'] { grid-column: 1; }
   .lz-service-slot[data-offset='0'] { grid-column: 2; }
   .lz-service-slot[data-offset='1'] { grid-column: 3; }
 }
 @media (max-width: 700px) {
-  .lz-services__stage { min-height: 420px; grid-template-columns: minmax(0,1fr) minmax(0,78vw) minmax(0,1fr); gap: 0; }
+  .lz-services__stage { min-height: 400px; grid-template-columns: minmax(0,1fr) minmax(0,70vw) minmax(0,1fr); gap: 0; padding: 18px 0 25px; border-radius: 2px; }
   .lz-service-slot[data-offset='-1'] { grid-column: 1; }
   .lz-service-slot[data-offset='0'] { grid-column: 2; }
   .lz-service-slot[data-offset='1'] { grid-column: 3; }
-  .lz-service-card { --card-scale: 1; --card-turn: 8deg; --card-lift: 4px; height: 330px; border-radius: 43% 43% 6px 6px / 25% 25% 6px 6px; }
-  .lz-service-slot[data-offset='1'] .lz-service-card { --card-turn: -8deg; }
-  .lz-service-slot[data-offset='0'] .lz-service-card { --card-turn: 0deg; --card-lift: -2px; height: 385px; }
-  .lz-service-card__caption { right: 16px; bottom: 21px; left: 16px; gap: 7px; }
-  .lz-service-card__caption strong { font-size: clamp(24px,7vw,32px); }
-  .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(29px,8vw,37px); }
-  .lz-services__controls { margin-top: 0; }
+  .lz-service-card { --card-scale: .84; --card-turn: 24deg; --card-roll: -3deg; height: 330px; border-radius: 13px; }
+  .lz-service-slot[data-offset='1'] .lz-service-card { --card-turn: -24deg; --card-roll: 3deg; }
+  .lz-service-slot[data-offset='0'] .lz-service-card { --card-scale: 1; --card-turn: 0deg; --card-roll: 0deg; height: 370px; }
+  .lz-service-card__caption { right: 17px; bottom: 22px; left: 17px; gap: 7px; }
+  .lz-service-card__caption strong { font-size: clamp(23px,6.7vw,32px); }
+  .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(28px,7.6vw,36px); }
+  .lz-services__controls { margin-top: 10px; }
+}
+@keyframes lz-service-hover {
+  0%,100% { translate: 0 0; }
+  50% { translate: 0 -7px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .lz-service-card,.lz-service-card__photo,.lz-service-arrow { transition-duration: .01ms !important; }
+  .lz-service-card,.lz-service-card__photo,.lz-service-arrow { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 `;
 
@@ -175,6 +188,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [serviceIndex, setServiceIndex] = useState(0);
   const [serviceDirection, setServiceDirection] = useState(1);
   const [servicePaused, setServicePaused] = useState(false);
+  const [serviceRevealPlayed, setServiceRevealPlayed] = useState(false);
   const serviceOffsets = services.length >= 5 ? [-2, -1, 0, 1, 2] : services.map((_, index) => index - Math.floor((services.length - 1) / 2));
   const visibleServiceCards = serviceOffsets.map((offset) => ({
     offset,
@@ -214,6 +228,10 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   useEffect(() => {
     setServiceIndex(0);
   }, [services.length]);
+
+  useEffect(() => {
+    if (servicesInView) setServiceRevealPlayed(true);
+  }, [servicesInView]);
 
   useEffect(() => {
     if (reviews !== undefined) { setPublicReviews(reviews); return; }
@@ -304,14 +322,14 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
       <main>
         <section className="lz-services" id="services" ref={serviceSection}>
           <style>{serviceCarouselStyles}</style>
-          <motion.div className="lz-services__heading" initial={reducedMotion ? false : { opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.55 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div className="lz-services__heading" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 26 }} animate={servicesInView ? { opacity: 1, y: 0 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }} transition={{ duration: 0.9, ease: [0.2, 0.75, 0.2, 1] }}>
             <div><p className="lz-eyebrow">THE GOOD PART</p><h2>Choose what feels right.</h2></div>
             <button onClick={() => onNavigate('services')}>See all services</button>
           </motion.div>
-          {visibleServiceCards.length > 0 && <motion.div className="lz-services__carousel" role="group" aria-roledescription="carousel" aria-label="Service categories" initial={reducedMotion ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }} onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); moveService(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); moveService(1); } }}>
+          {visibleServiceCards.length > 0 && <motion.div className="lz-services__carousel" role="group" aria-roledescription="carousel" aria-label="Service categories" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 55, scale: 0.94 }} animate={servicesInView ? { opacity: 1, y: 0, scale: 1 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 55, scale: 0.94 }} transition={{ duration: 1.05, delay: 0.12, ease: [0.2, 0.75, 0.2, 1] }} onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); moveService(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); moveService(1); } }}>
             <div className="lz-services__stage">
               <AnimatePresence initial={false}>
-                {visibleServiceCards.map(({ service, index, offset }) => <motion.div className="lz-service-slot" data-offset={offset} key={service.id} layout initial={reducedMotion ? false : { opacity: 0, y: 38, rotateY: serviceDirection * -14, scale: 0.88 }} animate={{ opacity: 1, y: 0, rotateY: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, y: -22, rotateY: serviceDirection * 16, scale: 0.82 }} transition={{ layout: { duration: 0.92, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.62 }, y: { duration: 0.82, ease: [0.22, 1, 0.36, 1] }, rotateY: { duration: 0.92, ease: [0.22, 1, 0.36, 1] }, scale: { duration: 0.82, ease: [0.22, 1, 0.36, 1] } }}>
+                {visibleServiceCards.map(({ service, index, offset }, cardOrder) => <motion.div className="lz-service-slot" data-offset={offset} key={service.id} layout="position" initial={reducedMotion || disableInitialAnimations ? false : serviceRevealPlayed ? { x: serviceDirection * 115, rotateY: serviceDirection * -42, scale: 0.66 } : { opacity: 0, y: 84, rotateX: 14, scale: 0.72 }} animate={{ opacity: 1, y: 0, x: 0, rotateX: 0, rotateY: 0, scale: 1 }} exit={reducedMotion || disableInitialAnimations ? undefined : { x: serviceDirection * -90, rotateY: serviceDirection * 48, scale: 0.7 }} transition={{ layout: { duration: 1.12, ease: [0.2, 0.75, 0.2, 1] }, opacity: { duration: 0.52 }, y: { duration: 1.12, delay: servicesInView ? cardOrder * 0.075 : 0, ease: [0.2, 0.75, 0.2, 1] }, rotateX: { duration: 1.12, delay: servicesInView ? cardOrder * 0.075 : 0, ease: [0.2, 0.75, 0.2, 1] }, rotateY: { duration: 1.05, ease: [0.2, 0.75, 0.2, 1] }, scale: { duration: 1.05, delay: servicesInView ? cardOrder * 0.075 : 0, ease: [0.2, 0.75, 0.2, 1] } }}>
                   <button className="lz-service-card" type="button" onClick={() => { if (offset === 0) onNavigate('services'); else { setServiceDirection(offset > 0 ? 1 : -1); setServiceIndex(index); } }} aria-current={offset === 0 ? 'true' : undefined} aria-label={offset === 0 ? `Explore ${service.name} services` : `Bring ${service.name} to the centre`}>
                     <img className="lz-service-card__photo" src={service.image} alt={service.alt} loading="lazy" />
                     <span className="lz-service-card__shade" aria-hidden="true" />
