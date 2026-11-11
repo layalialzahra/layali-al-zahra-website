@@ -60,9 +60,12 @@ function mapServiceCategories(items: any[]): ServiceCategoryCard[] {
 const fallbackServiceCategories = mapServiceCategories(legacyServicesData);
 
 const serviceCarouselStyles = `
+.lz-opening-track { height: 220svh; }
+.lz-services { padding-top: clamp(54px,6vw,82px); }
 .lz-services__carousel { position: relative; }
-.lz-services__stage { position: relative; display: grid; min-height: clamp(470px,47vw,620px); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; gap: clamp(9px,1.25vw,18px); overflow: hidden; padding: clamp(30px,4vw,58px) clamp(20px,3.2vw,48px) clamp(24px,3vw,42px); border: 1px solid rgba(244,232,222,.12); border-radius: 3px; background: radial-gradient(ellipse at 50% 44%,rgba(104,69,58,.23),transparent 62%),#211715; perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; }
-.lz-service-slot { min-width: 0; grid-row: 1; transform-style: preserve-3d; will-change: transform; }
+.lz-services__stage { position: relative; display: grid; min-height: clamp(470px,47vw,620px); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: center; gap: clamp(9px,1.25vw,18px); overflow: hidden; padding: clamp(30px,4vw,58px) clamp(20px,3.2vw,48px) clamp(24px,3vw,42px); border: 1px solid rgba(244,232,222,.12); border-radius: 3px; background: #211715; perspective: 1800px; perspective-origin: 50% 45%; isolation: isolate; }
+.lz-services__stage::before { position: absolute; z-index: 0; inset: -24px; background: linear-gradient(0deg,rgba(24,14,12,.76),rgba(27,17,15,.68)),radial-gradient(ellipse at 50% 42%,rgba(109,73,62,.38),transparent 68%),var(--service-backdrop) center 48%/cover no-repeat; content: ''; filter: blur(17px); transform: scale(1.06); }
+.lz-service-slot { position: relative; min-width: 0; grid-row: 1; transform-style: preserve-3d; will-change: transform; }
 .lz-service-slot[data-offset='-2'] { grid-column: 1; }
 .lz-service-slot[data-offset='-1'] { grid-column: 2; }
 .lz-service-slot[data-offset='0'] { grid-column: 3; }
@@ -102,13 +105,15 @@ const serviceCarouselStyles = `
   .lz-service-slot[data-offset='1'] { grid-column: 3; }
 }
 @media (max-width: 700px) {
-  .lz-services__stage { min-height: 400px; grid-template-columns: minmax(0,1fr) minmax(0,70vw) minmax(0,1fr); gap: 0; padding: 18px 0 25px; border-radius: 2px; }
+  .lz-opening-track { height: 205svh; }
+  .lz-services { padding: 46px 16px 60px; }
+  .lz-services__stage { min-height: clamp(350px,108vw,460px); grid-template-columns: minmax(0,1fr) minmax(0,min(62vw,295px)) minmax(0,1fr); gap: 0; padding: 16px 0 20px; border-radius: 2px; }
   .lz-service-slot[data-offset='-1'] { grid-column: 1; }
   .lz-service-slot[data-offset='0'] { grid-column: 2; }
   .lz-service-slot[data-offset='1'] { grid-column: 3; }
-  .lz-service-card { --card-scale: .84; --card-turn: 24deg; --card-roll: -3deg; height: 330px; border-radius: 13px; }
+  .lz-service-card { --card-scale: .84; --card-turn: 24deg; --card-roll: -3deg; height: clamp(310px,94vw,390px); border-radius: 13px; }
   .lz-service-slot[data-offset='1'] .lz-service-card { --card-turn: -24deg; --card-roll: 3deg; }
-  .lz-service-slot[data-offset='0'] .lz-service-card { --card-scale: 1; --card-turn: 0deg; --card-roll: 0deg; height: 370px; }
+  .lz-service-slot[data-offset='0'] .lz-service-card { --card-scale: 1; --card-turn: 0deg; --card-roll: 0deg; height: auto; aspect-ratio: .68; }
   .lz-service-card__caption { right: 17px; bottom: 22px; left: 17px; gap: 7px; }
   .lz-service-card__caption strong { font-size: clamp(23px,6.7vw,32px); }
   .lz-service-slot[data-offset='0'] .lz-service-card__caption strong { font-size: clamp(28px,7.6vw,36px); }
@@ -174,9 +179,9 @@ function PanelHeader({ onNavigate, inverse = false, menuOpen, setMenuOpen }: {
 
 export default function HomePage({ onNavigate, reviews, disableInitialAnimations = false }: HomePageProps) {
   const openingTrack = useRef<HTMLElement>(null);
-  const serviceSection = useRef<HTMLElement>(null);
+  const serviceStage = useRef<HTMLDivElement>(null);
   const reducedMotion = Boolean(useReducedMotion());
-  const servicesInView = useInView(serviceSection, { once: true, amount: 0.16 });
+  const servicesInView = useInView(serviceStage, { amount: 0.12, margin: '0px 0px -12% 0px' });
   const [menuOpen, setMenuOpen] = useState(false);
   const [featureActive, setFeatureActive] = useState(false);
   const [featureVisible, setFeatureVisible] = useState(false);
@@ -189,6 +194,8 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [serviceDirection, setServiceDirection] = useState(1);
   const [servicePaused, setServicePaused] = useState(false);
   const [serviceRevealPlayed, setServiceRevealPlayed] = useState(false);
+  const pendingServiceMoves = useRef<number[]>([]);
+  const serviceTransitioning = useRef(false);
   const serviceOffsets = services.length >= 5 ? [-2, -1, 0, 1, 2] : services.map((_, index) => index - Math.floor((services.length - 1) / 2));
   const visibleServiceCards = serviceOffsets.map((offset) => ({
     offset,
@@ -227,6 +234,8 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
 
   useEffect(() => {
     setServiceIndex(0);
+    pendingServiceMoves.current = [];
+    serviceTransitioning.current = false;
   }, [services.length]);
 
   useEffect(() => {
@@ -263,8 +272,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   useEffect(() => {
     if (!servicesInView || services.length < 2 || servicePaused || reducedMotion) return;
     const timer = window.setInterval(() => {
-      setServiceDirection(1);
-      setServiceIndex((index) => (index + 1) % services.length);
+      moveServiceRef.current(1);
     }, 6400);
     return () => window.clearInterval(timer);
   }, [servicesInView, services.length, servicePaused, reducedMotion]);
@@ -273,9 +281,26 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     setReviewIndex((index) => (index + direction + visibleReviews.length) % visibleReviews.length);
   };
   const moveService = (direction: number) => {
+    if (reducedMotion) {
+      setServiceDirection(direction);
+      setServiceIndex((index) => (index + direction + services.length) % services.length);
+      return;
+    }
+    pendingServiceMoves.current.push(direction);
+    if (!serviceTransitioning.current) startNextServiceMove();
+  };
+  const startNextServiceMove = () => {
+    const direction = pendingServiceMoves.current.shift();
+    if (!direction) {
+      serviceTransitioning.current = false;
+      return;
+    }
+    serviceTransitioning.current = true;
     setServiceDirection(direction);
     setServiceIndex((index) => (index + direction + services.length) % services.length);
   };
+  const moveServiceRef = useRef(moveService);
+  moveServiceRef.current = moveService;
   const featuredReview = visibleReviews[reviewIndex];
   const reviewExcerpt = selectReviewExcerpt(featuredReview?.description || '');
   const backgroundStyle = { '--lz-backdrop': `url(${heroPhoto})` } as React.CSSProperties;
@@ -320,17 +345,17 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
       </section>
 
       <main>
-        <section className="lz-services" id="services" ref={serviceSection}>
+        <section className="lz-services" id="services">
           <style>{serviceCarouselStyles}</style>
           <motion.div className="lz-services__heading" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 26 }} animate={servicesInView ? { opacity: 1, y: 0 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }} transition={{ duration: 0.9, ease: [0.2, 0.75, 0.2, 1] }}>
             <div><p className="lz-eyebrow">THE GOOD PART</p><h2>Choose what feels right.</h2></div>
             <button onClick={() => onNavigate('services')}>See all services</button>
           </motion.div>
-          {visibleServiceCards.length > 0 && <motion.div className="lz-services__carousel" role="group" aria-roledescription="carousel" aria-label="Service categories" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 55, scale: 0.94 }} animate={servicesInView ? { opacity: 1, y: 0, scale: 1 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 55, scale: 0.94 }} transition={{ duration: 1.05, delay: 0.12, ease: [0.2, 0.75, 0.2, 1] }} onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); moveService(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); moveService(1); } }}>
-            <div className="lz-services__stage">
-              <AnimatePresence initial={false}>
-                {visibleServiceCards.map(({ service, index, offset }, cardOrder) => <motion.div className="lz-service-slot" data-offset={offset} key={service.id} layout="position" initial={reducedMotion || disableInitialAnimations ? false : serviceRevealPlayed ? { x: serviceDirection * 115, rotateY: serviceDirection * -42, scale: 0.66 } : { opacity: 0, y: 84, rotateX: 14, scale: 0.72 }} animate={{ opacity: 1, y: 0, x: 0, rotateX: 0, rotateY: 0, scale: 1 }} exit={reducedMotion || disableInitialAnimations ? undefined : { x: serviceDirection * -90, rotateY: serviceDirection * 48, scale: 0.7 }} transition={{ layout: { duration: 1.12, ease: [0.2, 0.75, 0.2, 1] }, opacity: { duration: 0.52 }, y: { duration: 1.12, delay: servicesInView ? cardOrder * 0.075 : 0, ease: [0.2, 0.75, 0.2, 1] }, rotateX: { duration: 1.12, delay: servicesInView ? cardOrder * 0.075 : 0, ease: [0.2, 0.75, 0.2, 1] }, rotateY: { duration: 1.05, ease: [0.2, 0.75, 0.2, 1] }, scale: { duration: 1.05, delay: servicesInView ? cardOrder * 0.075 : 0, ease: [0.2, 0.75, 0.2, 1] } }}>
-                  <button className="lz-service-card" type="button" onClick={() => { if (offset === 0) onNavigate('services'); else { setServiceDirection(offset > 0 ? 1 : -1); setServiceIndex(index); } }} aria-current={offset === 0 ? 'true' : undefined} aria-label={offset === 0 ? `Explore ${service.name} services` : `Bring ${service.name} to the centre`}>
+          {visibleServiceCards.length > 0 && <motion.div className="lz-services__carousel" role="group" aria-roledescription="carousel" aria-label="Service categories" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 55, scale: 0.94 }} animate={servicesInView ? { opacity: 1, y: 0, scale: 1 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 34, scale: 0.97 }} transition={{ duration: 0.88, delay: 0.08, ease: [0.2, 0.75, 0.2, 1] }} onMouseEnter={() => setServicePaused(true)} onMouseLeave={() => setServicePaused(false)} onFocus={() => setServicePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setServicePaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); moveService(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); moveService(1); } }}>
+            <div className="lz-services__stage" ref={serviceStage} style={{ '--service-backdrop': `url(${washPhoto})` } as React.CSSProperties}>
+              <AnimatePresence initial={false} mode="popLayout" onExitComplete={startNextServiceMove}>
+                {visibleServiceCards.map(({ service, index, offset }, cardOrder) => <motion.div className="lz-service-slot" data-offset={offset} key={service.id} layout="position" initial={reducedMotion || disableInitialAnimations ? false : serviceRevealPlayed ? { x: serviceDirection * 115, rotateY: serviceDirection * -42, scale: 0.66 } : { opacity: 0, y: 84, rotateX: 14, scale: 0.72 }} animate={servicesInView ? { opacity: 1, y: 0, x: 0, rotateX: 0, rotateY: 0, scale: 1 } : reducedMotion || disableInitialAnimations ? { opacity: 1, y: 0, x: 0, rotateX: 0, rotateY: 0, scale: 1 } : { opacity: 0, y: 42, x: 0, rotateX: 5, rotateY: 0, scale: 0.91 }} exit={reducedMotion || disableInitialAnimations ? undefined : { opacity: 0, x: serviceDirection * -130, rotateY: serviceDirection * 56, scale: 0.64, filter: 'blur(3px)' }} transition={{ layout: { duration: 1.04, ease: [0.2, 0.75, 0.2, 1] }, opacity: { duration: 0.7, ease: [0.2, 0.75, 0.2, 1] }, y: { duration: 0.95, delay: servicesInView ? cardOrder * 0.07 : 0, ease: [0.2, 0.75, 0.2, 1] }, rotateX: { duration: 0.95, delay: servicesInView ? cardOrder * 0.07 : 0, ease: [0.2, 0.75, 0.2, 1] }, rotateY: { duration: 1.04, ease: [0.2, 0.75, 0.2, 1] }, scale: { duration: 1.04, delay: servicesInView ? cardOrder * 0.07 : 0, ease: [0.2, 0.75, 0.2, 1] }, filter: { duration: 0.8 } }}>
+                  <button className="lz-service-card" type="button" onClick={() => { if (offset === 0) onNavigate('services'); else { const direction = offset > 0 ? 1 : -1; for (let step = 0; step < Math.abs(offset); step += 1) moveService(direction); } }} aria-current={offset === 0 ? 'true' : undefined} aria-label={offset === 0 ? `Explore ${service.name} services` : `Bring ${service.name} to the centre`}>
                     <img className="lz-service-card__photo" src={service.image} alt={service.alt} loading="lazy" />
                     <span className="lz-service-card__shade" aria-hidden="true" />
                     <span className="lz-service-card__caption">{service.detail && <small>{service.detail}</small>}<strong>{service.name}</strong></span>
