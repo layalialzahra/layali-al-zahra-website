@@ -198,4 +198,3 @@ body:has(.layali-home-active) #wa-float { bottom: 78px !important; }
   .layali-home-page { scroll-behavior: auto; }
   .layali-home-page *,.layali-home-page *::before,.layali-home-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
-

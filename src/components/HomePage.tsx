@@ -6,11 +6,13 @@ import washPhoto from '../assets/salon-wash.jpg';
 import bridalPhoto from '../assets/salon-bridal.jpg';
 import finishPhoto from '../assets/salon-finish.jpg';
 import makeupPhoto from '../assets/makeup.jpg';
+import offerFigure from '../assets/offer-figure.png';
 import brandLogo from '../assets/logo-transparent.png';
 import brandLogoLight from '../assets/logo-transparent-light.png';
 import { legacyServicesData } from '../data/legacy-services.js';
 import { legacyPackagesData } from '../data/legacy-packages.js';
-import { loadPublicPackages, loadPublicServices } from '../data/managed-content-public';
+import { legacyOffersData } from '../data/legacy-offers.js';
+import { loadPublicOffers, loadPublicPackages, loadPublicServices } from '../data/managed-content-public';
 import './homepage-editorial.css';
 
 export interface HomePageReview {
@@ -64,6 +66,8 @@ const fallbackServiceCategories = mapServiceCategories(legacyServicesData);
 
 type HomePackage = (typeof legacyPackagesData)[number] & { bookingUrl?: string };
 const packageCarouselItems = (items: HomePackage[]) => items.filter((item) => item?.title && item.image);
+type HomeOffer = (typeof legacyOffersData)[number] & { bookingUrl?: string };
+const offerCarouselItems = (items: HomeOffer[]) => items.filter((item) => item?.title && item.image);
 
 const mapUrl = 'https://www.google.com/maps/place/Layali+Al+Zahra+Beauty+Lounge/@25.1060274,55.1981324,18z/data=!4m6!3m5!1s0x3e5f6b605b77aaa5:0x61889b1cddafac75!8m2!3d25.1067745!4d55.1988388!16s%2Fg%2F11xzsd5pcx';
 
@@ -130,6 +134,30 @@ const serviceCarouselStyles = `
 .lz-package-arrow { display: grid; width: 48px; height: 48px; place-items: center; padding: 0; border: 1px solid rgba(255,250,247,.56); border-radius: 50%; background: transparent; color: #fffaf7; cursor: pointer; transition: width .24s ease,height .24s ease,background .24s ease,color .24s ease,border-color .24s ease; }
 .lz-package-arrow svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .lz-package-arrow:hover,.lz-package-arrow:focus-visible { width: 56px; height: 56px; margin: -4px; border-color: #f0d3bd; background: #f0d3bd; color: #2b1b17; }
+.lz-offers { position: relative; display: grid; grid-template-columns: minmax(260px,.82fr) minmax(0,1.5fr); gap: clamp(26px,5vw,76px); align-items: center; overflow: hidden; padding: clamp(28px,5vw,66px) max(24px,calc((100vw - 1310px)/2)); color: #fffaf7; scroll-margin-top: 24px; }
+.lz-offers__figure { position: relative; display: flex; min-width: 0; height: clamp(390px,42vw,560px); align-items: flex-end; justify-content: center; }
+.lz-offers__figure::before { position: absolute; right: 2%; bottom: 2%; left: 2%; height: 58%; border-radius: 50%; background: radial-gradient(ellipse,rgba(210,153,121,.26),rgba(125,72,59,.1) 48%,transparent 72%); content: ''; filter: blur(24px); }
+.lz-offers__figure img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 28px 35px rgba(8,4,4,.28)); }
+.lz-offers__content { min-width: 0; }
+.lz-offers__heading { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px 20px; margin-bottom: 24px; }
+.lz-offers__heading .lz-eyebrow { margin: 0 0 9px; color: #e5c8b9; }
+.lz-offers__heading h2 { margin: 0; color: #fffaf7; font-family: Georgia,'Times New Roman',serif; font-size: clamp(35px,4vw,54px); font-weight: 400; letter-spacing: -.05em; line-height: .98; }
+.lz-offers__heading p { max-width: 210px; margin: 0 0 3px; color: rgba(255,250,247,.72); font-size: 11px; line-height: 1.55; }
+.lz-offers__grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.lz-offer-slot { min-width: 0; min-height: 166px; perspective: 900px; }
+.lz-offer-card { position: relative; display: flex; width: 100%; min-height: 166px; height: 100%; flex-direction: column; justify-content: flex-end; overflow: hidden; padding: clamp(16px,2vw,24px); border: 1px solid rgba(255,250,247,.34); border-radius: 22px; background: linear-gradient(130deg,rgba(255,248,243,.18),rgba(48,33,30,.58)),var(--offer-image) center/cover; color: #fffaf7; text-align: left; text-decoration: none; isolation: isolate; box-shadow: 0 18px 44px rgba(8,4,4,.17),inset 0 1px rgba(255,255,255,.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color .3s ease,box-shadow .3s ease; }
+.lz-offer-card::before { position: absolute; z-index: -1; inset: 0; background: linear-gradient(0deg,rgba(22,14,13,.8),rgba(22,14,13,.16) 78%); content: ''; }
+.lz-offer-card:hover,.lz-offer-card:focus-visible { border-color: rgba(255,250,247,.78); box-shadow: 0 24px 50px rgba(8,4,4,.26),inset 0 1px rgba(255,255,255,.18); outline: none; }
+.lz-offer-card__top { position: absolute; top: 14px; right: 14px; left: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.lz-offer-card__badge,.lz-offer-card__validity { color: rgba(255,250,247,.88); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+.lz-offer-card__badge { border: 1px solid rgba(255,250,247,.52); border-radius: 999px; padding: 6px 9px; background: rgba(32,22,20,.32); backdrop-filter: blur(8px); }
+.lz-offer-card__copy { display: grid; gap: 7px; }
+.lz-offer-card__copy strong { max-width: 28ch; font-family: Georgia,'Times New Roman',serif; font-size: clamp(17px,1.65vw,22px); font-weight: 400; letter-spacing: -.035em; line-height: 1.06; text-wrap: balance; }
+.lz-offer-card__copy span { max-width: 36ch; color: rgba(255,250,247,.76); font-size: 10px; line-height: 1.4; }
+.lz-offers__controls { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
+.lz-offers__arrow { display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border: 1px solid rgba(255,250,247,.58); border-radius: 50%; background: rgba(255,250,247,.025); color: #fffaf7; cursor: pointer; transition: transform .24s ease,background .24s ease,border-color .24s ease,color .24s ease,box-shadow .24s ease; }
+.lz-offers__arrow svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.25; }
+.lz-offers__arrow:hover,.lz-offers__arrow:focus-visible { transform: scale(1.14); border-color: #f0d3bd; background: #f0d3bd; color: #2b1b17; box-shadow: 0 0 0 4px rgba(240,211,189,.1); outline: none; }
 .lz-package-overlay { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 22px; background: rgba(19,13,12,.34); backdrop-filter: blur(18px) saturate(.78); -webkit-backdrop-filter: blur(18px) saturate(.78); }
 .lz-package-detail { position: relative; display: grid; width: min(850px,100%); min-height: min(390px,calc(100dvh - 44px)); max-height: min(430px,calc(100dvh - 44px)); grid-template-columns: 1fr .94fr; overflow: hidden; border: 1px solid rgba(255,250,247,.38); border-radius: 4px; background: #2d211f; color: #fffaf7; box-shadow: 0 32px 100px rgba(0,0,0,.42); }
 .lz-package-detail__copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(28px,5vw,58px); }
@@ -171,6 +199,9 @@ html { scroll-behavior: smooth; }
   .lz-service-slot[data-offset='-2'] .lz-service-card,.lz-service-slot[data-offset='2'] .lz-service-card { visibility: hidden; }
   .lz-package-circle { width: clamp(146px,23vw,192px); }
   .lz-contact { grid-template-columns: minmax(0,.85fr) minmax(350px,1.15fr); gap: 36px; padding: 34px; }
+  .lz-offers { grid-template-columns: minmax(220px,.72fr) minmax(0,1.28fr); gap: 24px; }
+  .lz-offers__figure { height: 430px; }
+  .lz-offer-slot,.lz-offer-card { min-height: 156px; }
   .lz-footer__details { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
@@ -202,6 +233,23 @@ html { scroll-behavior: smooth; }
   .lz-package-detail__price { margin-top: 12px; }
   .lz-package-detail__book { min-height: 40px; margin-top: 15px; }
   .lz-package-detail__close { top: 9px; right: 9px; width: 34px; height: 34px; background: rgba(31,22,20,.55); }
+  .lz-offers { grid-template-columns: 1fr; gap: 3px; padding: 28px 19px 30px; }
+  .lz-offers__figure { height: clamp(245px,72vw,330px); order: 0; }
+  .lz-offers__figure img { object-position: center 28%; }
+  .lz-offers__content { order: 1; }
+  .lz-offers__heading { margin-bottom: 16px; }
+  .lz-offers__heading h2 { font-size: clamp(34px,10vw,44px); }
+  .lz-offers__heading p { max-width: 120px; font-size: 10px; }
+  .lz-offers__grid { gap: 9px; }
+  .lz-offer-slot,.lz-offer-card { min-height: 154px; }
+  .lz-offer-card { padding: 14px; border-radius: 17px; }
+  .lz-offer-card__top { top: 10px; right: 9px; left: 9px; flex-wrap: wrap; gap: 5px; }
+  .lz-offer-card__badge,.lz-offer-card__validity { font-size: 7px; letter-spacing: .06em; }
+  .lz-offer-card__badge { padding: 5px 7px; }
+  .lz-offer-card__copy { gap: 5px; }
+  .lz-offer-card__copy strong { font-size: clamp(15px,4.3vw,19px); }
+  .lz-offer-card__copy span { font-size: 9px; }
+  .lz-offers__controls { margin-top: 14px; }
   .lz-contact { grid-template-columns: 1fr; gap: 26px; padding: 26px 20px; }
   .lz-contact__intro h2 { font-size: 44px; }
   .lz-contact__intro > p { margin-bottom: 22px; font-size: 12px; }
@@ -276,11 +324,14 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   const [featureVisible, setFeatureVisible] = useState(false);
   const [services, setServices] = useState<ServiceCategoryCard[]>(fallbackServiceCategories);
   const [packages, setPackages] = useState<HomePackage[]>(legacyPackagesData);
+  const [offers, setOffers] = useState<HomeOffer[]>(legacyOffersData);
   const [selectedPackage, setSelectedPackage] = useState<HomePackage | null>(null);
   const [packageIndex, setPackageIndex] = useState(0);
   const [packageDirection, setPackageDirection] = useState(1);
   const [packageStageWidth, setPackageStageWidth] = useState(0);
   const [packagePaused, setPackagePaused] = useState(false);
+  const [offerIndex, setOfferIndex] = useState(0);
+  const [offerDirection, setOfferDirection] = useState(1);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactStatus, setContactStatus] = useState<{ message: string; success: boolean } | null>(null);
@@ -332,6 +383,14 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   }, []);
 
   useEffect(() => {
+    let active = true;
+    void loadPublicOffers().then((items) => {
+      if (active) setOffers(items as HomeOffer[]);
+    });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
     if (!selectedPackage) return;
     const previousOverflow = document.body.style.overflow;
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setSelectedPackage(null); };
@@ -353,6 +412,17 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
   }, []);
 
   const featuredPackages = useMemo(() => packageCarouselItems(packages), [packages]);
+  const featuredOffers = useMemo(() => offerCarouselItems(offers), [offers]);
+  const visibleOffers = Array.from({ length: Math.min(4, featuredOffers.length) }, (_, offset) => ({
+    item: featuredOffers[(offerIndex + offset + featuredOffers.length) % featuredOffers.length],
+    offset,
+  })).filter(({ item }) => item);
+
+  const moveOffer = (direction: number) => {
+    if (featuredOffers.length < 2) return;
+    setOfferDirection(direction);
+    setOfferIndex((index) => (index + direction + featuredOffers.length) % featuredOffers.length);
+  };
 
   const compactPackageCarousel = packageStageWidth > 0 && packageStageWidth <= 700;
   const packageCardCount = compactPackageCarousel ? 3 : 5;
@@ -556,7 +626,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
         </section>
 
         <section className="lz-packages" id="packages" aria-labelledby="lz-packages-title">
-          <div className="lz-packages__heading" id="offers">
+          <div className="lz-packages__heading">
             <h2 id="lz-packages-title">Good things, together.</h2>
           </div>
           <div className="lz-packages__stage" ref={packageStage} role="group" aria-roledescription="carousel" aria-label="Salon packages" onMouseEnter={() => setPackagePaused(true)} onMouseLeave={() => setPackagePaused(false)} onFocus={() => setPackagePaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setPackagePaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); movePackage(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); movePackage(1); } }}>
@@ -603,6 +673,32 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
             </motion.div>
           </motion.div>}
         </AnimatePresence>
+
+        {featuredOffers.length > 0 && <section className="lz-offers" id="offers" aria-labelledby="lz-offers-title" onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); moveOffer(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); moveOffer(1); } }}>
+          <motion.div className="lz-offers__figure" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 34, scale: .97 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: false, amount: .18 }} transition={{ duration: reducedMotion ? .01 : .9, ease: [.2,.75,.2,1] }}>
+            <motion.img src={offerFigure} alt="Layali Al Zahra beauty campaign portrait" loading="lazy" animate={reducedMotion ? { y: 0 } : { y: [0, -7, 0, 5, 0] }} transition={reducedMotion ? { duration: .01 } : { duration: 7.2, ease: 'easeInOut', repeat: Infinity }} />
+          </motion.div>
+          <div className="lz-offers__content">
+            <motion.div className="lz-offers__heading" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: .35 }} transition={{ duration: reducedMotion ? .01 : .72, ease: [.2,.75,.2,1] }}>
+              <div><p className="lz-eyebrow">A LITTLE EXTRA</p><h2 id="lz-offers-title">Good things,<br />for today.</h2></div>
+              <p>Offers to make a little time for yourself.</p>
+            </motion.div>
+            <div className="lz-offers__grid" role="group" aria-roledescription="carousel" aria-label="Salon offers">
+              <AnimatePresence initial={false} custom={offerDirection} mode="sync">
+                {visibleOffers.map(({ item, offset }) => <motion.div className="lz-offer-slot" key={item.id} layout initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, x: offerDirection * 42, y: 16, scale: .94, rotateY: offerDirection * -5 }} animate={{ opacity: 1, x: 0, y: 0, scale: 1, rotateY: 0 }} exit={(direction: number) => reducedMotion ? { opacity: 0 } : { opacity: 0, x: direction * -36, y: -12, scale: .95, rotateY: direction * 4 }} transition={reducedMotion ? { duration: .01 } : { layout: { type: 'spring', stiffness: 190, damping: 24, mass: .75 }, opacity: { duration: .38, ease: [.22,1,.36,1] }, x: { duration: .62, delay: offset * .045, ease: [.22,1,.36,1] }, y: { duration: .62, delay: offset * .045, ease: [.22,1,.36,1] }, scale: { duration: .62, delay: offset * .045, ease: [.22,1,.36,1] }, rotateY: { duration: .62, delay: offset * .045, ease: [.22,1,.36,1] } }}>
+                  <motion.a className="lz-offer-card" href={item.bookingUrl || bookingUrl} target="_blank" rel="noreferrer" style={{ '--offer-image': `url("${item.image}")` } as React.CSSProperties} animate={reducedMotion ? { y: 0 } : { y: [0, -4, 0, 3, 0] }} transition={reducedMotion ? { duration: .01 } : { y: { duration: 5.8 + offset * .25, ease: 'easeInOut', repeat: Infinity, delay: offset * .32 } }} whileHover={reducedMotion ? undefined : { y: -7, scale: 1.015, transition: { duration: .25, ease: [.2,.75,.2,1] } }}>
+                    <span className="lz-offer-card__top"><span className="lz-offer-card__badge">{item.badge}</span><span className="lz-offer-card__validity">{item.validUntil}</span></span>
+                    <span className="lz-offer-card__copy"><strong>{item.title.replace(/^((Monday|Midday) Offer\s*[–-]\s*)/i, '')}</strong><span>{item.description}</span></span>
+                  </motion.a>
+                </motion.div>)}
+              </AnimatePresence>
+            </div>
+            {featuredOffers.length > 1 && <div className="lz-offers__controls" aria-label="Offer carousel controls">
+              <button className="lz-offers__arrow" type="button" onClick={() => moveOffer(-1)} aria-label="Previous offers"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13 10H6m0 0 3.5-3.5M6 10l3.5 3.5" /></svg></button>
+              <button className="lz-offers__arrow" type="button" onClick={() => moveOffer(1)} aria-label="Next offers"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 10h7m0 0-3.5-3.5M14 10l-3.5 3.5" /></svg></button>
+            </div>}
+          </div>
+        </section>}
 
         {featuredReview && <section className="lz-review" aria-label="Guest reviews" onMouseEnter={() => setReviewPaused(true)} onMouseLeave={() => setReviewPaused(false)} onFocus={() => setReviewPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setReviewPaused(false); }}>
           <div className="lz-review__scrim" aria-hidden="true" />
@@ -662,4 +758,3 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
     </div>
   );
 }
-
