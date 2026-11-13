@@ -6,7 +6,7 @@ import washPhoto from '../assets/salon-wash.jpg';
 import bridalPhoto from '../assets/salon-bridal.jpg';
 import finishPhoto from '../assets/salon-finish.jpg';
 import makeupPhoto from '../assets/makeup.jpg';
-import offerFigure from '../assets/offer-figure.png';
+import offerPortrait from '../assets/offer-editorial.jpg';
 import brandLogo from '../assets/logo-transparent.png';
 import brandLogoLight from '../assets/logo-transparent-light.png';
 import { legacyServicesData } from '../data/legacy-services.js';
@@ -674,7 +674,7 @@ export default function HomePage({ onNavigate, reviews, disableInitialAnimations
 
         {featuredOffers.length > 0 && <section className="lz-offers" id="offers" aria-labelledby="lz-offers-title" onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); moveOffer(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); moveOffer(1); } }}>
           <motion.div className="lz-offers__figure" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .18 }} transition={{ duration: reducedMotion ? .01 : .75, ease: [.2,.75,.2,1] }}>
-            <img src={offerFigure} alt="Layali Al Zahra beauty campaign portrait" loading="lazy" />
+            <img src={offerPortrait} alt="Layali Al Zahra beauty campaign portrait" loading="lazy" />
           </motion.div>
           <div className="lz-offers__content">
             <motion.div className="lz-offers__heading" initial={reducedMotion || disableInitialAnimations ? false : { opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: .35 }} transition={{ duration: reducedMotion ? .01 : .72, ease: [.2,.75,.2,1] }}>
