@@ -5,12 +5,6 @@
     "slug": "reduce-heat-damage-hair-styling-tips-dubai",
     "category": "Hair Care",
     "excerpt": "Changes to drying, tool temperature and styling frequency can reduce avoidable stress on your hair.",
-    "primaryKeyword": "how to prevent heat damage to hair",
-    "secondaryKeywords": [
-      "heat styling tips Dubai",
-      "hair care tips Dubai",
-      "hair breakage prevention"
-    ],
     "body": "<p>Repeated high temperatures can leave hair brittle and more prone to breakage. Dermatologists recommend reducing heat exposure, allowing hair to air-dry when practical and using hot tools on a low or medium setting. Read the <a href=\"https://www.aad.org/public/diseases/hair-loss/hair-care/styling\" target=\"_blank\" rel=\"noopener noreferrer\">American Academy of Dermatology guidance on styling without damage</a>.</p>",
     "tip1": "Let hair air-dry until it is partly dry before using a blow-dryer.",
     "tip2": "Choose a low or medium heat setting rather than the maximum temperature.",
@@ -30,7 +24,13 @@
     "seoTitle": "How to Prevent Heat Damage to Hair | Dubai Hair Care Tips",
     "metaDescription": "Reduce avoidable heat damage with practical advice on drying, tool temperature, heat protection and styling frequency.",
     "socialImage": "/content/editorial-campaign-nov-2026/haircare-research.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "how to prevent heat damage to hair",
+    "seoSecondaryKeywords": [
+      "heat styling tips Dubai",
+      "hair care tips Dubai",
+      "hair breakage prevention"
+    ]
   },
   {
     "type": "blog",
@@ -38,13 +38,6 @@
     "slug": "biab-vs-gel-extensions-dubai",
     "category": "Nails",
     "excerpt": "BIAB and gel extensions serve different purposes. Compare natural-nail support, added length, maintenance and removal before booking.",
-    "primaryKeyword": "BIAB vs gel extensions Dubai",
-    "secondaryKeywords": [
-      "BIAB nails Dubai",
-      "gel nail extensions Dubai",
-      "builder gel manicure",
-      "nail salon Al Barsha"
-    ],
     "body": "<p>If you are comparing BIAB and gel extensions in Dubai, start with the result you want rather than the product name. BIAB (builder-in-a-bottle) is generally used as a builder overlay on the natural nail. Gel extensions are designed to add length or change the nail shape. Products and techniques vary, so confirm exactly what the salon offers.</p><h2>What BIAB is designed to do</h2><p>BIAB is commonly applied over the natural nail to create a structured overlay. It may suit someone who wants a reinforced finish while keeping their existing length. The result depends on the product, application and condition of the natural nail.</p><h2>When gel extensions may make more sense</h2><p>Gel extensions are an option when you want additional length or a more substantial shape change. The technician should assess your natural nails, discuss a manageable length and explain maintenance and removal.</p><h2>Questions to ask before booking</h2><ul><li>Is this an overlay or will it add length?</li><li>How is the product removed: soaking, filing or both?</li><li>What maintenance interval is recommended?</li><li>What should I do if lifting or discomfort appears?</li></ul><h2>Choose around your nails and routine</h2><p>For short natural nails and a structured finish, ask whether BIAB is suitable. If length is the priority, discuss gel extensions and realistic upkeep. A consultation at a nail salon in Al Barsha can match the method to your nail condition and routine.</p><p>For general nail-health advice, see the <a href=\"https://www.aad.org/public/everyday-care/nail-care-secrets/basics/pedicures/reduce-artificial-nail-damage\" target=\"_blank\" rel=\"noopener noreferrer\">American Academy of Dermatology guidance on reducing artificial-nail damage</a>.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/gel-manicure.jpg",
     "altText": "Close-up of a polished salon manicure with a clean natural-looking finish",
@@ -59,7 +52,14 @@
     "seoTitle": "BIAB vs Gel Extensions in Dubai: Differences and How to Choose",
     "metaDescription": "Compare BIAB overlays and gel nail extensions in Dubai, including length, maintenance, removal and questions to ask your nail technician.",
     "socialImage": "/content/editorial-campaign-nov-2026/gel-manicure.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "BIAB vs gel extensions Dubai",
+    "seoSecondaryKeywords": [
+      "BIAB nails Dubai",
+      "gel nail extensions Dubai",
+      "builder gel manicure",
+      "nail salon Al Barsha"
+    ]
   },
   {
     "type": "news",
@@ -67,13 +67,6 @@
     "slug": "pinterest-beauty-trend-report-2026-hair-nails-makeup",
     "category": "News",
     "excerpt": "Pinterest’s October report tracks rising searches for detailed beauty looks, from caramel-nude nails to textured bobs and copper-toned hair.",
-    "primaryKeyword": "2026 beauty trends report",
-    "secondaryKeywords": [
-      "Pinterest beauty trends 2026",
-      "2026 nail trends",
-      "2026 hair colour trends",
-      "Dubai beauty trends"
-    ],
     "body": "<p>Pinterest published its first Beauty Trend Report on 6 October 2026, highlighting a move away from broad trend labels towards more specific looks. The report tracks search growth on Pinterest rather than salon bookings or sales, so the figures indicate platform interest, not guaranteed demand in Dubai.</p><h2>What the report says is gaining attention</h2><p>Among the searches highlighted are caramel nude nails, up 943%; mocha balayage hair, up 949%; and textured French bob searches, up 338%. The report also points to raspberry-jelly nail ideas, copper and cherry-cola hair colours, frosted makeup and more individualised eye looks.</p><h2>What this means for a salon consultation</h2><p>Bring a specific reference: the nail tone, placement of a colour accent or haircut shape. A stylist or nail technician can discuss how it translates to your hair, nail length, skin tone and maintenance preferences. A trend image is a starting point, not a promise that the same result suits everyone.</p><p>Read the <a href=\"https://newsroom.pinterest.com/en-us/news/beauty-trend-report-2026/\" target=\"_blank\" rel=\"noopener noreferrer\">Pinterest Beauty Trend Report 2026</a> for its full trend list.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/beautyworld-dubai.jpg",
     "altText": "Beauty industry exhibition display representing current hair, nail and makeup trends",
@@ -88,7 +81,14 @@
     "seoTitle": "Pinterest Beauty Trend Report 2026: Hair, Nail and Makeup Looks",
     "metaDescription": "Pinterest’s 2026 Beauty Trend Report highlights rising searches for caramel nude nails, mocha balayage, textured bobs and detailed makeup looks.",
     "socialImage": "/content/editorial-campaign-nov-2026/beautyworld-dubai.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "2026 beauty trends report",
+    "seoSecondaryKeywords": [
+      "Pinterest beauty trends 2026",
+      "2026 nail trends",
+      "2026 hair colour trends",
+      "Dubai beauty trends"
+    ]
   },
   {
     "type": "tip",
@@ -96,12 +96,6 @@
     "slug": "brow-lamination-aftercare-first-48-hours",
     "category": "Brows & Lashes",
     "excerpt": "Follow the specific aftercare instructions from your brow professional while freshly styled brows settle.",
-    "primaryKeyword": "brow lamination aftercare",
-    "secondaryKeywords": [
-      "brow lamination Dubai",
-      "brow care tips",
-      "brow styling aftercare"
-    ],
     "body": "<p>Aftercare varies with the products and process used. Before leaving your appointment, ask your brow professional how long to keep the area dry and which products to avoid. Contact a healthcare professional if you experience unexpected irritation or swelling.</p>",
     "tip1": "Follow the aftercare card or instructions supplied by your brow professional; timing differs between systems.",
     "tip2": "If your technician advises keeping brows dry for a set period, avoid steam, swimming and direct water during that window.",
@@ -120,7 +114,13 @@
     "seoTitle": "Brow Lamination Aftercare: What to Do in the First 48 Hours",
     "metaDescription": "Learn practical brow lamination aftercare habits and why your technician’s product-specific instructions should come first.",
     "socialImage": "/content/editorial-campaign-nov-2026/brow-threading.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "brow lamination aftercare",
+    "seoSecondaryKeywords": [
+      "brow lamination Dubai",
+      "brow care tips",
+      "brow styling aftercare"
+    ]
   },
   {
     "type": "blog",
@@ -128,13 +128,6 @@
     "slug": "russian-manicure-dubai-what-to-ask",
     "category": "Nails",
     "excerpt": "Understand the technique, tool handling, cuticle approach and hygiene questions to discuss before choosing a Russian manicure.",
-    "primaryKeyword": "Russian manicure Dubai",
-    "secondaryKeywords": [
-      "Russian manicure technique",
-      "dry manicure Dubai",
-      "nail salon hygiene",
-      "manicure consultation"
-    ],
     "body": "<p>A Russian manicure is commonly described as a detailed dry manicure that uses an e-file and specialised bits to refine the nail area. The term is used for different service variations; the result depends on the technician’s training, technique and assessment of your nails. It is not simply a standard manicure with a different polish.</p><h2>Understand what the appointment includes</h2><p>Ask the salon to explain each step. Find out whether the treatment includes e-file work around the cuticle area, nail shaping, product application and removal of existing enhancements. Discuss a gentler alternative if you do not want detailed cuticle work.</p><h2>Ask about tools and hygiene</h2><p>Ask how reusable metal instruments are cleaned and sterilised, how single-use items are handled and whether tools are prepared for each client. Dubai Municipality’s <a href=\"https://www.dm.gov.ae/wp-content/uploads/2024/07/DM-HSD-GU75-IS2_Ideal-Salon-Technical-Guidelines_V3-1.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ideal Salon Technical Guidelines</a> provide a local reference for salon standards.</p><h2>Is it right for every nail?</h2><p>No single manicure technique is appropriate for every person or nail condition. Tell the technician if your nails are thin, damaged or sensitive. Speak up if you feel pain or burning; detailed cuticle work should not be painful.</p><h2>Make the decision before the appointment</h2><p>Choose this service only after you understand the method, the technician’s experience and the hygiene process. If you prefer a simpler approach, ask about a classic manicure or another option that matches your comfort level.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/salon-standards.jpg",
     "altText": "Clean manicure station with prepared salon tools and fresh towels",
@@ -149,7 +142,14 @@
     "seoTitle": "Russian Manicure in Dubai: Technique, Safety and Questions to Ask",
     "metaDescription": "Considering a Russian manicure in Dubai? Learn what the service involves and what to ask about technique, cuticle care and tool hygiene.",
     "socialImage": "/content/editorial-campaign-nov-2026/salon-standards.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "Russian manicure Dubai",
+    "seoSecondaryKeywords": [
+      "Russian manicure technique",
+      "dry manicure Dubai",
+      "nail salon hygiene",
+      "manicure consultation"
+    ]
   },
   {
     "type": "news",
@@ -157,13 +157,6 @@
     "slug": "beautyworld-dubai-awards-2026-winners",
     "category": "News",
     "excerpt": "The October awards recognised brands and products across hair, nails, skincare, fragrance, beauty technology and cosmetics.",
-    "primaryKeyword": "Beautyworld Dubai Awards 2026 winners",
-    "secondaryKeywords": [
-      "Beautyworld Dubai 2026",
-      "UAE beauty industry news",
-      "beauty awards Dubai",
-      "nail product award 2026"
-    ],
     "body": "<p>The Beautyworld Dubai Awards 2026 revealed winners across 17 categories at its 7 October ceremony, during the exhibition’s 30th edition. Messe Frankfurt Middle East said the winners were selected by a panel of 20 independent judges from the international beauty industry.</p><h2>Selected winners</h2><p>Huda Kattan received the Beautyworld Icon Award. Other winners included Color Wow Dream Coat Supernatural for Hair Product of the Year, BANDI COLOR SKIN GEL #2 LIGHT PINK for Nail Product of the Year, and Salonist’s AI Beauty &amp; Wellness Operating System for Technology Innovation of the Year.</p><h2>Why the results matter to beauty professionals</h2><p>The list gives salon teams and consumers a snapshot of brands and product categories recognised by the judging panel. An award is not a substitute for checking whether a product suits an individual client, and it does not establish that a product is available at every UAE salon.</p><p>See the <a href=\"https://beautyworld-dubai.ae.messefrankfurt.com/dubai/en/events/awards/2026.html\" target=\"_blank\" rel=\"noopener noreferrer\">official Beautyworld Dubai Awards 2026 winners list</a>.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/beautyworld-dubai.jpg",
     "altText": "Beautyworld Dubai exhibition floor during the 2026 beauty industry event",
@@ -178,7 +171,14 @@
     "seoTitle": "Beautyworld Dubai Awards 2026: Winners Across 17 Categories",
     "metaDescription": "See selected winners from the Beautyworld Dubai Awards 2026, including hair, nail and beauty technology categories.",
     "socialImage": "/content/editorial-campaign-nov-2026/beautyworld-dubai.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "Beautyworld Dubai Awards 2026 winners",
+    "seoSecondaryKeywords": [
+      "Beautyworld Dubai 2026",
+      "UAE beauty industry news",
+      "beauty awards Dubai",
+      "nail product award 2026"
+    ]
   },
   {
     "type": "tip",
@@ -186,12 +186,6 @@
     "slug": "pedicure-care-between-salon-visits",
     "category": "Nails",
     "excerpt": "Moisturising, sensible footwear and gentle nail care help maintain a tidy pedicure between appointments.",
-    "primaryKeyword": "pedicure care tips",
-    "secondaryKeywords": [
-      "pedicure Dubai",
-      "foot care between appointments",
-      "nail care tips"
-    ],
     "body": "<p>These are cosmetic maintenance suggestions, not treatment for foot or nail conditions. If you notice pain, swelling, discolouration or a persistent change in a nail, seek advice from a qualified healthcare professional.</p>",
     "tip1": "Apply a foot moisturiser regularly, concentrating on dry areas while avoiding slippery residue on the soles.",
     "tip2": "Wear shoes with enough room at the toes so nails are not repeatedly pressed against the front of the shoe.",
@@ -211,7 +205,13 @@
     "seoTitle": "Pedicure Care Tips: Maintain Neat Feet Between Salon Visits",
     "metaDescription": "Keep a pedicure looking neat with practical foot-care habits, comfortable footwear and gentle nail maintenance between appointments.",
     "socialImage": "/content/editorial-campaign-nov-2026/gel-manicure.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "pedicure care tips",
+    "seoSecondaryKeywords": [
+      "pedicure Dubai",
+      "foot care between appointments",
+      "nail care tips"
+    ]
   },
   {
     "type": "blog",
@@ -219,13 +219,6 @@
     "slug": "how-to-choose-nail-shape-almond-square-oval",
     "category": "Nails",
     "excerpt": "Almond, oval, square and squoval nails create different finishes. Use length, natural nail shape and daily tasks to guide your choice.",
-    "primaryKeyword": "how to choose nail shape",
-    "secondaryKeywords": [
-      "almond nails Dubai",
-      "square nails",
-      "oval nail shape",
-      "nail shapes guide"
-    ],
     "body": "<p>The best nail shape is the one that suits your natural nail length, the finish you prefer and what your hands do every day. A reference photo helps, but the same shape can look different on different nail beds and lengths. Your technician can show you a practical version before shaping all ten nails.</p><h2>Almond: tapered with a soft point</h2><p>Almond nails narrow towards the tip and have a rounded point. They can create an elongated look, but usually need enough free edge to form the taper. On very short nails, ask whether a softer oval would achieve a similar effect.</p><h2>Square: straight sides and a flat tip</h2><p>Square nails have a crisp, straight edge. They create a structured finish, especially when there is enough length to keep the corners balanced. If your nails catch on fabric or you work with your hands, discuss softening the corners.</p><h2>Oval: a rounded everyday shape</h2><p>Oval nails follow a curved outline and can be practical at shorter lengths. They are useful if you prefer a softer edge without a pointed tip.</p><h2>Squoval: a compromise between square and oval</h2><p>Squoval combines straighter sides with gently rounded corners. It keeps some of the square look while reducing sharp corners that may catch.</p><h2>Choose for comfort, not only the photograph</h2><p>Tell your nail technician how long you want to keep the nails, whether you type or handle equipment frequently and whether you prefer a natural or extended length. A nail shape should feel comfortable in daily use as well as look balanced in a photo.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/gel-manicure.jpg",
     "altText": "Close-up of neatly shaped salon nails with a glossy neutral finish",
@@ -241,7 +234,14 @@
     "seoTitle": "How to Choose a Nail Shape: Almond, Square, Oval or Squoval",
     "metaDescription": "Compare almond, square, oval and squoval nail shapes and choose a finish based on your nail length, comfort and daily routine.",
     "socialImage": "/content/editorial-campaign-nov-2026/gel-manicure.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "how to choose nail shape",
+    "seoSecondaryKeywords": [
+      "almond nails Dubai",
+      "square nails",
+      "oval nail shape",
+      "nail shapes guide"
+    ]
   },
   {
     "type": "news",
@@ -249,12 +249,6 @@
     "slug": "beautyworld-dubai-2026-professional-hair-stylists",
     "category": "News",
     "excerpt": "The October event featured live demonstrations and brand activity led by recognised hair artists and professional stylists.",
-    "primaryKeyword": "Beautyworld Dubai 2026 hair trends",
-    "secondaryKeywords": [
-      "professional hair stylists Dubai",
-      "Beautyworld hair industry",
-      "salon hair trends 2026"
-    ],
     "body": "<p>At Beautyworld Dubai 2026, professional hair demonstrations and brand activity placed working stylists at the centre of the event programme. In its 7 October coverage, organiser Messe Frankfurt Middle East described how Keralook introduced a global ambassador on the beautyLIVE stage, while Shark Beauty and Living Proof worked with named stylists during the show.</p><h2>What the event highlighted</h2><p>The programme featured live demonstrations from international hair artists, including Dimitris Giannetos, Josh Lamonaca and Mounir. The organiser described a growing role for professional artists in how hair brands present products and build credibility with the salon community.</p><h2>Why professional technique remains important</h2><p>For clients, a trend or product launch is only one part of a good result. Consultation, hair history, technique and realistic maintenance still matter when choosing a colour, cut or treatment. Social content can help identify a look, but a stylist needs to assess how it translates to the individual client.</p><p>Read the organiser’s <a href=\"https://beautyworld-dubai.ae.messefrankfurt.com/dubai/en/press/press-releases1/2026/102220262.html\" target=\"_blank\" rel=\"noopener noreferrer\">report on professional hair and stylist partnerships</a>.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/beautyworld-dubai.jpg",
     "altText": "Professional hair demonstration at a beauty trade exhibition",
@@ -269,7 +263,13 @@
     "seoTitle": "Beautyworld Dubai 2026: Professional Hair Stylists in Focus",
     "metaDescription": "Beautyworld Dubai’s 2026 hair programme featured live demonstrations and brand activity led by international professional stylists.",
     "socialImage": "/content/editorial-campaign-nov-2026/beautyworld-dubai.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "Beautyworld Dubai 2026 hair trends",
+    "seoSecondaryKeywords": [
+      "professional hair stylists Dubai",
+      "Beautyworld hair industry",
+      "salon hair trends 2026"
+    ]
   },
   {
     "type": "tip",
@@ -277,12 +277,6 @@
     "slug": "waxing-aftercare-tips-sensitive-skin",
     "category": "Waxing",
     "excerpt": "Keep post-wax care simple and follow your therapist’s advice on heat, friction and products for the treated area.",
-    "primaryKeyword": "waxing aftercare tips",
-    "secondaryKeywords": [
-      "waxing Dubai",
-      "skin after waxing",
-      "waxing appointment advice"
-    ],
     "body": "<p>Skin can look temporarily red or feel sensitive after waxing. The American Academy of Dermatology recommends soothing the skin and avoiding hot baths or showers after waxing. Seek medical advice if redness or swelling persists or worsens. Reference: <a href=\"https://www.aad.org/public/everyday-care/skin-care-basics/hair/how-to-wax\" target=\"_blank\" rel=\"noopener noreferrer\">AAD waxing guidance</a>.</p>",
     "tip1": "Avoid very hot showers, steam rooms and hot baths immediately after waxing if the area feels warm or sensitive.",
     "tip2": "Choose loose, breathable clothing to reduce rubbing on freshly waxed skin.",
@@ -302,7 +296,13 @@
     "seoTitle": "Waxing Aftercare Tips: How to Care for Skin After Your Visit",
     "metaDescription": "Follow simple waxing aftercare tips on heat, friction and moisturising, and know when persistent irritation needs professional advice.",
     "socialImage": "/content/editorial-campaign-nov-2026/salon-standards.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "waxing aftercare tips",
+    "seoSecondaryKeywords": [
+      "waxing Dubai",
+      "skin after waxing",
+      "waxing appointment advice"
+    ]
   },
   {
     "type": "blog",
@@ -310,13 +310,6 @@
     "slug": "haircut-consultation-face-framing-layers-dubai",
     "category": "Hair Care",
     "excerpt": "Bring useful reference photos and explain your styling routine so your stylist can adapt layers and face-framing to your hair.",
-    "primaryKeyword": "haircut consultation Dubai",
-    "secondaryKeywords": [
-      "face framing layers Dubai",
-      "layered haircut Dubai",
-      "hair salon Al Barsha",
-      "haircut ideas"
-    ],
     "body": "<p>A haircut reference photo is useful, but it rarely tells the whole story. The person in the picture may have different hair density, texture, length or styling habits. A focused consultation helps your stylist understand which parts of the look matter and what can realistically be recreated with your hair.</p><h2>Bring more than one reference</h2><p>Choose two or three images that show the shape from different angles. Point out the detail you like: face-framing pieces, movement around the ends, a softer outline or a particular fringe. Also show one image of a result you do not want. This is often clearer than saying only that you want “more layers”.</p><h2>Explain your everyday styling routine</h2><p>Tell your stylist how much time you spend styling, whether you air-dry, use a blow-dryer or wear your hair tied back. Layers that look defined after a professional blow-dry may behave differently when left to dry naturally.</p><h2>Discuss length before the first cut</h2><p>Agree on the shortest point around the face and the amount of length to remove from the back. Ask the stylist to show where the layers will sit and whether they can be adjusted if you want a more subtle result.</p><h2>Share your hair history</h2><p>Mention previous chemical services, colour, extensions and breakage concerns. These details help the stylist plan the cut and finish around your hair’s condition.</p><h2>Leave with a manageable shape</h2><p>The best haircut is not just the one that photographs well in the salon. It should work with your texture, routine and preferred level of maintenance. A clear consultation gives your stylist a better brief before the scissors come out.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/haircare-research.jpg",
     "altText": "Hair stylist consulting with a client before shaping a layered haircut",
@@ -331,7 +324,14 @@
     "seoTitle": "Haircut Consultation in Dubai: How to Ask for Layers and Face-Framing",
     "metaDescription": "Plan a better haircut consultation with reference photos, styling details and clear questions about layers, face-framing and length.",
     "socialImage": "/content/editorial-campaign-nov-2026/haircare-research.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "haircut consultation Dubai",
+    "seoSecondaryKeywords": [
+      "face framing layers Dubai",
+      "layered haircut Dubai",
+      "hair salon Al Barsha",
+      "haircut ideas"
+    ]
   },
   {
     "type": "news",
@@ -339,12 +339,6 @@
     "slug": "sheglam-life-is-sweet-advent-calendar-2026",
     "category": "News",
     "excerpt": "The holiday set features 12 full-size beauty products across lips, cheeks, eyes and complexion, according to the launch announcement.",
-    "primaryKeyword": "SHEGLAM Life Is Sweet Advent Calendar",
-    "secondaryKeywords": [
-      "SHEGLAM holiday collection 2026",
-      "beauty advent calendar UAE",
-      "beauty gift set 2026"
-    ],
     "body": "<p>SHEGLAM’s Life Is Sweet Advent Calendar was featured in a 23 November 2026 product-launch announcement from Dubai Beauty Spot. The set is described as a 12-drawer countdown containing 12 full-size beauty products across lips, cheeks, eyes and complexion, including three limited-edition holiday shades alongside existing products.</p><h2>A seasonal beauty gift format</h2><p>The announcement positions the calendar as a holiday gift set with playful, confectionery-inspired presentation. This is a product launch story rather than an independent review; the announcement does not provide comparative performance testing or confirm availability at every UAE retailer.</p><h2>What shoppers should check</h2><p>Before purchasing a multi-product set, check current ingredient lists, shade selection, seller, delivery terms and return policy. If you have known sensitivities, review each product’s ingredients rather than assuming every item in the box will suit your skin.</p><p>Read the <a href=\"https://www.dubaibeautyspot.com/beauty-news/195193-sweet-treats-zero-sugar-crash-sheglam-unwraps-its-life-is-sweet-advent-calendar\" target=\"_blank\" rel=\"noopener noreferrer\">Dubai Beauty Spot launch coverage</a> and the <a href=\"https://www.sheglam.com/\" target=\"_blank\" rel=\"noopener noreferrer\">SHEGLAM website</a> for current details.</p>",
     "featuredImage": "/images/news/news-sheglam-blush.jpg",
     "altText": "SHEGLAM beauty product launch image for its seasonal Life Is Sweet collection",
@@ -359,7 +353,13 @@
     "seoTitle": "SHEGLAM Life Is Sweet Advent Calendar: 2026 Beauty Launch",
     "metaDescription": "SHEGLAM’s Life Is Sweet Advent Calendar features 12 full-size beauty products, according to its November 2026 launch coverage.",
     "socialImage": "/images/news/news-sheglam-blush.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "SHEGLAM Life Is Sweet Advent Calendar",
+    "seoSecondaryKeywords": [
+      "SHEGLAM holiday collection 2026",
+      "beauty advent calendar UAE",
+      "beauty gift set 2026"
+    ]
   },
   {
     "type": "tip",
@@ -367,12 +367,6 @@
     "slug": "how-to-detangle-wet-hair-with-less-breakage",
     "category": "Hair Care",
     "excerpt": "Use the right timing and a gentle detangling method for your hair texture instead of pulling through knots.",
-    "primaryKeyword": "how to detangle wet hair",
-    "secondaryKeywords": [
-      "prevent hair breakage",
-      "wide tooth comb",
-      "hair care tips Dubai"
-    ],
     "body": "<p>Wet hair can be more vulnerable to breakage, but the best detangling method depends on texture. The American Academy of Dermatology advises people with straight hair to let it dry somewhat before gently combing, while tightly curled or textured hair is often best detangled when damp with a wide-tooth comb. Reference: <a href=\"https://www.aad.org/public/diseases/hair-loss/hair-care/styling\" target=\"_blank\" rel=\"noopener noreferrer\">AAD guidance on styling without damage</a>.</p>",
     "tip1": "Do not pull a brush from roots to ends through a knot. Separate the tangle gently with your fingers first.",
     "tip2": "For straight hair, allow it to dry a little before using a wide-tooth comb.",
@@ -392,7 +386,13 @@
     "seoTitle": "How to Detangle Wet Hair Without Causing Unnecessary Breakage",
     "metaDescription": "Learn a gentler way to detangle wet hair, with advice on timing, sectioning and choosing a wide-tooth comb for your texture.",
     "socialImage": "/content/editorial-campaign-nov-2026/extension-care.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "how to detangle wet hair",
+    "seoSecondaryKeywords": [
+      "prevent hair breakage",
+      "wide tooth comb",
+      "hair care tips Dubai"
+    ]
   },
   {
     "type": "blog",
@@ -400,13 +400,6 @@
     "slug": "prepare-for-professional-makeup-appointment-dubai",
     "category": "Skincare",
     "excerpt": "A clear brief, realistic reference images and a familiar pre-appointment routine help your makeup artist plan the finish you want.",
-    "primaryKeyword": "professional makeup appointment Dubai",
-    "secondaryKeywords": [
-      "makeup artist Dubai",
-      "salon makeup Dubai",
-      "makeup appointment preparation",
-      "event makeup Dubai"
-    ],
     "body": "<p>A professional makeup appointment works best when the artist understands the event, the finish you like and how you normally wear makeup. A reference photo is helpful, but lighting, filters and the model’s features can change how a look appears. Use the image to explain the details you like rather than expecting an exact copy.</p><h2>Share the event and timing</h2><p>Tell the artist whether the makeup is for a daytime event, evening function, photoshoot or wedding. Mention the venue, start time and whether you will be outdoors. This helps the artist discuss coverage, finish and touch-ups.</p><h2>Bring useful references</h2><p>Choose one or two clear images and identify the elements you want: eye definition, lip colour, complexion finish or blush placement. Also explain anything you dislike, such as heavy lashes or a very matte base.</p><h2>Keep skin preparation familiar</h2><p>Use products your skin already tolerates before the appointment. Avoid experimenting with strong exfoliants or unfamiliar treatments immediately beforehand, especially if you are prone to sensitivity. Arrive with a clean face unless the artist advises otherwise.</p><h2>Discuss sensitivities and product preferences</h2><p>Tell the artist about known allergies, contact-lens use, skin sensitivities and products you prefer not to use. For medical skin concerns, seek advice from a healthcare professional rather than relying on makeup to treat them.</p><h2>Agree on the finish</h2><p>Confirm whether you want a natural, defined or dramatic result, and ask how long the appointment will take. A good brief gives the artist room to adapt the inspiration to your features and the occasion.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/makeup-humidity.jpg",
     "altText": "Makeup artist preparing complexion products for a client appointment",
@@ -421,7 +414,14 @@
     "seoTitle": "How to Prepare for a Professional Makeup Appointment in Dubai",
     "metaDescription": "Prepare for salon makeup in Dubai with practical advice on reference photos, skin preparation, sensitivities and communicating your preferred finish.",
     "socialImage": "/content/editorial-campaign-nov-2026/makeup-humidity.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "professional makeup appointment Dubai",
+    "seoSecondaryKeywords": [
+      "makeup artist Dubai",
+      "salon makeup Dubai",
+      "makeup appointment preparation",
+      "event makeup Dubai"
+    ]
   },
   {
     "type": "news",
@@ -429,13 +429,6 @@
     "slug": "2026-haircare-report-scalp-first-prevention-trends",
     "category": "News",
     "excerpt": "A Cosmetics Business report drawing on Circana and Worldpanel data describes a shift towards scalp care, prevention and targeted hair treatments.",
-    "primaryKeyword": "2026 haircare trends report",
-    "secondaryKeywords": [
-      "scalp care trends 2026",
-      "hair serum sales 2026",
-      "hair longevity",
-      "professional hair care news"
-    ],
     "body": "<p>Cosmetics Business published its 2026 Hair Care Trend Report coverage on 7 October, describing a shift from reactive repair towards prevention-led routines and greater attention to scalp health. The article reports that prestige haircare sales in Europe grew 24% to €1.2 billion in the 12 months ending August 2026, citing Circana. It also cites Worldpanel by Numerator data showing UK scalp treatment sales up 12% for the year ending 9 August 2026.</p><h2>Scalp care and targeted products gain attention</h2><p>The report discusses scalp treatments, hair serums, bond-building products and newer formats such as scalp exfoliants and dry shampoo mists. These are market signals from Europe and the UK, not UAE salon sales figures. They indicate product-development direction, but do not prove that every trend suits every hair type.</p><h2>What clients can take from the report</h2><p>Identify the concern you want help with—such as dryness, breakage, styling build-up or colour maintenance—and ask for a routine that addresses it. Do not treat a trend ingredient or scalp product as a medical solution for hair loss or scalp disease.</p><p>Read the full <a href=\"https://www.cosmeticsbusiness.com/cosmetics-business-reveals-the-top-5-hair-care-2\" target=\"_blank\" rel=\"noopener noreferrer\">Cosmetics Business 2026 haircare trend report coverage</a> for source data and expert commentary.</p>",
     "featuredImage": "/content/editorial-campaign-nov-2026/haircare-research.jpg",
     "altText": "Haircare research and professional products arranged for a salon consultation",
@@ -450,6 +443,13 @@
     "seoTitle": "2026 Haircare Trends: Scalp-First and Prevention-Led Routines",
     "metaDescription": "A 2026 haircare report highlights scalp treatments and prevention-led routines, with European and UK market data clearly identified.",
     "socialImage": "/content/editorial-campaign-nov-2026/haircare-research.jpg",
-    "status": "scheduled"
+    "status": "scheduled",
+    "seoPrimaryKeyword": "2026 haircare trends report",
+    "seoSecondaryKeywords": [
+      "scalp care trends 2026",
+      "hair serum sales 2026",
+      "hair longevity",
+      "professional hair care news"
+    ]
   }
 ]
