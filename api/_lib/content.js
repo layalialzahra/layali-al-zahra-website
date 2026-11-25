@@ -90,13 +90,13 @@ export function validateContentInput(input, partial = false) {
     if (!slug) throw new Error("A valid slug is required");
     result.slug = slug;
   }
-  for (const field of ["excerpt", "altText", "author", "relatedService", "seoTitle", "metaDescription", "socialImage"]) {
+  for (const field of ["excerpt", "altText", "author", "relatedService", "seoTitle", "metaDescription", "socialImage", "seoPrimaryKeyword"]) {
     if (data[field] !== undefined) result[field] = String(data[field] || "").trim().slice(0, field === "metaDescription" ? 320 : 500);
   }
   if (data.body !== undefined) result.body = sanitizeBody(data.body);
   if (data.featuredImage !== undefined) result.featuredImage = String(data.featuredImage || "").trim().slice(0, 2000);
   if (data.category !== undefined) result.category = String(data.category || "").trim().slice(0, 100);
-  if (data.tags !== undefined) result.tags = normalizeTags(data.tags);
+  if (data.tags !== undefined) result.tags = normalizeTags(data.tags);\n  if (data.seoSecondaryKeywords !== undefined) result.seoSecondaryKeywords = normalizeTags(data.seoSecondaryKeywords).slice(0, 20);
   if (data.status !== undefined) {
     const status = String(data.status).trim().toLowerCase();
     if (!["draft", "scheduled", "published"].includes(status)) throw new Error("Invalid content status");
@@ -119,9 +119,9 @@ export function validateContentInput(input, partial = false) {
 const CONTENT_PUBLIC_FIELDS = [
   "_id", "type", "title", "slug", "excerpt", "body", "featuredImage", "altText",
   "category", "tags", "author", "relatedService", "seoTitle", "metaDescription",
-  "socialImage", "publishDate", "tip1", "tip2", "tip3", "tip4", "tip5",
+  "socialImage", "seoPrimaryKeyword", "seoSecondaryKeywords", "publishDate", "tip1", "tip2", "tip3", "tip4", "tip5",
 ];
-const CONTENT_ADMIN_FIELDS = [...CONTENT_PUBLIC_FIELDS, "status", "createdAt", "updatedAt"];
+const CONTENT_ADMIN_FIELDS = [...CONTENT_PUBLIC_FIELDS, "seoPrimaryKeyword", "seoSecondaryKeywords", "status", "createdAt", "updatedAt"];
 
 export function serializeContent(doc, { publicOnly = false } = {}) {
   const output = {};
