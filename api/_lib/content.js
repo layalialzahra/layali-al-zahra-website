@@ -96,7 +96,8 @@ export function validateContentInput(input, partial = false) {
   if (data.body !== undefined) result.body = sanitizeBody(data.body);
   if (data.featuredImage !== undefined) result.featuredImage = String(data.featuredImage || "").trim().slice(0, 2000);
   if (data.category !== undefined) result.category = String(data.category || "").trim().slice(0, 100);
-  if (data.tags !== undefined) result.tags = normalizeTags(data.tags);\n  if (data.seoSecondaryKeywords !== undefined) result.seoSecondaryKeywords = normalizeTags(data.seoSecondaryKeywords).slice(0, 20);
+  if (data.tags !== undefined) result.tags = normalizeTags(data.tags);
+  if (data.seoSecondaryKeywords !== undefined) result.seoSecondaryKeywords = normalizeTags(data.seoSecondaryKeywords).slice(0, 20);
   if (data.status !== undefined) {
     const status = String(data.status).trim().toLowerCase();
     if (!["draft", "scheduled", "published"].includes(status)) throw new Error("Invalid content status");
