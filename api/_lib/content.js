@@ -119,7 +119,7 @@ export function validateContentInput(input, partial = false) {
 const CONTENT_PUBLIC_FIELDS = [
   "_id", "type", "title", "slug", "excerpt", "body", "featuredImage", "altText",
   "category", "tags", "author", "relatedService", "seoTitle", "metaDescription",
-  "socialImage", "seoPrimaryKeyword", "seoSecondaryKeywords", "publishDate", "tip1", "tip2", "tip3", "tip4", "tip5",
+  "socialImage", "publishDate", "tip1", "tip2", "tip3", "tip4", "tip5",
 ];
 const CONTENT_ADMIN_FIELDS = [...CONTENT_PUBLIC_FIELDS, "seoPrimaryKeyword", "seoSecondaryKeywords", "status", "createdAt", "updatedAt"];
 
